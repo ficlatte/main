@@ -1,2 +1,215 @@
-{% extends "castle/base_page.html" %}
+{% extends "castle/page_with_user_dashboard.html" %}
 {% load staticfiles %}
+
+{% block news_panel %}
+    <div class="container" id="news-content">
+      <div class="well" id="news">
+        <h2>Ficlatt&eacute; news <a href="/blog">(from the blog)</a></h2>
+        <div>
+          <h3 class="entry-title"><a href="/blog/1" rel="bookmark">A blog entry</a></h3>
+          <ul class="meta clear">
+            <li>3 comments</li>
+            <li class="posted">Posted 7 months ago</li>
+            <li class="vcard author"><span>Author: <a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a></span></li>
+          </ul>
+        </div> <!-- id="" class="" -->
+      </div> <!-- id="news" class="well" -->
+{% endblock news_panel %}
+
+{% block primary_panel %}
+          <div class="well well-sm">
+            <h3>User&#39;s recent activity</h3>
+            <ul id="user-activity-list">
+              <li><a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a> updated <a class="story_link" href="/stories/40007">a daft draft</a></li>
+              <li><a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a> updated <a class="story_link" href="/stories/40007">a daft draft</a></li>
+              <li><a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a> updated <a class="story_link" href="/stories/40007">a daft draft</a></li>
+              <li><a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a> wrote <a class="story_link" href="/stories/40024">20th story</a></li>
+              <li><a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a> posted a comment on <a class="story_link" href="/stories/40017">Soaking up the view</a></li>
+              <li><a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a> wrote <a class="story_link" href="/stories/40023">try blank tags</a></li>
+              <li><a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a> wrote <a class="story_link" href="/stories/40022">Yankee doodle</a></li>
+              <li><a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a> posted a comment on <a class="story_link" href="/stories/40020">adsfa</a></li>
+              <li><a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a> wrote <a class="story_link" href="/stories/40020">adsfa</a></li>
+              <li><a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a> updated <a class="story_link" href="/stories/40019">afdl jkhasdlkjf ha</a></li>
+            </ul>
+          </div> <!-- id="" class="well well-sm" -->
+          <div class="well well-sm" id="whats-new">
+            <h3>What&#39;s new</h3>
+            <div class="row" id="featured-popular">
+              <div class="col-md-8" id="featured-story">
+                <div class="panel panel-success">
+                  <div class="panel-heading">
+                    <h3 class="panel-title">Featured story</h3>
+                  </div> <!-- id="" class="panel-heading" -->
+                  <div class="panel-body">
+                    <h3><a href="/stories/40017">Soaking up the view</a></h3>
+<p>We&rsquo;d been dancing for over an hour when I had to call a time-out. We snaked our way back to the bar and sat for a moment, taking on water and allowing our bodies to cool.</p>
+<p></p>
+<p>We were far enough from the dance floor to shout a simple conversation, but mo&hellip;</p>
+                    <div class="row">
+                      <div class="col-md-4">
+                        <a href="/authors/ethelthefrog"><img alt="ethelthefrog" class="img-rounded img-responsive" src="/img/avatar/1" /></a>
+                      </div> <!-- id="" class="col-md-4" -->
+                      <div class="col-md-8">
+                        <p><span>Author: <a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a></span></p>
+                      </div> <!-- id="" class="col-md-8" -->
+                    </div> <!-- id="" class="row" -->
+                  </div> <!-- id="" class="panel-body" -->
+                </div> <!-- id="" class="panel panel-success" -->
+              </div> <!-- id="featured-story" class="col-md-8" -->
+              <div class="col-md-4" id="popular-stories">
+                <div class="panel panel-success">
+                  <div class="panel-heading">
+                    <h3 class="panel-title">Popular stories</h3>
+                  </div> <!-- id="" class="panel-heading" -->
+                  <div class="panel-body">
+                    <div class="list-group">
+                      <div class="list-group-item">
+                        <a href="/stories/40004"><h5 class="list-group-item-heading">u1 story</h5></a>
+                        <span class="list-group-item-text">Author: <a class="author_link" href="/authors/u1">u1</a></span>
+                      </div> <!-- id="" class="list-group-item" -->
+                      <div class="list-group-item">
+                        <a href="/stories/40003"><h5 class="list-group-item-heading">sfdgas</h5></a>
+                        <span class="list-group-item-text">Author: <a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a></span>
+                      </div> <!-- id="" class="list-group-item" -->
+                      <div class="list-group-item">
+                        <a href="/stories/40005"><h5 class="list-group-item-heading">a daft draft</h5></a>
+                        <span class="list-group-item-text">Author: <a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a></span>
+                      </div> <!-- id="" class="list-group-item" -->
+                      <div class="list-group-item">
+                        <a href="/stories/40008"><h5 class="list-group-item-heading">a</h5></a>
+                        <span class="list-group-item-text">Author: <a class="author_link" href="/authors/a/b/c/">a/b/c/</a></span>
+                      </div> <!-- id="" class="list-group-item" -->
+                    </div> <!-- id="" class="list-group" -->
+                    <p><a class="btn btn-success" href="/stories/popular" role="button">More popular stories &raquo;</a></p>
+                  </div> <!-- id="" class="panel-body" -->
+                </div> <!-- id="" class="panel panel-success" -->
+              </div> <!-- id="popular-stories" class="col-md-4" -->
+            </div> <!-- id="featured-popular" class="row" -->
+          </div> <!-- id="whats-new" class="well well-sm" -->
+          <div class="row" id="site-summary">
+            <div class="col-md-4" id="active-stories">
+              <div class="panel panel-success">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Active stories</h3>
+                </div> <!-- id="" class="panel-heading" -->
+                <div class="panel-body">
+                  <div class="list-group">
+                    <div class="list-group-item">
+                      <a href="/stories/40004"><h5 class="list-group-item-heading">u1 story</h5></a>
+                      <span class="list-group-item-text">Author: <a class="author_link" href="/authors/u1">u1</a></span>
+                    </div> <!-- id="" class="list-group-item" -->
+                    <div class="list-group-item">
+                      <a href="/stories/40003"><h5 class="list-group-item-heading">sfdgas</h5></a>
+                      <span class="list-group-item-text">Author: <a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a></span>
+                    </div> <!-- id="" class="list-group-item" -->
+                    <div class="list-group-item">
+                      <a href="/stories/40002"><h5 class="list-group-item-heading">prequel</h5></a>
+                      <span class="list-group-item-text">Author: <a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a></span>
+                    </div> <!-- id="" class="list-group-item" -->
+                    <div class="list-group-item">
+                      <a href="/stories/40008"><h5 class="list-group-item-heading">a</h5></a>
+                      <span class="list-group-item-text">Author: <a class="author_link" href="/authors/a/b/c/">a/b/c/</a></span>
+                    </div> <!-- id="" class="list-group-item" -->
+                    <div class="list-group-item">
+                      <a href="/stories/40001"><h5 class="list-group-item-heading">plim</h5></a>
+                      <span class="list-group-item-text">Author: <a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a></span>
+                    </div> <!-- id="" class="list-group-item" -->
+                    <div class="list-group-item">
+                      <a href="/stories/40005"><h5 class="list-group-item-heading">a daft draft</h5></a>
+                      <span class="list-group-item-text">Author: <a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a></span>
+                    </div> <!-- id="" class="list-group-item" -->
+                    <div class="list-group-item">
+                      <a href="/stories/40000"><h5 class="list-group-item-heading">One story</h5></a>
+                      <span class="list-group-item-text">Author: <a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a></span>
+                    </div> <!-- id="" class="list-group-item" -->
+                    <div class="list-group-item">
+                      <a href="/stories/40007"><h5 class="list-group-item-heading">a daft draft</h5></a>
+                      <span class="list-group-item-text">Author: <a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a></span>
+                    </div> <!-- id="" class="list-group-item" -->
+                  </div> <!-- id="" class="list-group" -->
+                  <p><a class="btn btn-success" href="/stories/active" role="button">More active stories &raquo;</a></p>
+                </div> <!-- id="" class="panel-body" -->
+              </div> <!-- id="" class="panel panel-success" -->
+            </div> <!-- id="active-stories" class="col-md-4" -->
+            <div class="col-md-4" id="recent-stories">
+              <div class="panel panel-success">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Recent stories</h3>
+                </div> <!-- id="" class="panel-heading" -->
+                <div class="panel-body">
+                  <div class="list-group">
+                    <div class="list-group-item">
+                      <a href="/stories/40007"><h5 class="list-group-item-heading">a daft draft</h5></a>
+                      <span class="list-group-item-text">Author: <a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a></span>
+                    </div> <!-- id="" class="list-group-item" -->
+                    <div class="list-group-item">
+                      <a href="/stories/40024"><h5 class="list-group-item-heading">20th story</h5></a>
+                      <span class="list-group-item-text">Author: <a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a></span>
+                    </div> <!-- id="" class="list-group-item" -->
+                    <div class="list-group-item">
+                      <a href="/stories/40023"><h5 class="list-group-item-heading">try blank tags</h5></a>
+                      <span class="list-group-item-text">Author: <a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a></span>
+                    </div> <!-- id="" class="list-group-item" -->
+                    <div class="list-group-item">
+                      <a href="/stories/40022"><h5 class="list-group-item-heading">Yankee doodle</h5></a>
+                      <span class="list-group-item-text">Author: <a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a></span>
+                    </div> <!-- id="" class="list-group-item" -->
+                    <div class="list-group-item">
+                      <a href="/stories/40021"><h5 class="list-group-item-heading">barney&#39;s story</h5></a>
+                      <span class="list-group-item-text">Author: <a class="author_link" href="/authors/barney">barney</a></span>
+                    </div> <!-- id="" class="list-group-item" -->
+                    <div class="list-group-item">
+                      <a href="/stories/40020"><h5 class="list-group-item-heading">adsfa</h5></a>
+                      <span class="list-group-item-text">Author: <a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a></span>
+                    </div> <!-- id="" class="list-group-item" -->
+                    <div class="list-group-item">
+                      <a href="/stories/40019"><h5 class="list-group-item-heading">afdl jkhasdlkjf ha</h5></a>
+                      <span class="list-group-item-text">Author: <a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a></span>
+                    </div> <!-- id="" class="list-group-item" -->
+                    <div class="list-group-item">
+                      <a href="/stories/40018"><h5 class="list-group-item-heading">delayed publication</h5></a>
+                      <span class="list-group-item-text">Author: <a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a></span>
+                    </div> <!-- id="" class="list-group-item" -->
+                    <div class="list-group-item">
+                      <a href="/stories/40017"><h5 class="list-group-item-heading">Soaking up the view</h5></a>
+                      <span class="list-group-item-text">Author: <a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a></span>
+                    </div> <!-- id="" class="list-group-item" -->
+                    <div class="list-group-item">
+                      <a href="/stories/40016"><h5 class="list-group-item-heading">Does this bloody thing work?</h5></a>
+                      <span class="list-group-item-text">Author: <a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a></span>
+                    </div> <!-- id="" class="list-group-item" -->
+                  </div> <!-- id="" class="list-group" -->
+                  <p><a class="btn btn-success" href="/stories/recent" role="button">More recent stories &raquo;</a></p>
+                </div> <!-- id="" class="panel-body" -->
+              </div> <!-- id="" class="panel panel-success" -->
+            </div> <!-- id="recent-stories" class="col-md-4" -->
+            <div class="col-md-4" id="old-stories">
+              <div class="panel panel-success">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Golden oldies</h3>
+                </div> <!-- id="" class="panel-heading" -->
+                <div class="panel-body">
+                  <div class="list-group">
+                    <div class="list-group-item">
+                      <a href="/stories/40007"><h5 class="list-group-item-heading">a daft draft</h5></a>
+                      <span class="list-group-item-text">Author: <a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a></span>
+                    </div> <!-- id="" class="list-group-item" -->
+                    <div class="list-group-item">
+                      <a href="/stories/40008"><h5 class="list-group-item-heading">a</h5></a>
+                      <span class="list-group-item-text">Author: <a class="author_link" href="/authors/a/b/c/">a/b/c/</a></span>
+                    </div> <!-- id="" class="list-group-item" -->
+                    <div class="list-group-item">
+                      <a href="/stories/40005"><h5 class="list-group-item-heading">a daft draft</h5></a>
+                      <span class="list-group-item-text">Author: <a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a></span>
+                    </div> <!-- id="" class="list-group-item" -->
+                    <div class="list-group-item">
+                      <a href="/stories/40003"><h5 class="list-group-item-heading">sfdgas</h5></a>
+                      <span class="list-group-item-text">Author: <a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a></span>
+                    </div> <!-- id="" class="list-group-item" -->
+                  </div> <!-- id="" class="list-group" -->
+                </div> <!-- id="" class="panel-body" -->
+              </div> <!-- id="" class="panel panel-success" -->
+            </div> <!-- id="old-stories" class="col-md-4" -->
+          </div> <!-- id="site-summary" class="row" -->
+
+{% endblock primary_panel %}

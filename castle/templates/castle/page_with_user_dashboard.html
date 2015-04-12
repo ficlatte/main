@@ -1,0 +1,42 @@
+{% extends "castle/page_with_sidebar.html" %}
+{% load staticfiles %}
+
+
+{% block secondary_panel %}
+          <div class="panel panel-warning">
+            <div class="panel-heading">
+              <h3 class="panel-title">User dashboard</h3>
+            </div> <!-- id="" class="panel-heading" -->
+            <div class="panel-body">
+              <span class="glyphicon glyphicon-user"></span>
+              <a href="/authors/edit/ethelthefrog">Edit profile</a>
+              <hr />
+              <h4>Your desk</h4>
+              <ul class="list-unstyled">
+                <li><a href="/stories/new">Write a new story</a></li>
+                <li><a href="/authors/u/drafts">Drafts</a> <span>1</span></li>
+              </ul>
+              <h4>Your library</h4>
+              <ul class="list-unstyled">
+                <li><a href="/authors/ethelthefrog">Published stories</a> <span>21</span></li>
+              </ul>
+              <hr />
+              <h4>Friends <span>1</span></h4>
+              <div class="row">
+                <div class="col-md-3">
+                  <a href="/authors/u1" title="u1"><img alt="u1" class="img-rounded img-responsive" src="/img/avatar/icon/3" /></a>
+                </div> <!-- id="" class="col-md-3" -->
+              </div> <!-- id="" class="row" -->
+              <hr />
+              <h4>Followers <span>2</span></h4>
+              <div class="row">
+                <div class="col-md-3">
+                  <a href="/authors/u2" title="u2"><img alt="u2" class="img-rounded img-responsive" src="/img/avatar/icon/4" /></a>
+                </div> <!-- id="" class="col-md-3" -->
+                <div class="col-md-3">
+                  <a href="/authors/fred" title="fred"><img alt="fred" class="img-rounded img-responsive" src="/img/avatar/icon/5" /></a>
+                </div> <!-- id="" class="col-md-3" -->
+              </div> <!-- id="" class="row" -->
+            </div> <!-- id="" class="panel-body" -->
+          </div> <!-- id="" class="panel panel-warning" -->
+{% endblock secondary_panel %}
