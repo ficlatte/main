@@ -108,7 +108,6 @@ class Rating(models.Model):
 # Comment on story or blog post
 class Comment(models.Model):
     user        = models.ForeignKey(Profile, related_name='comments_made')       # User making the comment
-    author      = models.ForeignKey(Profile, related_name='comments_received')       # Author of the commented story
     body        = models.CharField(max_length=1024)
     story       = models.ForeignKey(Story, blank=True, null=True)
     blog        = models.ForeignKey(Blog,  blank=True, null=True)
@@ -117,9 +116,9 @@ class Comment(models.Model):
 
     def __unicode__(self):
         if (self.story is not None):
-            return self.user.__unicode__() + u' comment on "' + self.story.__unicode__() + u'" by ' + self.story.user.__unicode__() + u' with text "' + unicode(self.body)[:30] + u'"'
+            return self.user.__unicode__() + u' comment on story "' + self.story.__unicode__() + u'" by ' + self.story.user.__unicode__() + u' with text "' + unicode(self.body)[:30] + u'"'
         if (self.blog is not None):
-            return self.user.__unicode__() + u' comment on "' + self.blog.__unicode__() + u'" by ' + self.blog.user.__unicode__() + u' with text "' + unicode(self.body)[:30] + u'"'
+            return self.user.__unicode__() + u' comment on blog post "' + self.blog.__unicode__() + u'" by ' + self.blog.user.__unicode__() + u' with text "' + unicode(self.body)[:30] + u'"'
         return self.user.__unicode__() + u' comment on nothing at all with text "' + unicode(self.body)[:30] + u'"'
 
 
@@ -148,6 +147,8 @@ class StoryLog(models.Model):
     quel        = models.ForeignKey(Story,   blank=True, null=True, related_name='activity_quel_set')     # ID of prequel/sequel if this log is for a prequel/sequel
     
     def __unicode__(self):
+        # FIXME: LOG_OPTIONS[self.log_type][1] is not the right way to access
+        #        the LOG_OPTIONS structure
         return u'User ' + self.user.__unicode__() + u' ' + self.LOG_OPTIONS[self.log_type][1] + u' story "' + self.story.__unicode__() + u'" by ' + self.story.user.__unicode__()
     
 
