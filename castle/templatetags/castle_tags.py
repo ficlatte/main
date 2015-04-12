@@ -46,10 +46,10 @@ def age(value):
         return unicode(age) + u' day'+s+u' ago'
 
     # Months
-    age = int((age * 12.0) / 365.25)
-    if (age < 12):
-        s = u's' if (age != 1) else u''
-        return unicode(age) + u' month'+s+u' ago'
+    months = int((age * 12.0) / 365.25)
+    if (months < 12):
+        s = u's' if (months != 1) else u''
+        return unicode(months) + u' month'+s+u' ago'
 
     # Years
     age = int(age / 365.25)
