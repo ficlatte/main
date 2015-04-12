@@ -3,6 +3,9 @@
 
 
 {% block secondary_panel %}
+
+    {% if profile %}
+
           <div class="panel panel-warning">
             <div class="panel-heading">
               <h3 class="panel-title">User dashboard</h3>
@@ -39,4 +42,5 @@
               </div> <!-- id="" class="row" -->
             </div> <!-- id="" class="panel-body" -->
           </div> <!-- id="" class="panel panel-warning" -->
+    {% endif %}
 {% endblock secondary_panel %}

@@ -30,11 +30,16 @@
           </div> <!-- id="" class="navbar-header" -->
           <div class="collapse navbar-collapse" id="navbar">
             <ul class="nav navbar-nav navbar-right">
+              {% if profile %}
               <li><p class="navbar-text">Signed in as:</p></li>
-              <li class="active"><a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a></li>
+              <li class="active"><a class="author_link" href="/authors/ethelthefrog">{{ profile.pen_name }}</a></li>
               <li><a href="/">Your desk</a></li>
               <li><a href="/notes">Notes</a></li>
               <li><a href="/logout">Log out</a></li>
+              {% else %}
+              <li><a href="/logout">Log in</a></li>
+              <li><a href="/logout">Register</a></li>
+              {% endif %}
               <li><a href="/blog">Blog</a></li>
               <li><a href="/help">Help</a></li>
             </ul>
@@ -77,19 +82,6 @@
         </nav>
       </div> <!-- id="" class="container" -->
     </div> <!-- id="header" class="" -->
-    <div class="container">
-      <div class="well" id="news">
-        <h2>Ficlatt&eacute; dev site news <a href="/blog">(from the blog)</a></h2>
-        <div>
-          <h3 class="entry-title"><a href="/blog/1" rel="bookmark">A blog entry</a></h3>
-          <ul class="meta clear">
-            <li>3 comments</li>
-            <li class="posted">Posted 7 months ago</li>
-            <li class="vcard author"><span>Author: <a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a></span></li>
-          </ul>
-        </div> <!-- id="" class="" -->
-      </div> <!-- id="news" class="well" -->
-    </div> <!-- id="" class="container" -->
 
 {% block news_panel %}
 {% endblock %}

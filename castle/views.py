@@ -12,5 +12,11 @@ from django.db.models import Sum
 # Views
 #-----------------------------------------------------------------------------
 def home(request):
-    context = { 'thing_list': 'moof' }
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    context = { 'thing_list': 'moof',
+                'profile'   : profile,
+                'blog_latest' : Blog.objects.all().order_by('-id')[0]
+              }
     return render(request, 'castle/index.html', context)
