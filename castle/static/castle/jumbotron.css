@@ -1,0 +1,54 @@
+ul {
+    list-style-type: none;
+}
+
+/* jumbotron */
+.jumbotron {
+    padding-top: 24px;
+    padding-bottom: 24px;
+}
+
+/* Side panel 
+div#side-panel {
+    display: block;
+    background-color: #ffff00;
+    width: 240px;
+}
+
+ul#story-stats{
+    border-bottom: 1px dotted #b39e4a;
+}
+*/
+
+/* news headline */
+
+div#news h2 a {
+	font-size: 12px;
+	font-style: italic;
+}
+
+div#news h3 {
+	font-size: 16px;
+	font-style: italic;
+}
+
+div#news ul.meta li {
+	float: left;
+	font-size: 11px;
+	font-style: italic;
+	margin-right: 10px;
+}
+
+
+div#tag-cloud a {
+        margin-bottom: 5px;
+}
+
+p#average-rating span {
+        font-size: large;
+        color: #eeeeee;
+}
+
+p#average-rating span#enabled {
+        color: #5cb85c;
+}
