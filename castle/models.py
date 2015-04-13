@@ -1,3 +1,4 @@
+
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import datetime
@@ -10,8 +11,8 @@ class Profile(models.Model):
     friends     = models.ManyToManyField('self', symmetrical=False, related_name='followers', blank=True, null=True)
     pen_name    = models.CharField(max_length=64)
     pen_name_uc = models.CharField(max_length=64)
-    site_url    = models.URLField(max_length=254)
-    site_name   = models.CharField(max_length=1024)
+    site_url    = models.URLField(max_length=254, blank=True, null=True)
+    site_name   = models.CharField(max_length=1024, blank=True, null=True)
     biography   = models.CharField(max_length=1024)
     mature      = models.BooleanField(default=False)
     email_addr  = models.EmailField(max_length=254)
@@ -165,3 +166,12 @@ class Misc(models.Model):
     key         = models.CharField(primary_key=True, max_length=32)
     s_val       = models.CharField(max_length=128, blank=True, null=True)
     i_val       = models.BigIntegerField(blank=True, null=True)
+
+    def __unicode__(self):
+        r = u'key:"'+unicode(self.key)+u'" : '
+        if (self.s_val is not None):
+            r = r + u' s_val="'+unicode(self.s_val)+u'";'
+        if (self.i_val is not None):
+            r = r + u' i_val='+unicode(self.i_val)+u';'
+        return r
+            
