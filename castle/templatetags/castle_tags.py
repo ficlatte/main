@@ -6,17 +6,27 @@ from django.utils.safestring import mark_safe
 from datetime import timedelta, datetime
 from django.utils.timezone import utc
 from django.utils.html import escape
+from django.template.defaultfilters import stringfilter
 
 register = template.Library()
 
 #-----------------------------------------------------------------------------
 @register.filter
-def comments(obj):
+def num_comments_txt(obj):
     c = obj.comment_set.count()
     if (c == 1):
         return u'1 comment';
     else:
         return unicode(c) + u' comments'
+
+#-----------------------------------------------------------------------------
+@register.filter
+def num_stories_txt(obj):
+    c = obj.story_set.count()
+    if (c == 1):
+        return u'1 story';
+    else:
+        return unicode(c) + u' stories'
 
 #-----------------------------------------------------------------------------
 @register.filter
@@ -74,12 +84,14 @@ def author_span(profile):
 
 #-----------------------------------------------------------------------------
 @register.filter
+@stringfilter
 def encode_story(text):
     # FIXME: this is has no functionality
-    return mark_safe(escape(text))
+    return mark_safe(u'<p>' + escape(text) + u'</p>')
 
 #-----------------------------------------------------------------------------
 @register.filter
+@stringfilter
 def big_snippet(text):
     if (len(text) > 255):
         snippet = text[:255] + u'…'
@@ -90,6 +102,7 @@ def big_snippet(text):
 
 #-----------------------------------------------------------------------------
 @register.filter
+@stringfilter
 def small_snippet(text):
     if (len(text) > 100):
         snippet = text[:100] + u'…'
@@ -99,4 +112,19 @@ def small_snippet(text):
     return encode_story(snippet)
 
 #-----------------------------------------------------------------------------
+@register.filter
+def story_link(story, tag=None):
+    t1 = ''
+    t2 = ''
+    if (tag is not None):
+        t1 = u'<'+tag+u'>'
+        t2 = u'</'+tag.partition(' ')[0]+u'>'   # Get bit before first space
     
+    # FIXME: fix URL
+    return mark_safe(u'<a href="/stories/' + unicode(story.id) + u'">' + t1 + escape(story.title) + t2 + u'</a>')
+
+#-----------------------------------------------------------------------------
+@register.filter
+def avatar(profile):
+    # FIXME: fix URL
+    return mark_safe(u'<a href="/authors/' + escape(profile.pen_name) + u'"><img alt="' + escape(profile.pen_name) + u'" class="img-rounded img-responsive" src="/img/avatar/' + unicode(profile.id) + u'" /></a>')

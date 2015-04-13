@@ -146,6 +146,7 @@ class StoryLog(models.Model):
     log_type    = models.IntegerField(default=1, choices=LOG_OPTIONS)
     comment     = models.ForeignKey(Comment, blank=True, null=True)     # ID of comment, if this log is for a comment
     quel        = models.ForeignKey(Story,   blank=True, null=True, related_name='activity_quel_set')     # ID of prequel/sequel if this log is for a prequel/sequel
+    ctime       = models.DateTimeField(default=datetime.now)
     
     def __unicode__(self):
         # FIXME: LOG_OPTIONS[self.log_type][1] is not the right way to access
