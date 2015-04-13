@@ -8,6 +8,7 @@ from django.utils.timezone import utc
 from django.utils.html import escape
 from django.utils.http import urlquote_plus
 from django.template.defaultfilters import stringfilter
+from castle.models import StoryLog
 
 register = template.Library()
 
@@ -151,6 +152,23 @@ def story_link(story, tag=None):
     
     # FIXME: fix URL
     return mark_safe(u'<a href="/stories/' + unicode(story.id) + u'">' + t1 + escape(story.title) + t2 + u'</a>')
+
+#-----------------------------------------------------------------------------
+@register.filter
+def activity_entry(log):
+    if (log.log_type == StoryLog.WRITE):
+        return mark_safe(author_link(log.user)+u' wrote '+story_link(log.story))
+    
+    elif (log.log_type == StoryLog.COMMENT):
+        return mark_safe(author_link(log.user)+u' wrote a comment on '+story_link(log.story))
+        
+    elif (log.log_type == StoryLog.SEQUEL):
+        return mark_safe(author_link(log.user)+u' wrote '+story_link(log.story)+u', sequel to '+story_link(log.quel)+u' by '+author_link(log.quel.user))
+        
+    elif (log.log_type == StoryLog.PREQUEL):
+        return mark_safe(author_link(log.user)+u' wrote '+story_link(log.story)+u', prequel to '+story_link(log.quel)+u' by '+author_link(log.quel.user))
+        
+    return mark_safe(author_link(log.user) + u' ' + log.get_type() + u' ' + story_link(log.story))
 
 #-----------------------------------------------------------------------------
 @register.filter

@@ -146,11 +146,19 @@ class StoryLog(models.Model):
     quel        = models.ForeignKey(Story,   blank=True, null=True, related_name='activity_quel_set')     # ID of prequel/sequel if this log is for a prequel/sequel
     ctime       = models.DateTimeField(default=datetime.now)
     
+    def get_opt(self, o):
+        return LOG_OPTIONS[o][1]
+    
+    def get_type(self):
+        # FIXME: LOG_OPTIONS[self.log_type][1] is not the right way to access
+        #        the LOG_OPTIONS structure
+        return self.LOG_OPTIONS[self.log_type][1]
+
     def __unicode__(self):
         # FIXME: LOG_OPTIONS[self.log_type][1] is not the right way to access
         #        the LOG_OPTIONS structure
         return u'User ' + self.user.__unicode__() + u' ' + self.LOG_OPTIONS[self.log_type][1] + u' story "' + self.story.__unicode__() + u'" by ' + self.story.user.__unicode__()
-    
+        
 
 # Site log
 class SiteLog(models.Model):

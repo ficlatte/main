@@ -21,16 +21,9 @@
           <div class="well well-sm">
             <h3>User&#39;s recent activity</h3>
             <ul id="user-activity-list">
-              <li><a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a> updated <a class="story_link" href="/stories/40007">a daft draft</a></li>
-              <li><a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a> updated <a class="story_link" href="/stories/40007">a daft draft</a></li>
-              <li><a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a> updated <a class="story_link" href="/stories/40007">a daft draft</a></li>
-              <li><a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a> wrote <a class="story_link" href="/stories/40024">20th story</a></li>
-              <li><a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a> posted a comment on <a class="story_link" href="/stories/40017">Soaking up the view</a></li>
-              <li><a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a> wrote <a class="story_link" href="/stories/40023">try blank tags</a></li>
-              <li><a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a> wrote <a class="story_link" href="/stories/40022">Yankee doodle</a></li>
-              <li><a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a> posted a comment on <a class="story_link" href="/stories/40020">adsfa</a></li>
-              <li><a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a> wrote <a class="story_link" href="/stories/40020">adsfa</a></li>
-              <li><a class="author_link" href="/authors/ethelthefrog">ethelthefrog</a> updated <a class="story_link" href="/stories/40019">afdl jkhasdlkjf ha</a></li>
+              {% for log in activity_log %}
+              <li>{{log|activity_entry}}</li>
+              {% endfor %}
             </ul>
           </div> <!-- id="" class="well well-sm" -->
           

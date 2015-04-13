@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.db.models import Sum
 from random import randint
+from django.db.models import Q
 
 # Create your views here.
 #-----------------------------------------------------------------------------
@@ -47,6 +48,12 @@ def get_old_stories(page_size=10):
     return Story.objects.filter(draft = False).order_by('-ptime')[first:last]
     
 #-----------------------------------------------------------------------------
+def get_activity_log(profile, entries):
+    log_entries = StoryLog.objects.exclude(log_type = StoryLog.VIEW).exclude(log_type = StoryLog.RATE).filter(Q(user = profile) | Q(story__user = profile)).order_by('-ctime')[:entries]
+    
+    return log_entries
+
+#-----------------------------------------------------------------------------
 # Views
 #-----------------------------------------------------------------------------
 def home(request):
@@ -71,5 +78,6 @@ def home(request):
                 'active'        : get_active_stories(1,10),
                 'recent'        : get_recent_stories(1,10),
                 'old'           : get_old_stories(10),
+                'activity_log'  : get_activity_log(profile, 10),
               }
     return render(request, 'castle/index.html', context)
