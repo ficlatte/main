@@ -55,7 +55,6 @@ class Story(models.Model):
     mature      = models.BooleanField(default=False)
     draft       = models.BooleanField(default=False)
     ficly       = models.BooleanField(default=False)
-    published   = models.BooleanField(default=False)
     activity    = models.FloatField(default=0.0)
     prompt_text = models.CharField(max_length=256, blank=True, null=True)
     ctime       = models.DateTimeField(default=datetime.now)
@@ -84,7 +83,6 @@ class Blog(models.Model):
     title       = models.CharField(max_length=256)
     body        = models.CharField(max_length=20480)
     draft       = models.BooleanField(default=False)
-    published   = models.BooleanField(default=False)
     ctime       = models.DateTimeField(default=datetime.now)
     mtime       = models.DateTimeField(default=datetime.now)
 

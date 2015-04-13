@@ -36,15 +36,15 @@ def get_active_stories(page_num=1, page_size=10):
 def get_recent_stories(page_num=1, page_size=10):
     last = (page_num * page_size) - 1
     first = (last - page_size) + 1
-    return Story.objects.filter(published = True).order_by('-ptime')[first:last]
+    return Story.objects.filter(draft = False).order_by('-ptime')[first:last]
     
 #-----------------------------------------------------------------------------
 def get_old_stories(page_size=10):
-    total = Story.objects.filter(published = True).count()
+    total = Story.objects.filter(draft = False).count()
     end = 0 if (total < page_size) else (total - page_size)
     first = randint(0, end)
     last  = first + page_size
-    return Story.objects.filter(published = True).order_by('-ptime')[first:last]
+    return Story.objects.filter(draft = False).order_by('-ptime')[first:last]
     
 #-----------------------------------------------------------------------------
 # Views

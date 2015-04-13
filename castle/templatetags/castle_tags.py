@@ -6,6 +6,7 @@ from django.utils.safestring import mark_safe
 from datetime import timedelta, datetime
 from django.utils.timezone import utc
 from django.utils.html import escape
+from django.utils.http import urlquote_plus
 from django.template.defaultfilters import stringfilter
 
 register = template.Library()
@@ -27,6 +28,26 @@ def num_stories_txt(obj):
         return u'1 story';
     else:
         return unicode(c) + u' stories'
+
+#-----------------------------------------------------------------------------
+@register.filter
+def num_stories(obj):
+    return obj.story_set.filter(draft = False).count()
+
+#-----------------------------------------------------------------------------
+@register.filter
+def num_drafts(obj):
+    return obj.story_set.filter(draft = True).count()
+
+#-----------------------------------------------------------------------------
+@register.filter
+def num_friends(profile):
+    return profile.friends.count()
+
+#-----------------------------------------------------------------------------
+@register.filter
+def num_followers(profile):
+    return profile.followers.count()
 
 #-----------------------------------------------------------------------------
 @register.filter
@@ -71,16 +92,24 @@ def age(value):
 
 #-----------------------------------------------------------------------------
 @register.filter
-def author_link(profile):
+def author_link(profile, text=None):
     if (profile is None):
         return u''
+    if (text is None):
+        text = profile.pen_name
     # FIXME: Need proper URL magic here
-    return mark_safe(u'<a href="/authors/'+escape(profile.pen_name)+u'">'+ escape(profile.pen_name)+u'</a>')
+    return mark_safe(u'<a href="/authors/'+escape(text)+u'">'+ escape(profile.pen_name)+u'</a>')
 
 #-----------------------------------------------------------------------------
 @register.filter
 def author_span(profile):
     return mark_safe(u'<span>Author: '+author_link(profile)+u'</span>')
+
+#-----------------------------------------------------------------------------
+@register.filter
+@stringfilter
+def url(text):
+    return urlquote_plus(text)
 
 #-----------------------------------------------------------------------------
 @register.filter
@@ -127,4 +156,18 @@ def story_link(story, tag=None):
 @register.filter
 def avatar(profile):
     # FIXME: fix URL
-    return mark_safe(u'<a href="/authors/' + escape(profile.pen_name) + u'"><img alt="' + escape(profile.pen_name) + u'" class="img-rounded img-responsive" src="/img/avatar/' + unicode(profile.id) + u'" /></a>')
+    #which_icon = unicode(profile.id)
+    which_icon = 'default.png'
+    
+    return mark_safe(u'<a href="/authors/' + escape(profile.pen_name) + u'"><img alt="' + escape(profile.pen_name) + u'" class="img-rounded img-responsive" src="/static/img/avatar/' + which_icon + u'" /></a>')
+
+#-----------------------------------------------------------------------------
+@register.filter
+def user_icon(profile):
+    # FIXME: fix URL
+    #which_icon = unicode(profile.id)
+    which_icon = 'default.png'
+    
+    return mark_safe(u'<a href="/authors/' + escape(profile.pen_name) + u'"><img alt="' + escape(profile.pen_name) + u'" class="img-rounded img-responsive" src="/static/img/icon/' + which_icon + u'" /></a>')
+
+#-----------------------------------------------------------------------------
