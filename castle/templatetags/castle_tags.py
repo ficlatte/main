@@ -70,4 +70,30 @@ def author_span(profile):
     return mark_safe(u'<span>Author: '+author_link(profile)+u'</span>')
 
 #-----------------------------------------------------------------------------
+@register.filter
+def encode_story(text):
+    # FIXME: this is has no functionality
+    return mark_safe(escape(text))
+
+#-----------------------------------------------------------------------------
+@register.filter
+def big_snippet(text):
+    if (len(text) > 255):
+        snippet = text[:255] + u'…'
+    else:
+        snippet = text
+
+    return encode_story(snippet)
+
+#-----------------------------------------------------------------------------
+@register.filter
+def small_snippet(text):
+    if (len(text) > 100):
+        snippet = text[:100] + u'…'
+    else:
+        snippet = text
+
+    return encode_story(snippet)
+
+#-----------------------------------------------------------------------------
     

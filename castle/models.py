@@ -159,4 +159,9 @@ class SiteLog(models.Model):
     
     def __unicode__(self):
         return unicode(self.url) + u' hit from IP ' + unicode(self.url)
-    
+
+# Misc bits
+class Misc(models.Model):
+    key         = models.CharField(primary_key=True, max_length=32)
+    s_val       = models.CharField(max_length=128, blank=True, null=True)
+    i_val       = models.BigIntegerField(blank=True, null=True)
