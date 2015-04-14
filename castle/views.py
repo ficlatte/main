@@ -256,6 +256,34 @@ def new_story(request):
     # Build context and render page
     context = { 'profile'       : profile,
                 'story'         : Story(),      # Create blank story for default purposes
+                'tags'          : u'',
+                'user_dashboard': 1,
+            }
+
+    return render(request, 'castle/edit_story.html', context)
+
+#-----------------------------------------------------------------------------
+@login_required
+def edit_story(request, story_id):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    # Get story
+    story = get_object_or_404(Story, pk=story_id)
+    
+    # User can only edit their own stories
+    if (story.user != profile):
+        raise Http404
+    
+    # Get tags
+    tags = ", ".join(story.tag_set.values_list('tag', flat=True))
+
+    # Build context and render page
+    context = { 'profile'       : profile,
+                'story'         : story,
+                'tags'          : tags,
                 'user_dashboard': 1,
             }
 
