@@ -7,5 +7,6 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^$',      'castle.views.home', name='home'),
+    url(r'^authors/(?P<pen_name>[^/]+)/$', 'castle.views.author', name='author'),
     url(r'^admin/', include(admin.site.urls)),
 )

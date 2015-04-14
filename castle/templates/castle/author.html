@@ -1,0 +1,47 @@
+{% extends "castle/page_with_user_dashboard.html" %}
+{% load staticfiles %}
+{% load castle_tags %}
+
+{% block primary_panel %}
+
+            
+          <div class="panel panel-success">
+            <div class="panel-heading">
+              <div class="row">
+                <div class="col-sm-2 col-md-2">
+                  {{author|avatar}}
+                </div> <!-- id="" class="col-sm-2 col-md-2" -->
+                <div class="col-sm-8 col-md-8">
+                  {{author|author_link:"h1"}}
+                  <p id="user-desc">Joined Ficlatt&eacute; in <span>{{author.ctime|date:"F Y"}}</span></p>
+                  <p id="user-stats">{{author|num_stories_txt}}, {{author|profile_comments_txt}}, {{author|num_friends_txt}}</p>
+                </div> <!-- id="" class="col-sm-8 col-md-8" -->
+              </div> <!-- id="" class="row" -->
+            </div> <!-- id="" class="panel-heading" -->
+            <div class="panel-body">
+              {{author.biography|encode_story}}
+            </div> <!-- id="" class="panel-body" -->
+          </div> <!-- id="" class="panel panel-success" -->
+{% block paged_content %}
+          <div class="well well-sm">
+            <h1>Stories</h1>
+            <div class="list-group">
+              {% for story in story_list %}
+              <div class="list-group-item">
+                {{story|story_link:'h4 class="list-group-item-heading"'}}
+                <span class="list-group-item-text">{{story.body|small_snippet}}</span>
+                {% if story.draft %}
+                <p class="list-group-item-text" id="story-stats">Edited <abbr title="{{story.mtime|date:'Y-m-d'}}">{{story.mtime|age}}</abbr>. </p>
+                {% else %}
+                <p class="list-group-item-text" id="story-stats">Published <abbr title="{{story.ptime|date:'Y-m-d'}}">{{story.ptime|age}}</abbr>. </p>
+                {% endif %}
+              </div> <!-- id="" class="list-group-item" -->
+              {% endfor %}
+            </div> <!-- id="" class="list-group" -->
+{% endblock paged_content %}
+{% block pager %}{{block.super}}{%endblock%}
+            
+          </div> <!-- id="" class="well well-sm" -->
+
+
+{% endblock primary_panel %}

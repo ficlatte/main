@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load castle_tags %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -89,10 +90,26 @@
     <div class="container" id="main-content">
 {% block main_content %}
         <h1>Main content goes here</h1>
-{% block primary_panel %}
-{% endblock %}
-{% block secondary_panel %}
-{% endblock %}
+  {% block primary_panel %}
+    {% block paged_panel %}
+      {% block paged_content %}
+      {% endblock paged_content %}
+      {% block pager %}
+          {% if pages %}
+            <div id="pager">
+              <ul class="pagination pagination-sm">
+                {% for page in pages %}
+                  {{page|pager_button:page_url}}
+                {% endfor %}
+              </ul>
+            </div> <!-- id="pager" -->
+          {% else %} <h3>NO PAGES!</h3>  
+          {% endif %}
+      {% endblock pager %}
+    {% endblock paged_panel %}
+  {% endblock primary_panel %}
+  {% block secondary_panel %}
+  {% endblock secondary_panel %}
 {% endblock %}
 
 {% block page_footer %}

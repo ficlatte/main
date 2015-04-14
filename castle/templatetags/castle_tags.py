@@ -42,6 +42,24 @@ def num_drafts(obj):
 
 #-----------------------------------------------------------------------------
 @register.filter
+def profile_comments_txt(profile):
+    c = profile.comments_made.count()
+    if (c == 1):
+        return u'1 comment';
+    else:
+        return unicode(c) + u' comments'
+
+#-----------------------------------------------------------------------------
+@register.filter
+def num_friends_txt(profile):
+    c = profile.friends.count()
+    if (c == 1):
+        return u'1 friend';
+    else:
+        return unicode(c) + u' friends'
+
+#-----------------------------------------------------------------------------
+@register.filter
 def num_friends(profile):
     return profile.friends.count()
 
@@ -93,18 +111,22 @@ def age(value):
 
 #-----------------------------------------------------------------------------
 @register.filter
-def author_link(profile, text=None):
+def author_link(profile, tag=None):
     if (profile is None):
         return u''
-    if (text is None):
-        text = profile.pen_name
+    t1 = ''
+    t2 = ''
+    if (tag is not None):
+        t1 = u'<'+tag+u'>'
+        t2 = u'</'+tag.partition(' ')[0]+u'>'   # Get bit before first space
+    
     # FIXME: Need proper URL magic here
-    return mark_safe(u'<a href="/authors/'+escape(text)+u'">'+ escape(profile.pen_name)+u'</a>')
+    return mark_safe(t1+u'<a href="/authors/'+urlquote_plus(profile.pen_name)+u'">'+ escape(profile.pen_name)+u'</a>'+t2)
 
 #-----------------------------------------------------------------------------
 @register.filter
-def author_span(profile):
-    return mark_safe(u'<span>Author: '+author_link(profile)+u'</span>')
+def author_span(profile, tag=None):
+    return mark_safe(u'<span>Author: '+author_link(profile,tag)+u'</span>')
 
 #-----------------------------------------------------------------------------
 @register.filter
@@ -150,8 +172,10 @@ def story_link(story, tag=None):
         t1 = u'<'+tag+u'>'
         t2 = u'</'+tag.partition(' ')[0]+u'>'   # Get bit before first space
     
+    d = '[DRAFT] ' if (story.draft) else ''
+    
     # FIXME: fix URL
-    return mark_safe(u'<a href="/stories/' + unicode(story.id) + u'">' + t1 + escape(story.title) + t2 + u'</a>')
+    return mark_safe(u'<a href="/stories/' + unicode(story.id) + u'">' + t1 + escape(d+story.title) + t2 + u'</a>')
 
 #-----------------------------------------------------------------------------
 @register.filter
@@ -187,5 +211,25 @@ def user_icon(profile):
     which_icon = 'default.png'
     
     return mark_safe(u'<a href="/authors/' + escape(profile.pen_name) + u'"><img alt="' + escape(profile.pen_name) + u'" class="img-rounded img-responsive" src="/static/img/icon/' + which_icon + u'" /></a>')
+
+#-----------------------------------------------------------------------------
+@register.filter
+def pager_button(page, url):
+    # page is a two-element tuple; [0] describes the type of furniture
+    # [1] contains the target page number
+    target = url + u'?page_num=' + unicode(page[1])
+    
+    if (page[0] == 'P'):        # Previous page
+        return mark_safe(u'<li><a href="' + target + u'">&laquo; Previous</a></li>')
+    elif (page[0] == 'N'):      # Next page
+        return mark_safe(u'<li><a href="' + target + u'">Next &raquo;</a></li>')
+    elif (page[0] == 'G'):      # Go to page
+        return mark_safe(u'<li><a href="' + target + u'">' + unicode(page[1]) + u'</a></li>')
+    elif (page[0] == 'C'):      # Current page
+        return mark_safe(u'<li class="active"><a href="#">' + unicode(page[1]) + u'</a></li>')
+    elif (page[0] == 'S'):      # Separator
+        return mark_safe(u'<li class="disabled"><a href="#">…</a></li>')
+    else:
+        return u'?'
 
 #-----------------------------------------------------------------------------

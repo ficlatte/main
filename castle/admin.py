@@ -31,7 +31,7 @@ class StoryAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {'fields' : ['user', 'title', 'body']}),
         ('Links', {'fields': ['prequel_to', 'sequel_to', 'prompt'], 'classes': ['collapse']}),
-        ('Bits', {'fields': ['mature', 'draft', 'ficly', 'published', 'activity', 'prompt_text'], 'classes': ['collapse']}),
+        ('Bits', {'fields': ['mature', 'draft', 'ficly', 'activity', 'prompt_text'], 'classes': ['collapse']}),
         ('Dates', {'fields': ['ctime', 'mtime', 'ptime', 'ftime'], 'classes': ['collapse']}),
     ]
     inlines = [CommentInLine, RatingInLine]
@@ -39,7 +39,7 @@ class StoryAdmin(admin.ModelAdmin):
 class BlogAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {'fields' : ['user', 'title', 'body']}),
-        ('Bits', {'fields': ['draft', 'published'], 'classes': ['collapse']}),
+        ('Bits', {'fields': ['draft'], 'classes': ['collapse']}),
         ('Dates', {'fields': ['ctime', 'mtime'], 'classes': ['collapse']}),
     ]
     inlines = [CommentInLine]
