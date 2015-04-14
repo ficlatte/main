@@ -241,6 +241,8 @@ def pager_button(page, url):
 #-----------------------------------------------------------------------------
 @register.filter
 def rating_pencils(rating):
+    if (rating is None):
+        return ''
     r = u''
     integer_rating = int(math.ceil(rating - 0.49))
     for i in range(0, integer_rating):

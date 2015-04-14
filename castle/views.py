@@ -171,9 +171,12 @@ def author(request, pen_name):
         raise Http404()
     author = author[0]          # Get single object from collection
 
-    # Build story list
+    # Is logged-in user the author?
+    owner = ((profile is not None) and (profile == author))
+
+    # Build story list (owner sees their drafts)
     story_list = []
-    if ((profile is not None) and (author == profile)):
+    if (owner):
         story_list.extend(Story.objects.filter(user = author, draft = True))
     story_list.extend(Story.objects.filter(user = author, draft = False))
 
@@ -183,6 +186,8 @@ def author(request, pen_name):
                 'story_list'    : story_list,
                 'page_url'      : u'/author/'+urlquote_plus(author.pen_name),
                 'pages'         : bs_pager(1, 10, len(story_list)),
+                'user_dashboard': owner,
+                'other_user_sidepanel' : (not owner),
             }
     return render(request, 'castle/author.html', context)
 
@@ -195,22 +200,31 @@ def story(request, story_id):
     if (request.user.is_authenticated()):
         profile = request.user.profile
 
+    # Is logged-in user the author?
+    author = story.user
+    owner = ((profile is not None) and (profile == author))
+
     # Collect prequels and sequels
     prequels = []
     if (story.sequel_to):
-        prequels.extend(sequel_to)
+        prequels.append(story.sequel_to)
     prequels.extend(story.prequels.all())
 
     sequels = []
     if (story.prequel_to):
-        sequels.extend(prequel_to)
+        sequels.append(story.prequel_to)
     sequels.extend(story.sequels.all())
 
     # Get user rating in numeric and string forms
     rating = Rating.objects.filter(story=story).exclude(user=story.user).aggregate(avg=Avg('rating'))['avg']
+    rating_str = u'{:.2f}'.format(rating) if (rating) else ''
     
     # Get comments
     comments = story.comment_set.all().order_by('ctime')
+
+    # Count how many times the story has been viewed and rated
+    viewed = StoryLog.objects.filter(story = story).exclude(user = author).count()
+    rated  = Rating.objects.filter(story = story).exclude(user=author).count()
 
     # Build context and render page
     context = { 'profile'       : profile,
@@ -218,11 +232,15 @@ def story(request, story_id):
                 'story'         : story,
                 'prequels'      : prequels,
                 'sequels'       : sequels,
-                'rating_str'    : u'{:.2f}'.format(rating),
+                'rating_str'    : rating_str,
                 'rating_num'    : rating,
                 'comments'      : comments,
                 'page_url'      : u'/stories/'+unicode(story_id),
                 'pages'         : bs_pager(1, 10, story.comment_set.count()),
+                'story_sidepanel':1 ,
+                'owner'         : owner,
+                'viewed'        : viewed,
+                'rated'         : rated,
             }
     return render(request, 'castle/story.html', context)
 

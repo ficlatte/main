@@ -63,10 +63,12 @@
           </div> <!-- id="prequel-and-sequel" class="row" -->
 {% block paged_content %}
           <h2>Comments <small>({{story|num_comments}} so far!)</small></h2>
+          {% if rating_num > 0 %}
           <h5>Average reader rating {{rating_str}}/5</h5>
           <p id="average-rating">
             {{rating_num|rating_pencils}}
           </p>
+          {% endif %}
           {% for comment in comments %}
           <div class="row">
             <div class="col-md-2">
