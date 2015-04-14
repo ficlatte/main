@@ -245,3 +245,20 @@ def story(request, story_id):
     return render(request, 'castle/story.html', context)
 
 #-----------------------------------------------------------------------------
+@login_required
+def new_story(request):
+
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    # Build context and render page
+    context = { 'profile'       : profile,
+                'story'         : Story(),      # Create blank story for default purposes
+                'user_dashboard': 1,
+            }
+
+    return render(request, 'castle/edit_story.html', context)
+
+#-----------------------------------------------------------------------------

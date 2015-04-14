@@ -1,0 +1,105 @@
+{% extends "castle/page_with_selected_sidebar.html" %}
+{% load staticfiles %}
+{% load castle_tags %}
+
+{% block body_tag %} onload="draft_button()" {% endblock %}
+{% block top_script %}
+<script type="text/javascript">
+function story_len()
+{
+    var tlen=document.getElementById('text_body').value.length;
+
+    var chars_left = 1024 - tlen;
+    document.getElementById('counter').innerHTML=chars_left;
+
+    var min_block = document.getElementById('minimum');
+    if (tlen < 60)
+    {
+        min_block.style.display = 'block';
+        return false;
+    }
+    else
+    {
+        min_block.style.display = 'none';
+        return true;
+    }
+}
+
+function draft_button()
+{
+    var draft=document.getElementById('story-is-draft').checked;
+
+    var button=document.getElementById('text-submit');
+    
+    if (draft)
+    {
+        button.innerHTML='Save';
+    }
+    else
+    {
+        button.innerHTML='Publish!';
+    }
+    return true;
+}
+</script>
+{% endblock %}
+
+    
+{% block primary_panel %}
+          <div class="well" id="new-story">
+            <h2>Let&#39;s write</h2>
+            <form accept-charset="utf-8" action="/stories/submit" class="form-horizontal" id="story-form" method="post" role="form">
+              {% csrf_token %}
+              <input name="sid" type="hidden" value="{{story.id}}" />
+              <input name="prequel_to" type="hidden" value="{{story.prequel_to.id}}" />
+              <input name="sequel_to" type="hidden" value="{{story.sequel_to.id}}" />
+              <input name="prid" type="hidden" value="{{story.prompt.id}}" />
+              <p id="play-nice"><a href="/rules.html">Please play by the Ficlatt&eacute; rules</a></p>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="story_title">Title</label>
+                <div class="col-sm-10">
+                  <input class="form-control" id="story_title" maxlength="64" name="title" tabindex="2" type="text" value="{{story.title}}" />
+                </div> <!-- id="" class="col-sm-10" -->
+              </div> <!-- id="" class="form-group" -->
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="story_tag_list">Tags</label>
+                <div class="col-sm-10">
+                  <input class="form-control" id="story_tag_list" name="tag_list" tabindex="3" value="" />
+                  <p class="help-block"><span class="glyphicon glyphicon-hand-up"></span> Separate your tags with commas like this: espresso shot, steamed milk</p>
+                </div> <!-- id="" class="col-sm-10" -->
+              </div> <!-- id="" class="form-group" -->
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="story_body">Story</label>
+                <div class="col-sm-10">
+                  <div class="field">
+                    <textarea class="form-control" cols="80" data-maxlength="1024" data-minlength="60" id="text_body" name="body" onkeyup="story_len()" rows="20" tabindex="4" type="text">{{story.body}}</textarea>
+                    <div class="pull-right">
+                      <span class="counter" id="counter">1024</span>
+                    </div> <!-- id="" class="pull-right" -->
+                    <span id="minimum" style="display: block;">60 character minimum not yet met</span>
+                    <p class="help-block"><span class="glyphicon glyphicon-hand-up"></span> HTML is not supported but you can <strong>bold</strong> ( *bold* ) and <em>italicise</em> ( _italic_ ).</p>
+                  </div> <!-- id="" class="field" -->
+                </div> <!-- id="" class="col-sm-10" -->
+              </div> <!-- id="" class="form-group" -->
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <div class="checkbox">
+                    <label><input id="story-is-mature" name="is_mature" tabindex="4" type="checkbox" {% if story.mature %}checked {% endif %}/> Mark this story as mature</label>
+                  </div> <!-- id="" class="checkbox" -->
+                </div> <!-- id="" class="col-sm-offset-2 col-sm-10" -->
+              </div> <!-- id="" class="form-group" -->
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <div class="checkbox">
+                    <label><input id="story-is-draft" name="is_draft" onclick="draft_button()" tabindex="5" type="checkbox" {% if story.draft %}checked {% endif %}/> Save as draft</label>
+                  </div> <!-- id="" class="checkbox" -->
+                </div> <!-- id="" class="col-sm-offset-2 col-sm-10" -->
+              </div> <!-- id="" class="form-group" -->
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <button class="btn btn-success" id="text-submit" tabindex="6" type="submit">Publish!</button>
+                </div> <!-- id="" class="col-sm-offset-2 col-sm-10" -->
+              </div> <!-- id="" class="form-group" -->
+            </form>
+          </div> <!-- id="new-story" class="well" -->
+{% endblock primary_panel %}
