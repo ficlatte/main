@@ -49,8 +49,8 @@ class Story(models.Model):
     user        = models.ForeignKey(Profile)
     title       = models.CharField(max_length=256)
     body        = models.CharField(max_length=1536)
-    prequel_to  = models.ForeignKey('self', blank=True, null=True, related_name='sequels')      # I am a prequel so, from the linked story's point of view, I am one of its sequels
-    sequel_to   = models.ForeignKey('self', blank=True, null=True, related_name='prequels')     # I am a sequel so, from the linked story's point of view, I am one of its prequels
+    prequel_to  = models.ForeignKey('self', blank=True, null=True, related_name='prequels')
+    sequel_to   = models.ForeignKey('self', blank=True, null=True, related_name='sequels')
     prompt      = models.ForeignKey(Prompt, blank=True, null=True)
     mature      = models.BooleanField(default=False)
     draft       = models.BooleanField(default=False)
@@ -119,6 +119,13 @@ class Comment(models.Model):
         if (self.blog is not None):
             return self.user.__unicode__() + u' comment on blog post "' + self.blog.__unicode__() + u'" by ' + self.blog.user.__unicode__() + u' with text "' + unicode(self.body)[:30] + u'"'
         return self.user.__unicode__() + u' comment on nothing at all with text "' + unicode(self.body)[:30] + u'"'
+
+    def get_rating(self):
+        if (self.story is not None):
+            r = Rating.objects.filter(story=self.story, user=self.user)
+            if (r and (r[0].rating>0)):
+                return r[0].rating
+        return None
 
 
 # Activity log

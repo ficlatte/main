@@ -1,0 +1,74 @@
+{% extends "castle/page_with_sidebar.html" %}
+{% load staticfiles %}
+{% load castle_tags %}
+
+{% block secondary_panel %}
+
+  {#------------------------------------------------------------------#}
+  {# User dashboard #}
+  {#------------------------------------------------------------------#}
+  {% if user_dashboard %}
+    {% if profile %}
+
+          <div class="panel panel-warning">
+            <div class="panel-heading">
+              <h3 class="panel-title">User dashboard</h3>
+            </div> <!-- id="" class="panel-heading" -->
+            <div class="panel-body">
+              <span class="glyphicon glyphicon-user"></span>
+              <a href="/authors/edit/{{profile.pen_name|url}}">Edit profile</a>
+              <hr />
+              <h4>Your desk</h4>
+              <ul class="list-unstyled">
+                <li><a href="/stories/new">Write a new story</a></li>
+                <li><a href="/authors/u/drafts">Drafts</a> <span>{{profile|num_drafts}}</span></li>
+              </ul>
+              <h4>Your library</h4>
+              <ul class="list-unstyled">
+                <li><a href="/authors/{{profile.pen_name|url}}">Published stories</a> <span>{{profile|num_stories}}</span></li>
+              </ul>
+              <hr />
+              <h4>Friends: <span>{{profile|num_friends}}</span></h4>
+              <div class="row">
+                {% for f in profile.friends.all %}
+                <div class="col-md-3">
+                  {{f|user_icon}}
+                </div> <!-- id="" class="col-md-3" -->
+                {% endfor %}
+              </div> <!-- id="" class="row" -->
+              <hr />
+              <h4>Followers: <span>{{profile|num_followers}}</span></h4>
+              <div class="row">
+                {% for f in profile.followers.all %}
+                <div class="col-md-3">
+                  {{f|user_icon}}
+                </div> <!-- id="" class="col-md-3" -->
+                {% endfor %}
+              </div> <!-- id="" class="row" -->
+            </div> <!-- id="" class="panel-body" -->
+          </div> <!-- id="" class="panel panel-warning" -->
+    {% endif %}
+  {% endif %}
+
+  {#------------------------------------------------------------------#}
+  {# Story side-panel #}
+  {#------------------------------------------------------------------#}
+  {% if story_sidepanel %}
+  
+            <a class="btn btn-info btn-block" href="/stories/edit/40116" id="edit-link" type="button"><span class="glyphicon glyphicon-pencil"></span> Edit story</a>
+          <a class="btn btn-danger btn-block" href="/stories/delete/40116" id="delete-link" onclick="return confirm('Are you sure you want to delete this story? (there is no undelete function)');" type="button"><span class="glyphicon glyphicon-trash"></span> Delete story</a>
+          <div class="well well-sm" id="inspiration">
+            <p>This story&#39;s tags are</p>
+            <div class="tag-cloud" id="tags">
+              <a class="btn btn-primary btn-xs" href="/tags/CLANS" rel="tag" type="button">CLANS</a>
+              <a class="btn btn-primary btn-xs" href="/tags/WATCHERS" rel="tag" type="button">WATCHERS</a>
+            </div> <!-- id="tags" class="tag-cloud" -->
+          </div> <!-- id="inspiration" class="well well-sm" -->
+          <ul class="list-unstyled" id="story-stats">
+            <li id="num-ratings">Story viewed 0 times and rated 0 times</li>
+          </ul>
+          <hr />
+          <p class="small" id="licence">All stories on Ficlatt&eacute; are licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license">Creative Commons Attribution-Share Alike 3.0 License</a><a href="http://wiki.creativecommons.org/Sharing_Creative_Works">What does this mean?</a></p>
+  {% endif %}
+          
+{% endblock secondary_panel %}

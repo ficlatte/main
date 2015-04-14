@@ -9,6 +9,7 @@ from django.utils.html import escape
 from django.utils.http import urlquote_plus
 from django.template.defaultfilters import stringfilter
 from castle.models import StoryLog
+import math
 
 register = template.Library()
 
@@ -20,6 +21,11 @@ def num_comments_txt(obj):
         return u'1 comment';
     else:
         return unicode(c) + u' comments'
+
+#-----------------------------------------------------------------------------
+@register.filter
+def num_comments(obj):
+    return obj.comment_set.count()
 
 #-----------------------------------------------------------------------------
 @register.filter
@@ -231,5 +237,16 @@ def pager_button(page, url):
         return mark_safe(u'<li class="disabled"><a href="#">…</a></li>')
     else:
         return u'?'
+
+#-----------------------------------------------------------------------------
+@register.filter
+def rating_pencils(rating):
+    r = u''
+    integer_rating = int(math.ceil(rating - 0.49))
+    for i in range(0, integer_rating):
+        r = r + u'<span class="glyphicon glyphicon-pencil" id="enabled"></span>'
+    for i in range(integer_rating, 5):
+        r = r + u'<span class="glyphicon glyphicon-pencil"></span>'
+    return mark_safe(r)
 
 #-----------------------------------------------------------------------------

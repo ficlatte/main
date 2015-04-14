@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.db import transaction
-from django.db.models import Sum
+from django.db.models import Sum, Avg
 from random import randint
 from django.db.models import Q
 from django.utils.http import urlquote_plus
@@ -154,6 +154,7 @@ def home(request):
                 'recent'        : get_recent_stories(1,10),
                 'old'           : get_old_stories(10),
                 'activity_log'  : get_activity_log(profile, 10),
+                'user_dashboard': 1,
               }
     return render(request, 'castle/index.html', context)
 
@@ -175,7 +176,6 @@ def author(request, pen_name):
     if ((profile is not None) and (author == profile)):
         story_list.extend(Story.objects.filter(user = author, draft = True))
     story_list.extend(Story.objects.filter(user = author, draft = False))
-                          
 
     # Build context and render page
     context = { 'profile'       : profile,
@@ -185,5 +185,45 @@ def author(request, pen_name):
                 'pages'         : bs_pager(1, 10, len(story_list)),
             }
     return render(request, 'castle/author.html', context)
+
+#-----------------------------------------------------------------------------
+def story(request, story_id):
+    story = get_object_or_404(Story, pk=story_id)
+    
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    # Collect prequels and sequels
+    prequels = []
+    if (story.sequel_to):
+        prequels.extend(sequel_to)
+    prequels.extend(story.prequels.all())
+
+    sequels = []
+    if (story.prequel_to):
+        sequels.extend(prequel_to)
+    sequels.extend(story.sequels.all())
+
+    # Get user rating in numeric and string forms
+    rating = Rating.objects.filter(story=story).exclude(user=story.user).aggregate(avg=Avg('rating'))['avg']
+    
+    # Get comments
+    comments = story.comment_set.all().order_by('ctime')
+
+    # Build context and render page
+    context = { 'profile'       : profile,
+                'author'        : story.user,
+                'story'         : story,
+                'prequels'      : prequels,
+                'sequels'       : sequels,
+                'rating_str'    : u'{:.2f}'.format(rating),
+                'rating_num'    : rating,
+                'comments'      : comments,
+                'page_url'      : u'/stories/'+unicode(story_id),
+                'pages'         : bs_pager(1, 10, story.comment_set.count()),
+            }
+    return render(request, 'castle/story.html', context)
 
 #-----------------------------------------------------------------------------

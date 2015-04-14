@@ -1,0 +1,133 @@
+{% extends "castle/page_with_user_dashboard.html" %}
+{% load staticfiles %}
+{% load castle_tags %}
+
+{% block primary_panel %}
+          <h1>{% if story.draft %}[DRAFT] {% endif %}{{story.title}}</h1>
+          <div class="row">
+            <div class="col-sm-2 col-md-2">
+              {{author|avatar}}
+            </div> <!-- id="" class="col-sm-2 col-md-2" -->
+            <div class="col-sm-10 col-md-10">
+              {{author|author_span}}
+              {{author.biography|encode_story}}
+            </div> <!-- id="" class="col-sm-10 col-md-10" -->
+          </div> <!-- id="" class="row" -->
+          <hr />
+          {{story.body|encode_story}}
+          <div class="row" id="prequel-and-sequel">
+            <div class="col-md-6" id="prequel-group">
+              <div class="panel panel-success">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Prequels</h3>
+                </div> <!-- id="" class="panel-heading" -->
+                <div class="panel-body">
+                  {% if prequels %}
+                  <div class="list-group">
+                    {% for q in prequels %}
+                    <div class="list-group-item">
+                      {{q|story_link:'h4 class="list-group-item-heading"'}}
+                      {{q.user|author_span:'class="list-group-item-text"'}}
+                    </div> <!-- id="" class="list-group-item" -->
+                    {% endfor %}
+                  </div> <!-- id="" class="list-group" -->
+                  {% else %}
+                  <p>No prequels yet, why not write one?</p>
+                  {% endif %}
+                  <p><a class="btn btn-success" href="/stories/new?prequel=40273" role="button">&laquo; Write a prequel</a></p>
+                </div> <!-- id="" class="panel-body" -->
+              </div> <!-- id="" class="panel panel-success" -->
+            </div> <!-- id="prequel-group" class="col-md-6" -->
+            <div class="col-md-6" id="sequel-group">
+              <div class="panel panel-success">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Sequels</h3>
+                </div> <!-- id="" class="panel-heading" -->
+                <div class="panel-body">
+                  {% if sequels %}
+                  <div class="list-group">
+                    {% for q in sequels %}
+                    <div class="list-group-item">
+                      {{q|story_link:'h4 class="list-group-item-heading"'}}
+                      {{q.user|author_span:'class="list-group-item-text"'}}
+                    </div> <!-- id="" class="list-group-item" -->
+                    {% endfor %}
+                  </div> <!-- id="" class="list-group" -->
+                  {% else %}
+                  <p>No sequels yet, why not write one?</p>
+                  {% endif %}
+                  <p><a class="btn btn-success" href="/stories/new?sequel=40273" role="button">Write a sequel &raquo;</a></p>
+                </div> <!-- id="" class="panel-body" -->
+              </div> <!-- id="" class="panel panel-success" -->
+            </div> <!-- id="sequel-group" class="col-md-6" -->
+          </div> <!-- id="prequel-and-sequel" class="row" -->
+{% block paged_content %}
+          <h2>Comments <small>({{story|num_comments}} so far!)</small></h2>
+          <h5>Average reader rating {{rating_str}}/5</h5>
+          <p id="average-rating">
+            {{rating_num|rating_pencils}}
+          </p>
+          {% for comment in comments %}
+          <div class="row">
+            <div class="col-md-2">
+              {{comment.user|avatar}}
+            </div> <!-- id="" class="col-md-2" -->
+            <div class="col-md-10">
+              <a name="comment-{{comment.id}}" rel="self bookmark"></a>
+              {{comment.user|author_link:'h4'}}
+              {{comment.body|encode_story}}
+              <ul class="list-inline">
+                <li class="posted">Posted <abbr class="dtposted" title="{{comment.ctime|date:'Y-m-d'}}">{{comment.ctime|age}}</abbr></li>
+                {% if comment.get_rating %}
+                <li><span class="glyphicon glyphicon-pencil"></span> <span>{{comment.get_rating}}</span> out of <span>5</span></li>
+                {% endif %}
+              </ul>
+            </div> <!-- id="" class="col-md-10" -->
+          </div> <!-- id="" class="row" -->
+          {% endfor %}
+          <hr />
+          <div id="comment-box">
+            <h3>Everybody loves feedback</h3>
+            <form action="/stories/submit_comment" id="comment-form" method="post" role="form">
+              {% csrf_token %}
+              <input id="comment_sid" name="sid" type="hidden" value="{{story.id}}" />
+              <div class="form-group">
+                <div class="col-md-10">
+                  <label class="control-label" for="comment_body">Leave a comment</label>
+                  <textarea class="form-control" id="comment_body" maxlength="1024" name="body" rows="7"></textarea>
+                </div> <!-- id="" class="col-md-10" -->
+              </div> <!-- id="" class="form-group" -->
+              <div class="form-group">
+                <div class="col-md-2">
+                  <label class="control-label">Rate this story</label>
+                  <div class="radio">
+                    <label for="rate-0"><input id="rate-0" name="rating" type="radio" value="0" /> none </label>
+                  </div> <!-- id="" class="radio" -->
+                  <div class="radio">
+                    <label for="rate-1"><input id="rate-1" name="rating" type="radio" value="1" /> 1 <span class="glyphicon glyphicon-pencil"></span></label>
+                  </div> <!-- id="" class="radio" -->
+                  <div class="radio">
+                    <label for="rate-2"><input id="rate-2" name="rating" type="radio" value="2" /> 2 <span class="glyphicon glyphicon-pencil"></span></label>
+                  </div> <!-- id="" class="radio" -->
+                  <div class="radio">
+                    <label for="rate-3"><input id="rate-3" name="rating" type="radio" value="3" /> 3 <span class="glyphicon glyphicon-pencil"></span></label>
+                  </div> <!-- id="" class="radio" -->
+                  <div class="radio">
+                    <label for="rate-4"><input id="rate-4" name="rating" type="radio" value="4" /> 4 <span class="glyphicon glyphicon-pencil"></span></label>
+                  </div> <!-- id="" class="radio" -->
+                  <div class="radio">
+                    <label for="rate-5"><input id="rate-5" name="rating" type="radio" value="5" /> 5 <span class="glyphicon glyphicon-pencil"></span></label>
+                  </div> <!-- id="" class="radio" -->
+                </div> <!-- id="" class="col-md-2" -->
+              </div> <!-- id="" class="form-group" -->
+              <div class="form-group">
+                <input alt="Submit comment" type="submit" value="Submit" />
+              </div> <!-- id="" class="form-group" -->
+            </form>
+          </div> <!-- id="comment-box" class="" -->
+
+
+{% endblock paged_content %}
+{% block pager %}{{block.super}}{%endblock%}
+
+{% endblock primary_panel %}
