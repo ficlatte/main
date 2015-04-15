@@ -326,10 +326,14 @@ def prompt(request, prompt_id):
     # Get stories inspired by prompt # FIXME: need to support paging
     stories = prompt.story_set.exclude(draft=True).order_by('ctime')
 
+    # Prompt's owner gets an edit link
+    owner = ((profile is not None) and (profile == prompt.user))
+
     # Build context and render page
     context = { 'profile'       : profile,
                 'prompt'        : prompt,
                 'stories'       : stories,
+                'owner'         : owner,
                 'prompt_sidepanel' : 1,
             }
     
@@ -353,6 +357,50 @@ def blogs(request):
                 'pages'         : bs_pager(1, 10, blogs.count()),
             }
     return render(request, 'castle/blogs.html', context)
+
+#-----------------------------------------------------------------------------
+@login_required
+def new_prompt(request):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    # Build context and render page
+    context = { 'profile'       : profile,
+                'story'         : Prompt(),      # Create blank story for default purposes
+                'tags'          : u'',
+                'length_limit'  : 256,
+                'length_min'    : 30,
+                'user_dashboard': 1,
+            }
+
+    return render(request, 'castle/edit_prompt.html', context)
+
+#-----------------------------------------------------------------------------
+@login_required
+def edit_prompt(request, prompt_id):
+    # Get prompt
+    prompt = get_object_or_404(Prompt, pk=prompt_id)
+    
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    # User can only edit their own stories
+    if (prompt.user != profile):
+        raise Http404
+    
+    # Build context and render page
+    context = { 'profile'       : profile,
+                'prompt'        : prompt,
+                'length_limit'  : 1024,
+                'length_min'    : 60,
+                'user_dashboard': 1,
+            }
+
+    return render(request, 'castle/edit_prompt.html', context)
 
 #-----------------------------------------------------------------------------
 def blog(request, blog_id):

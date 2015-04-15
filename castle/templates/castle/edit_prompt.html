@@ -1,0 +1,46 @@
+{% extends "castle/page_without_sidebar.html" %}
+{% load staticfiles %}
+{% load castle_tags %}
+
+{% block body_tag %} onload="story_len();" {% endblock %}
+{% block top_script %}
+{% endblock %}
+
+    
+{% block primary_panel %}
+          <div class="well" id="new-prompt">
+            <h2>Let&#39;s prompt</h2>
+            <form accept-charset="utf-8" action="/prompt/submit" class="form-horizontal" id="prompt-form" method="post" role="form">
+              {% csrf_token %}
+              <input name="prid" type="hidden" value="{{prompt.id}}" />
+              <input name="prequel_to" type="hidden" value="{{prompt.prequel_to.id}}" />
+              <input name="sequel_to" type="hidden" value="{{prompt.sequel_to.id}}" />
+              <input name="prid" type="hidden" value="{{prompt.prompt.id}}" />
+              <p id="play-nice"><a href="/rules.html">Please play by the Ficlatt&eacute; rules</a></p>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="prompt_title">Title</label>
+                <div class="col-sm-10">
+                  <input class="form-control" id="prompt_title" maxlength="64" name="title" tabindex="2" type="text" value="{{prompt.title}}" />
+                </div> <!-- id="" class="col-sm-10" -->
+              </div> <!-- id="" class="form-group" -->
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="prompt_body">Blog entry</label>
+                <div class="col-sm-10">
+                  <div class="field">
+                    <textarea class="form-control" cols="60" data-maxlength="{{length_limit}}" data-minlength="{{length_min}}" id="text_body" name="body" onkeyup="story_len()" rows="8" tabindex="4" type="text">{{prompt.body}}</textarea>
+                    <div class="pull-right">
+                      <span class="counter" id="counter">{{length_limit}}</span>
+                    </div> <!-- id="" class="pull-right" -->
+                    <span id="minimum" style="display: block;">{{length_min}} character minimum not yet met</span>
+                    <p class="help-block"><span class="glyphicon glyphicon-hand-up"></span> HTML is not supported but you can <strong>bold</strong> ( *bold* ) and <em>italicise</em> ( _italic_ ).</p>
+                  </div> <!-- id="" class="field" -->
+                </div> <!-- id="" class="col-sm-10" -->
+              </div> <!-- id="" class="form-group" -->
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <button class="btn btn-success" id="text-submit" tabindex="6" type="submit">Publish!</button>
+                </div> <!-- id="" class="col-sm-offset-2 col-sm-10" -->
+              </div> <!-- id="" class="form-group" -->
+            </form>
+          </div> <!-- id="new-prompt" class="well" -->
+{% endblock primary_panel %}

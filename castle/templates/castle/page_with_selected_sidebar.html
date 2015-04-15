@@ -152,6 +152,9 @@
   {#------------------------------------------------------------------#}
   {% if prompt_sidepanel and prompt %}
           <a class="btn btn-success btn-block" href="/stories/new?prid={{prompt.id}}" id="prompt-link" type="button"><span class="glyphicon glyphicon-pencil"></span> Take prompt</a>
+          {% if owner %}
+          <a class="btn btn-info btn-block" href="/prompts/edit/{{prompt.id}}" id="prompt-link" type="button"><span class="glyphicon glyphicon-pencil"></span> Edit prompt</a>
+          {% endif %}
           <ul class="list-unstyled" id="story-stats">
             <li id="pubdate"><small>Prompt published {{prompt.ctime|date:"jS F Y"}}</small></li>
           </ul>

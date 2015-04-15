@@ -2,15 +2,17 @@
 {% load staticfiles %}
 
 {% block main_content %}
-
       <div class="row">
         <div class="col-md-12" id="main-bit">
-
+{% if error_messages %}
+          <div class="alert alert-danger" id="errors" role="alert">
+            <h3>{{error_title}}</h3>
+            {% for err in error_messages %}<p>{{err}}</p>{% endfor %}
+          </div> <!-- id="errors" class="alert alert-danger" -->
+{% endif %}
 {% block primary_panel %}
           <h3>Primary panel</h3>
 {% endblock %}
-
         </div> <!-- id="main-bit" class="col-md-12" -->
       </div> <!-- id="" class="row" -->
-
 {% endblock main_content %}
