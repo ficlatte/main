@@ -28,7 +28,7 @@ function draft_button()
 {% block primary_panel %}
           <div class="well" id="new-story">
             <h2>Let&#39;s write</h2>
-            <form accept-charset="utf-8" action="/stories/submit" class="form-horizontal" id="story-form" method="post" role="form">
+            <form accept-charset="utf-8" action="/stories/submit/" class="form-horizontal" id="story-form" method="post" role="form">
               {% csrf_token %}
               <input name="sid" type="hidden" value="{{story.id}}" />
               <input name="prequel_to" type="hidden" value="{{story.prequel_to.id}}" />

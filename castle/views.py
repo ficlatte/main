@@ -39,7 +39,7 @@ def get_active_stories(page_num=1, page_size=10):
 def get_recent_stories(page_num=1, page_size=10):
     last = (page_num * page_size) - 1
     first = (last - page_size) + 1
-    return Story.objects.filter(draft = False).order_by('-ptime')[first:last]
+    return Story.objects.filter(draft = False).order_by('ptime')[first:last]
     
 #-----------------------------------------------------------------------------
 def get_old_stories(page_size=10):
@@ -47,11 +47,11 @@ def get_old_stories(page_size=10):
     end = 0 if (total < page_size) else (total - page_size)
     first = randint(0, end)
     last  = first + page_size
-    return Story.objects.filter(draft = False).order_by('-ptime')[first:last]
+    return Story.objects.filter(draft = False).order_by('ptime')[first:last]
     
 #-----------------------------------------------------------------------------
 def get_activity_log(profile, entries):
-    log_entries = StoryLog.objects.exclude(log_type = StoryLog.VIEW).exclude(log_type = StoryLog.RATE).filter(Q(user = profile) | Q(story__user = profile)).order_by('-ctime')[:entries]
+    log_entries = StoryLog.objects.exclude(log_type = StoryLog.VIEW).exclude(log_type = StoryLog.RATE).filter(Q(user = profile) | Q(story__user = profile)).order_by('ctime')[:entries]
     
     return log_entries
 
@@ -292,6 +292,82 @@ def edit_story(request, story_id):
             }
 
     return render(request, 'castle/edit_story.html', context)
+
+#-----------------------------------------------------------------------------
+def get_foo(request, foo, key):
+    sid = request.POST.get(key, None)
+    if ((sid is None) or (sid == '') or (sid == 'None')):  # Text 'None' results in None return
+        return None
+    
+    # The id may be invalid; the story may not exist.
+    # Return it if it's there or None otherwise
+    sl = foo.objects.filter(pk=sid)
+    if (sl):
+        return sl[0]
+    else:
+        return None
+
+#-----------------------------------------------------------------------------
+@login_required
+@transaction.atomic
+def submit_story(request):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    # Get bits and bobs
+    errors     = []
+    story      = get_foo(request, Story,  'sid')
+    prequel_to = get_foo(request, Story,  'prequel_to')
+    sequel_to  = get_foo(request, Story,  'sequel_to')
+    prompt     = get_foo(request, Prompt, 'prid')
+    tags       = ''
+
+    if (not profile.email_authenticated()):
+        errors.append(u'You must have authenticated your e-mail address before posting a story');
+    else:
+        # Get story object, either existing or new
+        if (story is None):
+            story = Story(user=profile)
+
+        # Populate story object with data from submitted form
+        story.title  = request.POST.get('title', '')
+        story.body   = request.POST.get('body', '')
+        story.mature = request.POST.get('is_mature', False)
+        story.draft  = request.POST.get('is_draft', False)
+        
+        if (len(story.title) < 1):
+            errors.append(u'Story title must be at least 1 character long')
+        
+        l = len(story.body)
+        if ((not story.draft) and (l < 60)):
+            errors.append(u'Story body must be at least 60 characters long')
+        
+        if ((not story.draft) and (l > 1024)):
+            errors.append(u'Story is over 1024 characters (currently ' + unicode(l) + u')')
+
+        if ((    story.draft) and (l > 1536)):
+            errors.append(u'Draft is over 1536 characters (currently ' + unicode(l) + u')')
+    
+    # If there have been errors, re-display the page
+    if (errors):
+    # Build context and render page
+        context = { 'profile'       : profile,
+                    'story'         : story,
+                    'tags'          : tags,
+                    'length_limit'  : 1024,
+                    'length_min'    : 60,
+                    'user_dashboard': 1,
+                    'error_title'   : 'Story submission unsuccessful',
+                    'error_messages': errors,
+                }
+
+        return render(request, 'castle/edit_story.html', context)
+    
+    # No problems, update the database and redirect
+    story.save()
+    return HttpResponseRedirect(reverse('story', args=(story.id,)))
 
 #-----------------------------------------------------------------------------
 def prompts(request):

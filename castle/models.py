@@ -30,6 +30,9 @@ class Profile(models.Model):
     
     def __unicode__(self):
         return unicode(self.pen_name)
+    
+    def email_authenticated(self):
+        return (self.email_auth == 0L)
 
 # Story prompts
 class Prompt(models.Model):
