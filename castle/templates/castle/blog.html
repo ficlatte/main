@@ -1,0 +1,58 @@
+{% extends "castle/page_without_sidebar.html" %}
+{% load staticfiles %}
+{% load castle_tags %}
+
+{% block primary_panel %}
+          <h1>{% if blog.draft %}[DRAFT] {% endif %}{{blog.title}}</h1>
+          <div class="row">
+            <div class="col-sm-2 col-md-2">
+              {{author|avatar}}
+            </div> <!-- id="" class="col-sm-2 col-md-2" -->
+            <div class="col-sm-10 col-md-10">
+              {{author|author_span}}
+              {{author.biography|encode_story}}
+            </div> <!-- id="" class="col-sm-10 col-md-10" -->
+          </div> <!-- id="" class="row" -->
+          <hr />
+          {{blog.body|encode_story}}
+{% block paged_content %}
+          <h2>Comments <small>({{blog|num_comments}} so far!)</small></h2>
+          {% for comment in comments %}
+          <div class="row">
+            <div class="col-md-2">
+              {{comment.user|avatar}}
+            </div> <!-- id="" class="col-md-2" -->
+            <div class="col-md-10">
+              <a name="comment-{{comment.id}}" rel="self bookmark"></a>
+              {{comment.user|author_link:'h4'}}
+              {{comment.body|encode_story}}
+              <ul class="list-inline">
+                <li class="posted">Posted <abbr class="dtposted" title="{{comment.ctime|date:'Y-m-d'}}">{{comment.ctime|age}}</abbr></li>
+              </ul>
+            </div> <!-- id="" class="col-md-10" -->
+          </div> <!-- id="" class="row" -->
+          {% endfor %}
+          {% if profile %}
+          <hr />
+          <div id="comment-box">
+            <h3>Everybody loves feedback</h3>
+            <form action="/blog/submit_comment" id="comment-form" method="post" role="form">
+              {% csrf_token %}
+              <input id="comment_sid" name="sid" type="hidden" value="{{blog.id}}" />
+              <div class="form-group">
+                <div class="col-md-10">
+                  <label class="control-label" for="comment_body">Leave a comment</label>
+                  <textarea class="form-control" id="comment_body" maxlength="1024" name="body" rows="7"></textarea>
+                </div> <!-- id="" class="col-md-10" -->
+              </div> <!-- id="" class="form-group" -->
+              <div class="form-group">
+                <input alt="Submit comment" type="submit" value="Submit" />
+              </div> <!-- id="" class="form-group" -->
+            </form>
+          </div> <!-- id="comment-box" class="" -->
+        {% endif %}
+
+{% endblock paged_content %}
+{% block pager %}{{block.super}}{%endblock%}
+
+{% endblock primary_panel %}

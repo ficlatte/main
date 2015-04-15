@@ -40,7 +40,7 @@ class BlogAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {'fields' : ['user', 'title', 'body']}),
         ('Bits', {'fields': ['draft'], 'classes': ['collapse']}),
-        ('Dates', {'fields': ['ctime', 'mtime'], 'classes': ['collapse']}),
+        ('Dates', {'fields': ['ctime', 'mtime', 'ptime'], 'classes': ['collapse']}),
     ]
     inlines = [CommentInLine]
 

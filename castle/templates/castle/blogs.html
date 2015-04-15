@@ -1,0 +1,24 @@
+{% extends "castle/page_without_sidebar.html" %}
+{% load staticfiles %}
+{% load castle_tags %}
+
+{% block primary_panel %}
+          <div class="blog-header">
+            <h1 class="blog-title">The Ficlatt&eacute; blog</h1>
+            <p class="lead blog-description">What&#39;s going on</p>
+          </div> <!-- id="" class="blog-header" -->
+          <div class="row">
+{% block paged_content %}
+            <div class="col-md-8 blog-main">
+              {% for blog in blogs %}
+              <div class="blog-post">
+                <h2 class="blog-post-title"><a href="/blog/{{blog.id}}">{{blog.title}}</a></h2>
+                {{blog.body|big_snippet}}
+                <p class="blog-post-meta">{{blog.user|author_span}} {{blog|num_comments_txt}} Posted <abbr class="dtposted" title="{{blog.ptime|date:'Y-m-d'}}">{{blog.ptime|age}}</abbr></p>
+              </div> <!-- id="" class="blog-post" -->
+              {% endfor %}
+            </div> <!-- id="" class="col-md-8 blog-main" -->
+ {% endblock paged_content %}
+{% block pager %}{{block.super}}{%endblock%}
+         </div> <!-- id="" class="row" -->
+{% endblock primary_panel %}

@@ -85,6 +85,7 @@ class Blog(models.Model):
     draft       = models.BooleanField(default=False)
     ctime       = models.DateTimeField(default=datetime.now)
     mtime       = models.DateTimeField(default=datetime.now)
+    ptime       = models.DateTimeField(blank=True, null=True)
 
     def __unicode__(self):
         return unicode(self.title)

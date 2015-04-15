@@ -16,6 +16,33 @@
   </head>
 
   <body {% block body_tag %} {% endblock %} >
+  {% if length_limit %}
+  <script type="text/javascript">
+  function story_len()
+  {
+    var tlen=document.getElementById('text_body').value.length;
+
+    var chars_left = {{length_limit}} - tlen;
+    document.getElementById('counter').innerHTML=chars_left;
+
+    {% if length_min %}
+    var min_block = document.getElementById('minimum');
+    if (tlen < {{length_min}})
+    {
+        min_block.style.display = 'block';
+        return false;
+    }
+    else
+    {
+        min_block.style.display = 'none';
+        return true;
+    }
+    {% else %}
+    return true;
+    {% endif %}
+  }
+  </script>
+  {% endif %}
     {% block top_script %} {% endblock %}
     <div id="header">
       <nav class="navbar navbar-inverse navbar-static-top" role="navigation">

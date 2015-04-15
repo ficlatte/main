@@ -257,6 +257,8 @@ def new_story(request):
     context = { 'profile'       : profile,
                 'story'         : Story(),      # Create blank story for default purposes
                 'tags'          : u'',
+                'length_limit'  : 1024,
+                'length_min'    : 60,
                 'user_dashboard': 1,
             }
 
@@ -284,6 +286,8 @@ def edit_story(request, story_id):
     context = { 'profile'       : profile,
                 'story'         : story,
                 'tags'          : tags,
+                'length_limit'  : 1024,
+                'length_min'    : 60,
                 'user_dashboard': 1,
             }
 
@@ -331,5 +335,89 @@ def prompt(request, prompt_id):
     
 
     return render(request, 'castle/prompt.html', context)
+
+#-----------------------------------------------------------------------------
+def blogs(request):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    # Get blogs # FIXME: need to support paging
+    blogs = Blog.objects.exclude(draft=True).order_by('ptime')
+
+    # Build context and render page
+    context = { 'profile'       : profile,
+                'blogs'         : blogs,
+                'page_url'      : u'/blog/',
+                'pages'         : bs_pager(1, 10, blogs.count()),
+            }
+    return render(request, 'castle/blogs.html', context)
+
+#-----------------------------------------------------------------------------
+def blog(request, blog_id):
+    blog = get_object_or_404(Blog, pk=blog_id)
+    
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    # Is logged-in user the author?
+    author = blog.user
+    owner = ((profile is not None) and (profile == author))
+
+    # Get comments # FIXME: need to support paging
+    comments = blog.comment_set.all().order_by('ctime')
+
+    # Build context and render page
+    context = { 'profile'       : profile,
+                'author'        : blog.user,
+                'blog'          : blog,
+                'comments'      : comments,
+                'page_url'      : u'/stories/'+unicode(blog_id),
+                'pages'         : bs_pager(1, 10, blog.comment_set.count()),
+                'owner'         : owner,
+            }
+    return render(request, 'castle/blog.html', context)
+
+#-----------------------------------------------------------------------------
+@login_required
+def new_blog(request):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    # Build context and render page
+    context = { 'profile'       : profile,
+                'blog'          : Blog(),      # Create blank blog for default purposes
+                'length_limit'  : 20480,
+                'length_min'    : 60,
+                'user_dashboard': 1,
+            }
+
+    return render(request, 'castle/edit_blog.html', context)
+
+#-----------------------------------------------------------------------------
+@login_required
+def edit_blog(request, blog_id):
+    # Get blog
+    blog = get_object_or_404(Blog, pk=blog_id)
+
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    
+    # Build context and render page
+    context = { 'profile'       : profile,
+                'blog'          : blog,
+                'length_limit'  : 20480,
+                'length_min'    : 60,
+                'user_dashboard': 1,
+            }
+
+    return render(request, 'castle/edit_blog.html', context)
 
 #-----------------------------------------------------------------------------
