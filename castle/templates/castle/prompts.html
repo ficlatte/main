@@ -1,0 +1,21 @@
+{% extends "castle/page_with_selected_sidebar.html" %}
+{% load staticfiles %}
+{% load castle_tags %}
+
+{% block primary_panel %}
+
+          <div id="prompt-summary">
+            <h3>Recent prompts</h3>
+{% block paged_content %}
+            <div class="story_list_div">
+              <ul class="story_list">
+                {% for p in prompts %}
+                <li class="story_list_item"><h3 class="entry_title"><a class="prompt_link" href="/prompts/{{ p.id }}">{{p.title}}</a></h3><blockquote class="entry_content">{{p.body|encode_story}}                </blockquote><ul class="story_foot"><li class="author">{{p.user|author_span}}</li><li class="posted">Posted <abbr class="published" title="{{p.ctime|date:'Y-m-d'}}">{{p.ctime|age}}</abbr></li><li class="count">{{p|num_stories_txt}}</li></ul></li>
+                {% endfor %}
+              </ul>
+            </div> <!-- id="" class="story_list_div" -->
+{% endblock paged_content %}
+{% block pager %}{{block.super}}{%endblock%}
+          </div> <!-- id="prompt-summary" class="" -->
+
+{% endblock primary_panel %}

@@ -1,0 +1,33 @@
+{% extends "castle/page_with_selected_sidebar.html" %}
+{% load staticfiles %}
+{% load castle_tags %}
+
+{% block primary_panel %}
+
+          <h1>{{prompt.title}}</h1>
+          <div class="row">
+            <div class="col-sm-2 col-md-2">
+              {{prompt.user|avatar}}
+            </div> <!-- id="" class="col-sm-2 col-md-2" -->
+            <div class="col-sm-10 col-md-10">
+              {{prompt.user|author_span}}
+              {{prompt.user.biography|encode_story}}
+            </div> <!-- id="" class="col-sm-10 col-md-10" -->
+          </div> <!-- id="" class="row" -->
+          <hr />
+          {{prompt.body|encode_story}}
+          <hr />
+          <div id="story-summary">
+{% block paged_content %}
+            <h3>Inspired stories</h3>
+            <div class="story_list_div">
+              <ul class="story_list">
+                {% for s in stories %}
+                <li class="story_list_item"><h4 class="entry_title"><a class="story_link" href="/stories/{{s.id}}">{{s.title}}</a></h4><blockquote class="entry_content small">{{s.body|small_snippet}}</blockquote><ul class="story_foot"><li class="author">{{s.user|author_span}}</li><li class="posted">Posted <abbr class="published" title="{{s.ptime|date:'Y-m-d'}}">{{s.ptime|age}}</abbr></li></ul></li>
+                {% endfor %}
+              </ul>
+            </div> <!-- id="" class="story_list_div" -->
+{% endblock paged_content %}
+          </div> <!-- id="story-summary" class="" -->
+{% block pager %}{{block.super}}{%endblock%}
+{% endblock primary_panel %}

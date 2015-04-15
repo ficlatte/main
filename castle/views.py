@@ -175,7 +175,7 @@ def author(request, pen_name):
     owner = ((profile is not None) and (profile == author))
 
     # Build story list (owner sees their drafts)
-    story_list = []
+    story_list = [] # FIXME: need to support paging
     if (owner):
         story_list.extend(Story.objects.filter(user = author, draft = True))
     story_list.extend(Story.objects.filter(user = author, draft = False))
@@ -219,7 +219,7 @@ def story(request, story_id):
     rating = Rating.objects.filter(story=story).exclude(user=story.user).aggregate(avg=Avg('rating'))['avg']
     rating_str = u'{:.2f}'.format(rating) if (rating) else ''
     
-    # Get comments
+    # Get comments # FIXME: need to support paging
     comments = story.comment_set.all().order_by('ctime')
 
     # Count how many times the story has been viewed and rated
@@ -288,5 +288,48 @@ def edit_story(request, story_id):
             }
 
     return render(request, 'castle/edit_story.html', context)
+
+#-----------------------------------------------------------------------------
+def prompts(request):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    # Get prompts # FIXME: need to support paging
+    prompts = Prompt.objects.all().order_by('ctime')
+
+    # Build context and render page
+    context = { 'profile'       : profile,
+                'prompts'       : prompts,
+                'prompt_button' : (profile is not None),
+                'user_dashboard': (profile is not None),
+            }
+    
+
+    return render(request, 'castle/prompts.html', context)
+
+#-----------------------------------------------------------------------------
+def prompt(request, prompt_id):
+    # Get story
+    prompt = get_object_or_404(Prompt, pk=prompt_id)
+
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    # Get stories inspired by prompt # FIXME: need to support paging
+    stories = prompt.story_set.exclude(draft=True).order_by('ctime')
+
+    # Build context and render page
+    context = { 'profile'       : profile,
+                'prompt'        : prompt,
+                'stories'       : stories,
+                'prompt_sidepanel' : 1,
+            }
+    
+
+    return render(request, 'castle/prompt.html', context)
 
 #-----------------------------------------------------------------------------

@@ -9,6 +9,16 @@
   {#------------------------------------------------------------------#}
   {% if user_dashboard %}
     {% if profile %}
+      {% if prompt_button %}
+          <div class="panel panel-info">
+            <div class="panel-heading">
+              <h3 class="panel-title">Prompts</h3>
+            </div> <!-- id="" class="panel-heading" -->
+            <div class="panel-body">
+              <a class="btn btn-success btn-block" href="/prompts/new" id="new-prompt-link" type="button"><span class="glyphicon glyphicon-pencil"></span> &nbsp; Write a prompt</a>
+            </div> <!-- id="" class="panel-body" -->
+          </div> <!-- id="" class="panel panel-info" -->
+      {% endif %}
 
           <div class="panel panel-warning">
             <div class="panel-heading">
@@ -137,6 +147,16 @@
           <hr />
           <p class="small" id="licence">All stories on Ficlatt&eacute; are licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license">Creative Commons Attribution-Share Alike 3.0 License</a><a href="http://wiki.creativecommons.org/Sharing_Creative_Works">What does this mean?</a></p>
   {% endif %}
-  
+  {#------------------------------------------------------------------#}
+  {# Prompt side panel #}
+  {#------------------------------------------------------------------#}
+  {% if prompt_sidepanel and prompt %}
+          <a class="btn btn-success btn-block" href="/stories/new?prid={{prompt.id}}" id="prompt-link" type="button"><span class="glyphicon glyphicon-pencil"></span> Take prompt</a>
+          <ul class="list-unstyled" id="story-stats">
+            <li id="pubdate"><small>Prompt published {{prompt.ctime|date:"jS F Y"}}</small></li>
+          </ul>
+          <hr />
+          <p class="small" id="licence">All prompts on Ficlatt&eacute; are licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license">Creative Commons Attribution-Share Alike 3.0 License</a><a href="http://wiki.creativecommons.org/Sharing_Creative_Works">What does this mean?</a></p>
+  {% endif %}
           
 {% endblock secondary_panel %}

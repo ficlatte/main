@@ -87,6 +87,7 @@
             </div> <!-- id="" class="col-md-10" -->
           </div> <!-- id="" class="row" -->
           {% endfor %}
+          {% if profile %}
           <hr />
           <div id="comment-box">
             <h3>Everybody loves feedback</h3>
@@ -127,7 +128,7 @@
               </div> <!-- id="" class="form-group" -->
             </form>
           </div> <!-- id="comment-box" class="" -->
-
+        {% endif %}
 
 {% endblock paged_content %}
 {% block pager %}{{block.super}}{%endblock%}

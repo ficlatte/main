@@ -11,5 +11,7 @@ urlpatterns = patterns('',
     url(r'^stories/(?P<story_id>\d+)/$', 'castle.views.story', name='story'),
     url(r'^stories/edit/(?P<story_id>\d+)/$', 'castle.views.edit_story', name='edit_story'),
     url(r'^stories/new/$', 'castle.views.new_story', name='new_story'),
+    url(r'^prompts/$', 'castle.views.prompts', name='prompts'),
+    url(r'^prompts/(?P<prompt_id>\d+)/$', 'castle.views.prompt', name='prompt'),
     url(r'^admin/', include(admin.site.urls)),
 )
