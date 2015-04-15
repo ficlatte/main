@@ -27,7 +27,7 @@ function draft_button()
     
 {% block primary_panel %}
           <div class="well" id="new-blog">
-            <h2>Let&#39;s write</h2>
+            <h2>Let&#39;s blog</h2>
             <form accept-charset="utf-8" action="/blog/submit" class="form-horizontal" id="blog-form" method="post" role="form">
               {% csrf_token %}
               <input name="sid" type="hidden" value="{{blog.id}}" />
@@ -42,14 +42,7 @@ function draft_button()
                 </div> <!-- id="" class="col-sm-10" -->
               </div> <!-- id="" class="form-group" -->
               <div class="form-group">
-                <label class="col-sm-2 control-label" for="blog_tag_list">Tags</label>
-                <div class="col-sm-10">
-                  <input class="form-control" id="blog_tag_list" name="tag_list" tabindex="3" value="{{tags}}" />
-                  <p class="help-block"><span class="glyphicon glyphicon-hand-up"></span> Separate your tags with commas like this: espresso shot, steamed milk</p>
-                </div> <!-- id="" class="col-sm-10" -->
-              </div> <!-- id="" class="form-group" -->
-              <div class="form-group">
-                <label class="col-sm-2 control-label" for="blog_body">Story</label>
+                <label class="col-sm-2 control-label" for="blog_body">Blog entry</label>
                 <div class="col-sm-10">
                   <div class="field">
                     <textarea class="form-control" cols="80" data-maxlength="{{length_limit}}" data-minlength="{{length_min}}" id="text_body" name="body" onkeyup="story_len()" rows="20" tabindex="4" type="text">{{blog.body}}</textarea>
