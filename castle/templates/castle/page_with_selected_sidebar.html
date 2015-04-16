@@ -106,7 +106,7 @@
     {% if story.tag_set.count > 0 or story.prompt or story.prequel_to or story.sequel_to %}
           <div class="well well-sm" id="inspiration">
     {% if story.prompt %}
-            <h4>Story prompt</h4>
+            <h4>Story prompt:</h4>
             {{story.prompt.body|encode_story}}
             <p><a href="/prompts/{{story.prompt.id}}">{{story.prompt.title}}</a> by {{story.prompt.user|author_link}}</p>
     {% endif %}
@@ -142,6 +142,11 @@
           </div> <!-- id="inspiration" class="well well-sm" -->
     {% endif %}
           <ul class="list-unstyled" id="story-stats">
+    {% if story.draft %}
+            <li id="mtime">Edited <abbr title="{{story.mtime|date:'Y-m-d'}}">{{story.mtime|age}}</abbr>. </p>
+    {% else %}
+            <li id="ptime">Published <abbr title="{{story.ptime|date:'Y-m-d'}}">{{story.ptime|age}}</abbr>. </p>
+    {% endif %}
             <li id="num-ratings">Story viewed {{viewed}} times and rated {{rated}} times</li>
           </ul>
           <hr />

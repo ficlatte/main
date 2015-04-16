@@ -35,6 +35,14 @@ function draft_button()
               <input name="sequel_to" type="hidden" value="{{story.sequel_to.id}}" />
               <input name="prid" type="hidden" value="{{story.prompt.id}}" />
               <p id="play-nice"><a href="/rules.html">Please play by the Ficlatt&eacute; rules</a></p>
+{% if story.prompt %}
+              <div class="panel panel-info">
+                <div class="panel-heading">Prompt: &quot;{{story.prompt.title}}&quot;</div>
+                <div class="panel-body">
+                {{story.prompt.body|encode_story}}
+                </div> <!-- id="" class="panel-body" -->
+              </div> <!-- id="" class="panel panel-info" -->
+{% endif %}
               <div class="form-group">
                 <label class="col-sm-2 control-label" for="story_title">Title</label>
                 <div class="col-sm-10">

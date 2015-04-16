@@ -33,6 +33,11 @@ class Profile(models.Model):
     
     def email_authenticated(self):
         return (self.email_auth == 0L)
+    
+    class Meta:
+        permissions = (
+            ("post_blog", "User can make blog posts"),
+        )
 
 # Story prompts
 class Prompt(models.Model):

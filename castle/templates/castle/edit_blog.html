@@ -28,7 +28,7 @@ function draft_button()
 {% block primary_panel %}
           <div class="well" id="new-blog">
             <h2>Let&#39;s blog</h2>
-            <form accept-charset="utf-8" action="/blog/submit" class="form-horizontal" id="blog-form" method="post" role="form">
+            <form accept-charset="utf-8" action="/blog/submit/" class="form-horizontal" id="blog-form" method="post" role="form">
               {% csrf_token %}
               <input name="bid" type="hidden" value="{{blog.id}}" />
               <input name="prequel_to" type="hidden" value="{{blog.prequel_to.id}}" />

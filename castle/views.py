@@ -9,7 +9,9 @@ from django.db.models import Sum, Avg
 from random import randint
 from django.db.models import Q
 from django.utils.http import urlquote_plus
+from datetime import datetime
 import math
+import re
 
 # Create your views here.
 #-----------------------------------------------------------------------------
@@ -129,6 +131,29 @@ def bs_pager(cur_page, page_size, num_items):
     return page_nums
 
 #-----------------------------------------------------------------------------
+# Helper functions
+#-----------------------------------------------------------------------------
+def get_foo(request, foo, key):
+    """Uses a request.POST or a request.GET enquiry to attempt to
+       get hold of a named GET or POST parameter and look it up in the
+       relevant database
+       eg. to use the GET field 'sid' as a key in the Story table, use
+       
+       get_foo(request.GET, Story, 'sid')
+       """
+    sid = request.get(key, None)
+    if ((sid is None) or (sid == '') or (sid == 'None')):  # Text 'None' results in None return
+        return None
+    
+    # The id may be invalid; the story may not exist.
+    # Return it if it's there or None otherwise
+    sl = foo.objects.filter(pk=sid)
+    if (sl):
+        return sl[0]
+    else:
+        return None
+
+#-----------------------------------------------------------------------------
 # Views
 #-----------------------------------------------------------------------------
 def home(request):
@@ -192,6 +217,27 @@ def author(request, pen_name):
     return render(request, 'castle/author.html', context)
 
 #-----------------------------------------------------------------------------
+def signin(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        if user.is_active:
+            login(request, user)
+            return HttpResponseRedirect(reverse('home'))
+        else:
+            return HttpResponse("Account disabled")
+    else:
+        return HttpResponse("Log in failed")
+
+#-----------------------------------------------------------------------------
+def signout(request):
+    logout(request)
+    return HttpResponseRedirect(reverse('home'))
+
+#-----------------------------------------------------------------------------
+# Story views
+#-----------------------------------------------------------------------------
 def story(request, story_id):
     story = get_object_or_404(Story, pk=story_id)
     
@@ -247,15 +293,24 @@ def story(request, story_id):
 #-----------------------------------------------------------------------------
 @login_required
 def new_story(request):
-
     # Get user profile
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
 
+    # Get prequel, sequel and prompt data from the GET request
+    prequel_to = get_foo(request.GET, Story,  'prequel_to')
+    sequel_to  = get_foo(request.GET, Story,  'sequel_to')
+    prompt     = get_foo(request.GET, Prompt, 'prid')
+
+    # Create a blank story to give the template some defaults
+    story = Story(prequel_to = prequel_to,
+                  sequel_to  = sequel_to,
+                  prompt     = prompt)
+
     # Build context and render page
     context = { 'profile'       : profile,
-                'story'         : Story(),      # Create blank story for default purposes
+                'story'         : story,
                 'tags'          : u'',
                 'length_limit'  : 1024,
                 'length_min'    : 60,
@@ -294,20 +349,6 @@ def edit_story(request, story_id):
     return render(request, 'castle/edit_story.html', context)
 
 #-----------------------------------------------------------------------------
-def get_foo(request, foo, key):
-    sid = request.POST.get(key, None)
-    if ((sid is None) or (sid == '') or (sid == 'None')):  # Text 'None' results in None return
-        return None
-    
-    # The id may be invalid; the story may not exist.
-    # Return it if it's there or None otherwise
-    sl = foo.objects.filter(pk=sid)
-    if (sl):
-        return sl[0]
-    else:
-        return None
-
-#-----------------------------------------------------------------------------
 @login_required
 @transaction.atomic
 def submit_story(request):
@@ -318,25 +359,33 @@ def submit_story(request):
 
     # Get bits and bobs
     errors     = []
-    story      = get_foo(request, Story,  'sid')
-    prequel_to = get_foo(request, Story,  'prequel_to')
-    sequel_to  = get_foo(request, Story,  'sequel_to')
-    prompt     = get_foo(request, Prompt, 'prid')
-    tags       = ''
+    story      = get_foo(request.POST, Story,  'sid')
+    prequel_to = get_foo(request.POST, Story,  'prequel_to')
+    sequel_to  = get_foo(request.POST, Story,  'sequel_to')
+    prompt     = get_foo(request.POST, Prompt, 'prid')
+    tags       = request.POST.get('tag_list', '')
+    new_story  = (story is None)
+    was_draft  = False
+    if (not new_story):         # Remember if the story was draft
+        was_draft = story.draft
 
     if (not profile.email_authenticated()):
         errors.append(u'You must have authenticated your e-mail address before posting a story');
     else:
         # Get story object, either existing or new
         if (story is None):
-            story = Story(user=profile)
+            story = Story(user       = profile,
+                          prequel_to = prequel_to,
+                          sequel_to  = sequel_to,
+                          prompt     = prompt)
 
         # Populate story object with data from submitted form
         story.title  = request.POST.get('title', '')
         story.body   = request.POST.get('body', '')
         story.mature = request.POST.get('is_mature', False)
         story.draft  = request.POST.get('is_draft', False)
-        
+                
+        # Check for submission errors
         if (len(story.title) < 1):
             errors.append(u'Story title must be at least 1 character long')
         
@@ -364,11 +413,36 @@ def submit_story(request):
                 }
 
         return render(request, 'castle/edit_story.html', context)
+
+    # Is the story being published?
+    if (not draft and (was_draft or new_story)):
+        story.ptime = datetime.now
+    
+    # Set modification time
+    story.mtime = datetime.now
     
     # No problems, update the database and redirect
     story.save()
+    
+    # Populate tags list
+    r = re.compile(r'\s*,\s*')
+    tag_list = r.split(tags.upper())
+    td = {}
+    
+    if (not new_story):
+        # Remove old tags on current story before laying the new ones down
+        story.tag_set.all().delete()
+    for t in tag_list:
+        if (len(t) > 1):
+            if (t not in td):   # Strip out duplicates using dict 'td'
+                td[t] = 1
+                tag_object = Tag(story=story, tag=t)
+                tag_object.save()
+            
     return HttpResponseRedirect(reverse('story', args=(story.id,)))
 
+#-----------------------------------------------------------------------------
+# Prompt views
 #-----------------------------------------------------------------------------
 def prompts(request):
     # Get user profile
@@ -412,27 +486,68 @@ def prompt(request, prompt_id):
                 'owner'         : owner,
                 'prompt_sidepanel' : 1,
             }
-    
 
     return render(request, 'castle/prompt.html', context)
 
 #-----------------------------------------------------------------------------
-def blogs(request):
+@login_required
+@transaction.atomic
+def submit_prompt(request):
     # Get user profile
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
 
-    # Get blogs # FIXME: need to support paging
-    blogs = Blog.objects.exclude(draft=True).order_by('ptime')
+    # Get bits and bobs
+    errors     = []
+    prompt     = get_foo(request.POST, Prompt,  'prid')
 
+    if (not profile.email_authenticated()):
+        errors.append(u'You must have authenticated your e-mail address before posting a prompt');
+    else:
+        # Get prompt object, either existing or new
+        new_prompt = False
+        if (prompt is None):
+            prompt = Prompt(user=profile)
+            new_prompt = True
+
+        # Populate prompt object with data from submitted form
+        prompt.title  = request.POST.get('title', '')
+        prompt.body   = request.POST.get('body', '')
+        prompt.mature = request.POST.get('is_mature', False)
+                
+        # Check for submission errors
+        if (len(prompt.title) < 1):
+            errors.append(u'Prompt title must be at least 1 character long')
+        
+        l = len(prompt.body)
+        if (l < 30):
+            errors.append(u'Prompt body must be at least 30 characters long')
+        
+        if (l > 256):
+            errors.append(u'Prompt is over 256 characters (currently ' + unicode(l) + u')')
+    
+    # If there have been errors, re-display the page
+    if (errors):
     # Build context and render page
-    context = { 'profile'       : profile,
-                'blogs'         : blogs,
-                'page_url'      : u'/blog/',
-                'pages'         : bs_pager(1, 10, blogs.count()),
-            }
-    return render(request, 'castle/blogs.html', context)
+        context = { 'profile'       : profile,
+                    'prompt'        : prompt,
+                    'length_limit'  : 256,
+                    'length_min'    : 30,
+                    'user_dashboard': 1,
+                    'error_title'   : 'Prompt submission unsuccessful',
+                    'error_messages': errors,
+                }
+
+        return render(request, 'castle/edit_prompt.html', context)
+    
+    # Set modification time
+    prompt.mtime = datetime.now
+
+    # No problems, update the database and redirect
+    prompt.save()
+    
+    return HttpResponseRedirect(reverse('prompt', args=(prompt.id,)))
 
 #-----------------------------------------------------------------------------
 @login_required
@@ -479,6 +594,26 @@ def edit_prompt(request, prompt_id):
     return render(request, 'castle/edit_prompt.html', context)
 
 #-----------------------------------------------------------------------------
+# Blog views
+#-----------------------------------------------------------------------------
+def blogs(request):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    # Get blogs # FIXME: need to support paging
+    blogs = Blog.objects.exclude(draft=True).order_by('ptime')
+
+    # Build context and render page
+    context = { 'profile'       : profile,
+                'blogs'         : blogs,
+                'page_url'      : u'/blog/',
+                'pages'         : bs_pager(1, 10, blogs.count()),
+            }
+    return render(request, 'castle/blogs.html', context)
+
+#-----------------------------------------------------------------------------
 def blog(request, blog_id):
     blog = get_object_or_404(Blog, pk=blog_id)
     
@@ -512,6 +647,9 @@ def new_blog(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+    
+    if ((profile is None) or (not request.user.has_perm("castle.post_blog"))):
+        raise Http404
 
     # Build context and render page
     context = { 'profile'       : profile,
@@ -534,6 +672,9 @@ def edit_blog(request, blog_id):
     if (request.user.is_authenticated()):
         profile = request.user.profile
     
+    if ((profile is None) or (not profile.has_perm("castle.post_blog"))):
+        raise Http404
+
     # Build context and render page
     context = { 'profile'       : profile,
                 'blog'          : blog,
@@ -543,5 +684,78 @@ def edit_blog(request, blog_id):
             }
 
     return render(request, 'castle/edit_blog.html', context)
+
+#-----------------------------------------------------------------------------
+@login_required
+@transaction.atomic
+def submit_blog(request):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    
+    if ((profile is None) or (not profile.has_perm("castle.post_blog"))):
+        raise Http404
+
+    # Get bits and bobs
+    errors     = []
+    blog      = get_foo(request.POST, Blog,  'sid')
+    prequel_to = get_foo(request.POST, Blog,  'prequel_to')
+    sequel_to  = get_foo(request.POST, Blog,  'sequel_to')
+    prompt     = get_foo(request.POST, Prompt, 'prid')
+    tags       = request.POST.get('tag_list', '')
+    new_blog  = (blog is None)
+    was_draft  = False
+    if (not new_blog):         # Remember if the blog was draft
+        was_draft = blog.draft
+
+    if (not profile.email_authenticated()):
+        errors.append(u'You must have authenticated your e-mail address before posting a blog');
+    else:
+        # Get blog object, either existing or new
+        if (blog is None):
+            blog = Blog(user = profile)
+
+        # Populate blog object with data from submitted form
+        blog.title  = request.POST.get('title', '')
+        blog.body   = request.POST.get('body', '')
+        blog.draft  = request.POST.get('is_draft', False)
+                
+        # Check for submission errors
+        if (len(blog.title) < 1):
+            errors.append(u'Blog title must be at least 1 character long')
+        
+        l = len(blog.body)
+        if ((not blog.draft) and (l < 60)):
+            errors.append(u'Blog body must be at least 60 characters long')
+        
+        if (l > 20480):
+            errors.append(u'Blog is over 20480 characters (currently ' + unicode(l) + u')')
+    
+    # If there have been errors, re-display the page
+    if (errors):
+    # Build context and render page
+        context = { 'profile'       : profile,
+                    'blog'          : blog,
+                    'length_limit'  : 20480,
+                    'length_min'    : 60,
+                    'user_dashboard': 1,
+                    'error_title'   : 'Blog submission unsuccessful',
+                    'error_messages': errors,
+                }
+
+        return render(request, 'castle/edit_blog.html', context)
+
+    # Is the blog being published?
+    if (not draft and (was_draft or new_blog)):
+        blog.ptime = datetime.now
+    
+    # Set modification time
+    blog.mtime = datetime.now
+    
+    # No problems, update the database and redirect
+    blog.save()
+            
+    return HttpResponseRedirect(reverse('blog', args=(blog.id,)))
 
 #-----------------------------------------------------------------------------

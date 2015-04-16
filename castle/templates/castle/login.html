@@ -1,0 +1,17 @@
+{% extends "castle/base_page.html" %}
+{% load staticfiles %}
+{% load castle_tags %}
+
+{% block main_content %}
+      <div>
+        <form action="/signin/" class="form-signin" id="log-in-form" method="POST" role="form">
+          {% csrf_token %}
+          <input name="action" type="hidden" value="log in" />
+          <h2 class="form-signin-heading">Please sign in</h2>
+          <input autofocus class="form-control" name="username" placeholder="Pen name" required type="text" />
+          <input class="form-control" name="password" placeholder="Password" required type="password" />
+          <button class="btn btn-lg btn-success btn-block" type="submit">Sign in</button>
+        </form>
+      </div> <!-- id="" class="" -->
+
+{% endblock main_content %}

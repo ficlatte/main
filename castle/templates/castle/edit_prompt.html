@@ -10,7 +10,7 @@
 {% block primary_panel %}
           <div class="well" id="new-prompt">
             <h2>Let&#39;s prompt</h2>
-            <form accept-charset="utf-8" action="/prompt/submit" class="form-horizontal" id="prompt-form" method="post" role="form">
+            <form accept-charset="utf-8" action="/prompts/submit/" class="form-horizontal" id="prompt-form" method="post" role="form">
               {% csrf_token %}
               <input name="prid" type="hidden" value="{{prompt.id}}" />
               <input name="prequel_to" type="hidden" value="{{prompt.prequel_to.id}}" />

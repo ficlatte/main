@@ -77,6 +77,9 @@ def num_followers(profile):
 #-----------------------------------------------------------------------------
 @register.filter
 def age(value):
+    if (value is None):
+        return u'<NULL TIME FIELD>'
+    
     # Work out difference in seconds between now and the value parameter
     # FIXME: need to add hover text with the real date in
     now = datetime.utcnow().replace(tzinfo=utc)
