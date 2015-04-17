@@ -1,0 +1,20 @@
+{% extends "castle/page_without_sidebar.html" %}
+{% load staticfiles %}
+{% load castle_tags %}
+
+{% block primary_panel %}
+          <div id="story-summary">
+            <h3>{{label}}</h3>
+{% block paged_content %}
+            <div class="story_list_div">
+              <ul class="story_list">
+              {% for story in stories %}
+                <li class="story_list_item"><h3 class="entry_title"><a class="story_link" href="/stories/{{story.id}}">{{story.title}}</a></h3><blockquote class="entry_content">{{story.body|small_snippet}}</blockquote><ul class="story_foot"><li class="author">{{story.user|author_span}}</li><li class="posted">Posted <abbr class="dtposted" title="{{story.ptime|date:'Y-m-d'}}">{{story.ptime|age}}</abbr></li></ul></li>
+              {% endfor %}
+              </ul>
+            </div> <!-- id="" class="story_list_div" -->
+{% endblock paged_content %}
+{% block pager %}{{block.super}}{%endblock%}
+          </div> <!-- id="story-summary" class="" -->
+{% endblock primary_panel %}
+

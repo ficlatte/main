@@ -8,7 +8,7 @@ from django.db import transaction
 from django.db.models import Sum, Avg
 from random import randint
 from django.db.models import Q
-from django.utils.http import urlquote_plus
+from django.utils.http import urlquote_plus, urlquote
 from datetime import datetime
 import math
 import re
@@ -41,7 +41,7 @@ def get_active_stories(page_num=1, page_size=10):
 def get_recent_stories(page_num=1, page_size=10):
     last = (page_num * page_size) - 1
     first = (last - page_size) + 1
-    return Story.objects.filter(draft = False).order_by('ptime')[first:last]
+    return Story.objects.filter(draft = False).order_by('-ptime')[first:last]
     
 #-----------------------------------------------------------------------------
 def get_old_stories(page_size=10):
@@ -209,7 +209,7 @@ def author(request, pen_name):
     context = { 'profile'       : profile,
                 'author'        : author,
                 'story_list'    : story_list,
-                'page_url'      : u'/author/'+urlquote_plus(author.pen_name),
+                'page_url'      : u'/author/'+urlquote(author.pen_name),
                 'pages'         : bs_pager(1, 10, len(story_list)),
                 'user_dashboard': owner,
                 'other_user_sidepanel' : (not owner),
@@ -425,11 +425,11 @@ def submit_story(request):
         return render(request, 'castle/edit_story.html', context)
 
     # Is the story being published?
-    if (not draft and (was_draft or new_story)):
-        story.ptime = datetime.now
+    if (not story.draft and (was_draft or new_story)):
+        story.ptime = datetime.now()
     
     # Set modification time
-    story.mtime = datetime.now
+    story.mtime = datetime.now()
     
     # No problems, update the database and redirect
     story.save()
@@ -450,6 +450,37 @@ def submit_story(request):
                 tag_object.save()
             
     return HttpResponseRedirect(reverse('story', args=(story.id,)))
+
+#-----------------------------------------------------------------------------
+def browse_stories(request, dataset=get_recent_stories, label=u'Recent stories'):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    
+    # Get featured story
+    featured_id = Misc.objects.filter(key='featured')
+    featured = None
+    if (featured_id):
+        featured_query = Story.objects.filter(id=featured_id[0].i_val)
+        if (featured_query):
+            featured = featured_query[0]
+        
+    # Build context and render page
+    context = { 'profile'       : profile,
+                'stories'       : dataset(1,25),
+                'user_dashboard': 1,
+                'label'         : label,
+              }
+    return render(request, 'castle/browse.html', context)
+
+#-----------------------------------------------------------------------------
+def active_stories(request):
+    return browse_stories(request, get_active_stories, u'Active stories')
+
+#-----------------------------------------------------------------------------
+def popular_stories(request):
+    return browse_stories(request, get_popular_stories, u'Popular stories')
 
 #-----------------------------------------------------------------------------
 # Prompt views
@@ -552,7 +583,7 @@ def submit_prompt(request):
         return render(request, 'castle/edit_prompt.html', context)
     
     # Set modification time
-    prompt.mtime = datetime.now
+    prompt.mtime = datetime.now()
 
     # No problems, update the database and redirect
     prompt.save()
@@ -757,10 +788,10 @@ def submit_blog(request):
 
     # Is the blog being published?
     if (not draft and (was_draft or new_blog)):
-        blog.ptime = datetime.now
+        blog.ptime = datetime.now()
     
     # Set modification time
-    blog.mtime = datetime.now
+    blog.mtime = datetime.now()
     
     # No problems, update the database and redirect
     blog.save()

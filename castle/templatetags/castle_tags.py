@@ -6,7 +6,7 @@ from django.utils.safestring import mark_safe
 from datetime import timedelta, datetime
 from django.utils.timezone import utc
 from django.utils.html import escape
-from django.utils.http import urlquote_plus
+from django.utils.http import urlquote
 from django.template.defaultfilters import stringfilter
 from castle.models import StoryLog
 import math
@@ -135,7 +135,7 @@ def author_link(profile, tag=None):
         t2 = u'</'+tag.partition(' ')[0]+u'>'   # Get bit before first space
     
     # FIXME: Need proper URL magic here
-    return mark_safe(t1+u'<a href="/authors/'+urlquote_plus(profile.pen_name)+u'">'+ escape(profile.pen_name)+u'</a>'+t2)
+    return mark_safe(t1+u'<a href="/authors/'+urlquote(profile.pen_name)+u'">'+ escape(profile.pen_name)+u'</a>'+t2)
 
 #-----------------------------------------------------------------------------
 @register.filter
@@ -146,7 +146,7 @@ def author_span(profile, tag=None):
 @register.filter
 @stringfilter
 def url(text):
-    return urlquote_plus(text)
+    return urlquote(text)
 
 #-----------------------------------------------------------------------------
 @register.filter
