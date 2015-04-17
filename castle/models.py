@@ -19,8 +19,8 @@ class Profile(models.Model):
     email_flags = models.IntegerField(default=0)
     email_auth  = models.BigIntegerField(default=0)
     email_time  = models.DateTimeField(blank=True, null=True)
-    old_auth    = models.BinaryField(max_length=64, blank=True, null=True)     # DEPRECATED pass md5 val
-    old_salt    = models.BigIntegerField(default=0, blank=True, null=True)     # DEPRECATED pass salt
+    old_auth    = models.CharField(max_length=64, blank=True, null=True)     # DEPRECATED pass md5 val
+    old_salt    = models.CharField(max_length=16, blank=True, null=True)     # DEPRECATED pass salt
     prefs       = models.IntegerField(default=0)
     flags       = models.IntegerField(default=0)
     stored      = models.ForeignKey('Story', blank=True, null=True)            # User can make a note of a story for later use

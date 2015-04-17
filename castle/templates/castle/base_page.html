@@ -8,7 +8,7 @@
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <link href="{% static 'castle/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'castle/jumbotron.css' %}" rel="stylesheet" type="text/css" />
-    <title>Ficlatt&eacute;</title>
+    <title>{{0|site_name}}</title>
     <meta content="Paul Robertson" name="author" />
     <meta content="Perl" name="generator" />
     <meta content="Micro-fiction site" name="description" />
@@ -54,7 +54,7 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand " href="/">Ficlatt&eacute; dev site</a>
+            <a class="navbar-brand " href="/">{{0|site_name}}</a>
           </div> <!-- id="" class="navbar-header" -->
           <div class="collapse navbar-collapse" id="navbar">
             <ul class="nav navbar-nav navbar-right">
@@ -81,7 +81,7 @@
               <img alt="Logo" class="img-thumbnail" src="/static/img/ficlatte-logo-mono.png" />
             </div> <!-- id="" class="col-md-2" -->
             <div class="col-md-10">
-              <h1>Ficlatt&eacute;<br /><small>Tiny shots of fiction. With milk</small></h1>
+              <h1>{{0|site_name}}<br /><small>Tiny shots of fiction. With milk</small></h1>
             </div> <!-- id="" class="col-md-10" -->
           </div> <!-- id="" class="row" -->
         </div> <!-- id="" class="jumbotron" -->

@@ -1,17 +1,21 @@
+
+#coding: utf-8
+
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from castle.models import *
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.db import transaction
-from django.db.models import Sum, Avg
-from random import randint
-from django.db.models import Q
+from django.db.models import Sum, Avg, Q
 from django.utils.http import urlquote_plus, urlquote
+from django.conf import settings
+from castle.models import *
 from datetime import datetime
+from random import randint
 import math
 import re
+import hashlib
 
 #-----------------------------------------------------------------------------
 # Global symbols
@@ -27,7 +31,9 @@ PAGE_BLOG       = 10
 #-----------------------------------------------------------------------------
 def get_popular_stories(page_num=1, page_size=10):
     # FIXME: this code is MySQL specific
-    r = Story.objects.raw(
+    db = getattr(settings, 'DB', 'mysql')
+    if (db == 'mysql'):
+        return Story.objects.raw(
         "SELECT s.id as id, " +
         "SUM(1/(TIMESTAMPDIFF(day, l.ctime, NOW())+1)) AS score " +
         "FROM castle_storylog AS l " +
@@ -37,8 +43,9 @@ def get_popular_stories(page_num=1, page_size=10):
         "AND ((s.draft IS NULL) OR (NOT s.draft)) " +
         "GROUP BY l.story_id ORDER BY score DESC LIMIT " +
         str((page_num-1) * page_size) + "," + str(page_size))
-    return r
-
+    elif (db == 'postgres'):
+        return Story.objects.all()
+    
 #-----------------------------------------------------------------------------
 def get_active_stories(page_num=1, page_size=10):
     first = (page_num-1) * page_size
@@ -239,10 +246,53 @@ def author(request, pen_name):
     return render(request, 'castle/author.html', context)
 
 #-----------------------------------------------------------------------------
+@transaction.atomic
 def signin(request):
-    username = request.POST['username']
-    password = request.POST['password']
-    user = authenticate(username=username, password=password)
+    username = request.POST.get('username', None)
+    password = request.POST.get('password', None)
+
+    if ((username is None) or (password is None)):
+        raise Http404
+
+    # Now we work magic to match the Django auth system with the
+    # legacy Ficlatté auth system
+    prof = Profile.objects.filter(pen_name_uc = username.upper())
+    if (not prof):
+        return render(request, 'castle/login.html', {
+                'error_title' : u'Log in failed',
+                'error_messages' : [u'Invalid pen name or password'],
+            })
+    profile = prof[0]
+    
+    user = None
+    grunt = "none"
+    # Check to see if legacy auth tokens remain
+    if (profile.old_salt is not None):
+        # Run old-fashioned auth
+        ph = hashlib.sha256()
+        ph.update(profile.old_salt)
+        ph.update(password)
+        grunt = "old auth but failed"
+        if (ph.hexdigest() == profile.old_auth):
+            grunt = "old auth succeeded"
+            # Fake successful authentication
+            user = profile.user
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
+            login(request, user)
+            user.set_password(password)
+            profile.old_salt = None
+            profile.old_auth = None
+            user.save()
+            profile.save()
+            # For some reason, we need to log in again now
+            user = authenticate(username='user'+str(profile.id), password=password)
+            login(request,user)
+            
+            return HttpResponseRedirect(reverse('home'))
+        
+    else:
+        user = authenticate(username='user'+str(profile.id), password=password)
+    
     if user is not None:
         if user.is_active:
             login(request, user)
@@ -250,7 +300,10 @@ def signin(request):
         else:
             return HttpResponse("Account disabled")
     else:
-        return HttpResponse("Log in failed")
+        return render(request, 'castle/login.html', {
+                'error_title' : u'Log in failed',
+                'error_messages' : [u'Invalid pen name or password'],
+            })
 
 #-----------------------------------------------------------------------------
 def signout(request):

@@ -8,6 +8,7 @@ from django.utils.timezone import utc
 from django.utils.html import escape
 from django.utils.http import urlquote
 from django.template.defaultfilters import stringfilter
+from django.conf import settings
 from castle.models import StoryLog
 import math
 
@@ -259,4 +260,13 @@ def rating_pencils(rating):
         r = r + u'<span class="glyphicon glyphicon-pencil"></span>'
     return mark_safe(r)
 
+#-----------------------------------------------------------------------------
+@register.filter
+def site_name(a):
+    loc = getattr(settings, 'SERVER_LOCATION', 'dev')
+    if (loc == 'production'):
+        return u'Ficlatté'
+    else:
+        return u'Ficlatté dev site'
+    
 #-----------------------------------------------------------------------------
