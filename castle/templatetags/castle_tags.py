@@ -15,6 +15,11 @@ register = template.Library()
 
 #-----------------------------------------------------------------------------
 @register.filter
+def get_range(end, start=0):
+    return range(start, end)
+
+#-----------------------------------------------------------------------------
+@register.filter
 def num_comments_txt(obj):
     c = obj.comment_set.count()
     if (c == 1):

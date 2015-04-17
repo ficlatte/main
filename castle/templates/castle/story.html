@@ -91,7 +91,7 @@
           <hr />
           <div id="comment-box">
             <h3>Everybody loves feedback</h3>
-            <form action="/stories/submit_comment" id="comment-form" method="post" role="form">
+            <form action="/comment/submit/" id="comment-form" method="post" role="form">
               {% csrf_token %}
               <input id="comment_sid" name="sid" type="hidden" value="{{story.id}}" />
               <div class="form-group">
@@ -104,23 +104,13 @@
                 <div class="col-md-2">
                   <label class="control-label">Rate this story</label>
                   <div class="radio">
-                    <label for="rate-0"><input id="rate-0" name="rating" type="radio" value="0" /> none </label>
+                    <label for="rate-0"><input id="rate-0" name="rating" type="radio" value="0" {% if user_rating == 0 %}checked {% endif %}/> none </label>
                   </div> <!-- id="" class="radio" -->
+                  {% for r in 6|get_range:1 %}
                   <div class="radio">
-                    <label for="rate-1"><input id="rate-1" name="rating" type="radio" value="1" /> 1 <span class="glyphicon glyphicon-pencil"></span></label>
+                    <label for="rate-{{ forloop.counter }}"><input id="rate-{{ forloop.counter }}" name="rating" type="radio" value="{{ forloop.counter }}" {% if user_rating == forloop.counter %}checked {% endif %}/> {{ forloop.counter }} <span class="glyphicon glyphicon-pencil"></span></label>
                   </div> <!-- id="" class="radio" -->
-                  <div class="radio">
-                    <label for="rate-2"><input id="rate-2" name="rating" type="radio" value="2" /> 2 <span class="glyphicon glyphicon-pencil"></span></label>
-                  </div> <!-- id="" class="radio" -->
-                  <div class="radio">
-                    <label for="rate-3"><input id="rate-3" name="rating" type="radio" value="3" /> 3 <span class="glyphicon glyphicon-pencil"></span></label>
-                  </div> <!-- id="" class="radio" -->
-                  <div class="radio">
-                    <label for="rate-4"><input id="rate-4" name="rating" type="radio" value="4" /> 4 <span class="glyphicon glyphicon-pencil"></span></label>
-                  </div> <!-- id="" class="radio" -->
-                  <div class="radio">
-                    <label for="rate-5"><input id="rate-5" name="rating" type="radio" value="5" /> 5 <span class="glyphicon glyphicon-pencil"></span></label>
-                  </div> <!-- id="" class="radio" -->
+                  {% endfor %}
                 </div> <!-- id="" class="col-md-2" -->
               </div> <!-- id="" class="form-group" -->
               <div class="form-group">

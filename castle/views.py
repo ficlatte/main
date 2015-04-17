@@ -238,7 +238,7 @@ def signout(request):
 #-----------------------------------------------------------------------------
 # Story views
 #-----------------------------------------------------------------------------
-def story(request, story_id):
+def story_view(request, story_id, comment_text=None, user_rating=None, error_title='', error_messages=None):
     story = get_object_or_404(Story, pk=story_id)
     
     # Get user profile
@@ -272,6 +272,12 @@ def story(request, story_id):
     viewed = StoryLog.objects.filter(story = story).exclude(user = author).count()
     rated  = Rating.objects.filter(story = story).exclude(user=author).count()
 
+    # Get current user's rating
+    if ((profile) and (user_rating is None)):
+        rating_set = Rating.objects.filter(story=story, user=profile)
+        if (rating_set):
+            user_rating = rating_set[0].rating
+
     # Build context and render page
     context = { 'profile'       : profile,
                 'author'        : story.user,
@@ -287,6 +293,10 @@ def story(request, story_id):
                 'owner'         : owner,
                 'viewed'        : viewed,
                 'rated'         : rated,
+                'comment_text'  : comment_text, # in case of failed comment submission
+                'user_rating'   : user_rating,
+                'error_title'   : error_title,
+                'error_messages': error_messages,
             }
     return render(request, 'castle/story.html', context)
 
@@ -614,7 +624,7 @@ def blogs(request):
     return render(request, 'castle/blogs.html', context)
 
 #-----------------------------------------------------------------------------
-def blog(request, blog_id):
+def blog_view(request, blog_id, comment_text=None, error_title='', error_messages=None):
     blog = get_object_or_404(Blog, pk=blog_id)
     
     # Get user profile
@@ -637,6 +647,9 @@ def blog(request, blog_id):
                 'page_url'      : u'/stories/'+unicode(blog_id),
                 'pages'         : bs_pager(1, 10, blog.comment_set.count()),
                 'owner'         : owner,
+                'comment_text'  : comment_text,
+                'error_title'   : error_title,
+                'error_messages': error_messages,
             }
     return render(request, 'castle/blog.html', context)
 
@@ -699,12 +712,8 @@ def submit_blog(request):
 
     # Get bits and bobs
     errors     = []
-    blog      = get_foo(request.POST, Blog,  'sid')
-    prequel_to = get_foo(request.POST, Blog,  'prequel_to')
-    sequel_to  = get_foo(request.POST, Blog,  'sequel_to')
-    prompt     = get_foo(request.POST, Prompt, 'prid')
-    tags       = request.POST.get('tag_list', '')
-    new_blog  = (blog is None)
+    blog       = get_foo(request.POST, Blog,  'bid')
+    new_blog   = (blog is None)
     was_draft  = False
     if (not new_blog):         # Remember if the blog was draft
         was_draft = blog.draft
@@ -757,5 +766,74 @@ def submit_blog(request):
     blog.save()
             
     return HttpResponseRedirect(reverse('blog', args=(blog.id,)))
+
+#-----------------------------------------------------------------------------
+@login_required
+@transaction.atomic
+def submit_comment(request):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    
+    # Get bits and bobs
+    errors     = []
+    blog       = get_foo(request.POST, Blog,  'bid')
+    story      = get_foo(request.POST, Story, 'sid')
+    rating     = request.POST.get('rating', None)
+    if (rating is not None):
+        rating = int(rating)
+
+    if (not profile.email_authenticated()):
+        errors.append(u'You must have authenticated your e-mail address before posting a comment');
+    else:
+        # Create comment object
+        comment = Comment(user = profile,
+                          blog = blog,
+                          story = story)
+
+        # Populate comment object with data from submitted form
+        comment.body   = request.POST.get('body', '')
+
+        # Check for submission errors
+        l = len(comment.body)
+        if ((l < 1) and (rating is None)):
+            # Empty comments are allowed if the user is making a rating
+            errors.append(u'Comment body must be at least 1 character long')
+        
+        if (l > 1024):
+            errors.append(u'Comment is over 1024 characters (currently ' + unicode(l) + u')')
+
+    # If there have been errors, re-display the page
+    if (errors):
+    # Build context and render page
+        if (blog):
+            return blog_view(request, blog.id, comment.body, 'Comment submission unsuccessful', errors)
+        else:
+            return story_view(request, story.id, comment.body, rating, u'Comment submission failed', errors)
+
+    # Set modification time
+    comment.mtime = datetime.now()
+    
+    # No problems, update the database and redirect
+    if (l > 0):
+        comment.save()
+    
+    # Update rating, if applicable
+    if ((story is not None) and (rating is not None)):
+        rating_set = Rating.objects.filter(story=story, user=profile)
+        if (rating_set):
+            rating_obj = rating_set[0]
+        else:
+            rating_obj = Rating(user=profile, story=story)
+        rating_obj.rating = rating
+        rating_obj.mtime = datetime.now()
+        rating_obj.save()
+            
+    if (blog):
+        return HttpResponseRedirect(reverse('blog', args=(blog.id,)))
+    else:
+        return HttpResponseRedirect(reverse('story', args=(story.id,)))
+        
 
 #-----------------------------------------------------------------------------
