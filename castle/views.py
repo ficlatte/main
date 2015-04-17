@@ -13,7 +13,15 @@ from datetime import datetime
 import math
 import re
 
-# Create your views here.
+#-----------------------------------------------------------------------------
+# Global symbols
+#-----------------------------------------------------------------------------
+PAGE_COMMENTS   = 15
+PAGE_STORIES    = 15
+PAGE_BROWSE     = 3 #0
+PAGE_PROMPTS    = 20
+PAGE_BLOG       = 10
+
 #-----------------------------------------------------------------------------
 # Query functions
 #-----------------------------------------------------------------------------
@@ -33,14 +41,18 @@ def get_popular_stories(page_num=1, page_size=10):
 
 #-----------------------------------------------------------------------------
 def get_active_stories(page_num=1, page_size=10):
-    last = (page_num * page_size) - 1
-    first = (last - page_size) + 1
+    first = (page_num-1) * page_size
+    last  = first + page_size
     return Story.objects.filter(activity__gt = 0).order_by('activity')[first:last]
     
 #-----------------------------------------------------------------------------
+def get_num_active_stories():
+    return Story.objects.filter(activity__gt = 0).count()
+    
+#-----------------------------------------------------------------------------
 def get_recent_stories(page_num=1, page_size=10):
-    last = (page_num * page_size) - 1
-    first = (last - page_size) + 1
+    first = (page_num-1) * page_size
+    last  = first + page_size
     return Story.objects.filter(draft = False).order_by('-ptime')[first:last]
     
 #-----------------------------------------------------------------------------
@@ -62,7 +74,7 @@ def get_activity_log(profile, entries):
 #-----------------------------------------------------------------------------
 def bs_pager(cur_page, page_size, num_items):
     
-    num_pages = int(math.ceil(num_items / page_size))
+    num_pages = int(math.ceil(num_items / (page_size+0.0)))
     
     # No need for a pager if we have fewer than two pages
     if (num_pages < 2):
@@ -154,6 +166,13 @@ def get_foo(request, foo, key):
         return None
 
 #-----------------------------------------------------------------------------
+def safe_int(v, default=1):
+    try:
+        return int(v)
+    except ValueError:
+        return default
+
+#-----------------------------------------------------------------------------
 # Views
 #-----------------------------------------------------------------------------
 def home(request):
@@ -200,17 +219,20 @@ def author(request, pen_name):
     owner = ((profile is not None) and (profile == author))
 
     # Build story list (owner sees their drafts)
-    story_list = [] # FIXME: need to support paging
+    page_num = safe_int(request.GET.get('page_num', 1))
     if (owner):
-        story_list.extend(Story.objects.filter(user = author, draft = True))
-    story_list.extend(Story.objects.filter(user = author, draft = False))
+        num_stories = Story.objects.filter(user = author).count()
+        story_list = Story.objects.filter(user = author).order_by('-draft','-ptime','-mtime')[(page_num-1)*PAGE_STORIES:page_num*PAGE_STORIES]
+    else:
+        num_stories=Story.objects.filter(user = author, draft = False).count()
+        story_list=Story.objects.filter(user = author, draft = False).order_by('-ptime')[(page_num-1)*PAGE_STORIES:page_num*PAGE_STORIES]
 
     # Build context and render page
     context = { 'profile'       : profile,
                 'author'        : author,
                 'story_list'    : story_list,
-                'page_url'      : u'/author/'+urlquote(author.pen_name),
-                'pages'         : bs_pager(1, 10, len(story_list)),
+                'page_url'      : u'/authors/'+urlquote(author.pen_name)+u'/',
+                'pages'         : bs_pager(page_num, PAGE_STORIES, num_stories),
                 'user_dashboard': owner,
                 'other_user_sidepanel' : (not owner),
             }
@@ -265,8 +287,9 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
     rating = Rating.objects.filter(story=story).exclude(user=story.user).aggregate(avg=Avg('rating'))['avg']
     rating_str = u'{:.2f}'.format(rating) if (rating) else ''
     
-    # Get comments # FIXME: need to support paging
-    comments = story.comment_set.all().order_by('ctime')
+    # Get comments
+    page_num = safe_int(request.GET.get('page_num', 1))
+    comments = story.comment_set.all().order_by('ctime')[(page_num-1)*PAGE_COMMENTS:page_num*PAGE_COMMENTS]
 
     # Count how many times the story has been viewed and rated
     viewed = StoryLog.objects.filter(story = story).exclude(user = author).count()
@@ -287,8 +310,8 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
                 'rating_str'    : rating_str,
                 'rating_num'    : rating,
                 'comments'      : comments,
-                'page_url'      : u'/stories/'+unicode(story_id),
-                'pages'         : bs_pager(1, 10, story.comment_set.count()),
+                'page_url'      : u'/stories/'+unicode(story_id)+u'/',
+                'pages'         : bs_pager(page_num, PAGE_COMMENTS, story.comment_set.count()),
                 'story_sidepanel':1 ,
                 'owner'         : owner,
                 'viewed'        : viewed,
@@ -452,23 +475,35 @@ def submit_story(request):
     return HttpResponseRedirect(reverse('story', args=(story.id,)))
 
 #-----------------------------------------------------------------------------
-def browse_stories(request, dataset=get_recent_stories, label=u'Recent stories'):
+def browse_stories(request, dataset=0):
     # Get user profile
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+
+    page_num = safe_int(request.GET.get('page_num', 1))
     
-    # Get featured story
-    featured_id = Misc.objects.filter(key='featured')
-    featured = None
-    if (featured_id):
-        featured_query = Story.objects.filter(id=featured_id[0].i_val)
-        if (featured_query):
-            featured = featured_query[0]
-        
+    if (dataset == 1):
+        stories = get_active_stories(page_num, PAGE_BROWSE)
+        num_stories = get_num_active_stories()
+        label = u'Active stories'
+        url = u'/stories/active/'
+    elif (dataset == 2):
+        stories = get_popular_stories(page_num, PAGE_BROWSE)
+        num_stories = Story.objects.exclude(draft = True).count()
+        label = u'Popular stories'
+        url = u'/stories/popular/'
+    else:
+        stories = get_recent_stories(page_num, PAGE_BROWSE)
+        num_stories = Story.objects.exclude(draft = True).count()
+        label = u'Recent stories'
+        url = u'/stories/'
+
     # Build context and render page
     context = { 'profile'       : profile,
-                'stories'       : dataset(1,25),
+                'stories'       : stories,
+                'page_url'      : url,
+                'pages'         : bs_pager(page_num, PAGE_BROWSE, num_stories),
                 'user_dashboard': 1,
                 'label'         : label,
               }
@@ -476,11 +511,11 @@ def browse_stories(request, dataset=get_recent_stories, label=u'Recent stories')
 
 #-----------------------------------------------------------------------------
 def active_stories(request):
-    return browse_stories(request, get_active_stories, u'Active stories')
+    return browse_stories(request, 1)
 
 #-----------------------------------------------------------------------------
 def popular_stories(request):
-    return browse_stories(request, get_popular_stories, u'Popular stories')
+    return browse_stories(request, 2)
 
 #-----------------------------------------------------------------------------
 # Prompt views
@@ -491,14 +526,18 @@ def prompts(request):
     if (request.user.is_authenticated()):
         profile = request.user.profile
 
-    # Get prompts # FIXME: need to support paging
-    prompts = Prompt.objects.all().order_by('ctime')
+    # Get prompts
+    page_num = safe_int(request.GET.get('page_num', 1))
+    prompts = Prompt.objects.all().order_by('ctime')[(page_num-1)*PAGE_PROMPTS:page_num*PAGE_PROMPTS]
+    num_prompts = Prompt.objects.all().count()
 
     # Build context and render page
     context = { 'profile'       : profile,
                 'prompts'       : prompts,
                 'prompt_button' : (profile is not None),
                 'user_dashboard': (profile is not None),
+                'page_url'      : u'/prompts/',
+                'pages'         : bs_pager(page_num, PAGE_PROMPTS, num_prompts),
             }
     
 
@@ -514,8 +553,10 @@ def prompt(request, prompt_id):
     if (request.user.is_authenticated()):
         profile = request.user.profile
 
-    # Get stories inspired by prompt # FIXME: need to support paging
-    stories = prompt.story_set.exclude(draft=True).order_by('ctime')
+    # Get stories inspired by prompt
+    page_num = safe_int(request.GET.get('page_num', 1))
+    stories = prompt.story_set.exclude(draft=True).order_by('ctime')[(page_num-1)*PAGE_STORIES:page_num*PAGE_STORIES]
+    num_stories = prompt.story_set.exclude(draft=True).count()
 
     # Prompt's owner gets an edit link
     owner = ((profile is not None) and (profile == prompt.user))
@@ -526,6 +567,8 @@ def prompt(request, prompt_id):
                 'stories'       : stories,
                 'owner'         : owner,
                 'prompt_sidepanel' : 1,
+                'page_url'      : u'/prompts/'+unicode(prompt.id)+u'/',
+                'pages'         : bs_pager(page_num, PAGE_STORIES, num_stories),
             }
 
     return render(request, 'castle/prompt.html', context)
@@ -643,8 +686,10 @@ def blogs(request):
     if (request.user.is_authenticated()):
         profile = request.user.profile
 
-    # Get blogs # FIXME: need to support paging
-    blogs = Blog.objects.exclude(draft=True).order_by('ptime')
+    # Get blogs
+    page_num = safe_int(request.GET.get('page_num', 1))
+    blogs = Blog.objects.exclude(draft=True).order_by('ptime')[(page_num-1)*PAGE_BLOG:page_num*PAGE_BLOG]
+    num_blogs = Blog.objects.exclude(draft = True).count()
 
     # Build context and render page
     context = { 'profile'       : profile,
@@ -667,8 +712,9 @@ def blog_view(request, blog_id, comment_text=None, error_title='', error_message
     author = blog.user
     owner = ((profile is not None) and (profile == author))
 
-    # Get comments # FIXME: need to support paging
-    comments = blog.comment_set.all().order_by('ctime')
+    # Get comments
+    page_num = safe_int(request.GET.get('page_num', 1))
+    comments = blog.comment_set.all().order_by('ctime')[(page_num-1)*PAGE_COMMENTS:page_num*PAGE_COMMENTS]
 
     # Build context and render page
     context = { 'profile'       : profile,
@@ -676,7 +722,7 @@ def blog_view(request, blog_id, comment_text=None, error_title='', error_message
                 'blog'          : blog,
                 'comments'      : comments,
                 'page_url'      : u'/stories/'+unicode(blog_id),
-                'pages'         : bs_pager(1, 10, blog.comment_set.count()),
+                'pages'         : bs_pager(page_num, PAGE_COMMENTS, blog.comment_set.count()),
                 'owner'         : owner,
                 'comment_text'  : comment_text,
                 'error_title'   : error_title,
