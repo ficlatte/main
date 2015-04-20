@@ -181,6 +181,8 @@ def small_snippet(text):
 #-----------------------------------------------------------------------------
 @register.filter
 def story_link(story, tag=None):
+    if (story is None):
+        return u'<NULL STORY>'
     t1 = ''
     t2 = ''
     if (tag is not None):
@@ -195,6 +197,7 @@ def story_link(story, tag=None):
 #-----------------------------------------------------------------------------
 @register.filter
 def activity_entry(log):
+    return 'log_id={}, user={}; story={}, type={}'.format(log.id, log.user.id,log.story.id, log.log_type)
     if (log.log_type == StoryLog.WRITE):
         return mark_safe(author_link(log.user)+u' wrote '+story_link(log.story))
     

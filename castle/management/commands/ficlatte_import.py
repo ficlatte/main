@@ -11,7 +11,7 @@ class Command(BaseCommand):
     @transaction.atomic
     def import_users(self):
         c = self.db.cursor()
-        c.execute('SELECT uid, pen_name, site_url, site_name, biography, mature, email_addr, auth, salt, ctime, flags, prefs FROM user WHERE uid != 1 AND email_auth = 0');
+        c.execute('SELECT uid, pen_name, site_url, site_name, biography, mature, email_addr, auth, salt, ctime, flags, prefs FROM user WHERE uid = 1 AND email_auth = 0');
         while (1):
             row = c.fetchone()
             if (not row):
@@ -67,11 +67,197 @@ class Command(BaseCommand):
             prof.friends.add(Profile.objects.get(pk=row[1]))
             prof.save()
     
+    @transaction.atomic
+    def import_prompts(self):
+        c = self.db.cursor()
+        c.execute('SELECT prid, uid, title, body, mature, ctime, mtime FROM prompts');
+        while (1):
+            row = c.fetchone()
+            if (not row):
+                break;
+            self.stdout.write('Prompt '+str(row[0]))
+            prompt = Prompt(
+                id = row[0],
+                user = Profile.objects.get(pk=row[1]),
+                title = row[2],
+                body = row[3],
+                mature = row[4],
+                ctime = row[5],
+                mtime = row[6],
+            )
+            prompt.save()
+            
+    @transaction.atomic
+    def import_stories(self):
+        c = self.db.cursor()
+        c.execute('SELECT sid, uid, title, body, mature, draft, ctime, ftime, ptime, mtime, prequel_to, sequel_to, prid FROM stories');
+        while (1):
+            row = c.fetchone()
+            if (not row):
+                break;
+            self.stdout.write('Story '+str(row[0])+': '+str(row[2]))
+            story = Story(
+                id = row[0],
+                user = Profile.objects.get(pk=row[1]),
+                title = row[2],
+                body = row[3],
+                mature = not (not row[4]),
+                draft = not (not row[5]),
+                ctime = row[6],
+                ftime = row[7],
+                ptime = row[8],
+                mtime = row[9],
+            )
+            story.save()
+                
+    @transaction.atomic
+    def import_story_links(self):
+        c = self.db.cursor()
+        c.execute('SELECT sid, prequel_to, sequel_to, prid FROM stories');
+        while (1):
+            row = c.fetchone()
+            if (not row):
+                break;
+            self.stdout.write('Story '+str(row[0])+': '+str(row[2]))
+            story = Story.objects.get(pk=row[0])
+            if (row[1]):
+                story.prequel_to = Story.objects.get(pk=row[1])
+            if (row[2]):
+                story.sequel_to = Story.objects.get(pk=row[2])
+            if (row[3]):
+                story.prompt = Prompt.objects.get(pk=row[3])
+            story.save()
+                
+    @transaction.atomic
+    def import_blog(self):
+        c = self.db.cursor()
+        c.execute('SELECT bid, uid, title, body, draft, ctime FROM blog');
+        while (1):
+            row = c.fetchone()
+            if (not row):
+                break;
+            self.stdout.write('Blog '+str(row[0]))
+            profile = Profile.objects.get(pk=row[1])
+            blog = Blog(
+                    id = row[0],
+                    user = profile,
+                    title = row[2],
+                    body = row[3],
+                    draft = not (not row[4]),
+                    ctime = row[5],
+                    mtime = row[5],
+                    ptime = row[5],
+                    )
+            blog.save()
+
+    @transaction.atomic
+    def import_comments(self):
+        c = self.db.cursor()
+        c.execute('SELECT cid, uid, sid, bid, body, ctime FROM comments');
+        while (1):
+            row = c.fetchone()
+            if (not row):
+                break;
+            self.stdout.write('Comment '+str(row[0]))
+            profile = Profile.objects.get(pk=row[1])
+            comment = Comment(
+                    id = row[0],
+                    user = profile,
+                    body = row[4],
+                    ctime = row[5]
+                    )
+            if (row[2]):
+                comment.story = Story.objects.get(pk=row[2])
+            if (row[3]):
+                comment.blog = Blog.objects.get(pk=row[3])
+            comment.save()
+
+    @transaction.atomic
+    def import_tags(self):
+        c = self.db.cursor()
+        c.execute('SELECT tag, sid FROM tags');
+        while (1):
+            row = c.fetchone()
+            if (not row):
+                break;
+            self.stdout.write('Tag '+str(row[0])+' on '+str(row[1]))
+            story = Story.objects.get(pk=row[1])
+            tag = Tag(
+                tag = row[0],
+                story = story,
+                )
+        tag.save()
+    
+    @transaction.atomic
+    def import_ratings(self):
+        c = self.db.cursor()
+        c.execute('SELECT uid, sid, rating FROM ratings');
+        while (1):
+            row = c.fetchone()
+            if (not row):
+                break;
+            self.stdout.write('Rating from '+str(row[0]))
+            r = Rating(
+                user  = Profile.objects.get(pk=row[0]),
+                story = Story.objects.get(pk=row[1]),
+                rating = row[2],
+                )
+            r.save()
+
+    @transaction.atomic
+    def import_story_log(self):
+        c = self.db.cursor()
+        #c.execute('SELECT uid, sid, type, mid, time FROM story_log');
+        c.execute('SELECT uid, sid, type, mid, time FROM story_log where type!=1');
+        while (1):
+            row = c.fetchone()
+            if (not row):
+                break;
+            self.stdout.write('Story log user '+str(row[0])+'; story='+str(row[1])+'; type='+str(row[2]))
+            l = StoryLog(
+                user  = Profile.objects.get(pk=row[0]),
+                log_type = row[2],
+                ctime = row[4],
+                )
+            if (row[1]):
+                l.story = Story.objects.get(pk=row[1])
+            if ((row[2] == 4) or (row[2] == 5)):
+                l.quel = Story.objects.get(pk=row[3])
+            elif ((row[2] == 8) or (row[2] == 9)):
+                l.prompt = Prompt.objects.get(pk=row[3])
+            #l.save()
+
+    @transaction.atomic
+    def import_misc(self):
+        c = self.db.cursor()
+        c.execute('SELECT k, s, i FROM misc');
+        while (1):
+            row = c.fetchone()
+            if (not row):
+                break;
+            self.stdout.write('misc '+row[0])
+            m = Misc(
+                key = row[0],
+                s_val = row[1],
+                i_val = row[2],
+                )
+            m.save()
+
+            
     def handle(self, *args, **options):
         self.db = MySQLdb.connect(db='ficlatte',passwd='MQvbCW9FFU6X3HVD',user='ficlatte')
         
-        self.import_users()
-        self.import_friendships()
+        #self.import_users()
+        #self.import_friendships()
+        #self.import_prompts()
+        #self.import_stories()
+        #self.import_story_links()
+        #self.import_blog()
+        #self.import_comments()
+        #self.import_tags()
+        #self.import_ratings()
+        self.import_story_log()
+        #self.import_misc()
         
         self.stdout.write('Balls')
         

@@ -10,9 +10,13 @@ from django.db import transaction
 from django.db.models import Sum, Avg, Q
 from django.utils.http import urlquote_plus, urlquote
 from django.conf import settings
+from django.utils import timezone
 from castle.models import *
+from castle.mail import *
 from datetime import datetime
 from random import randint
+from struct import unpack
+from os import urandom
 import math
 import re
 import hashlib
@@ -180,6 +184,34 @@ def safe_int(v, default=1):
         return default
 
 #-----------------------------------------------------------------------------
+def random64():
+    return unpack("!Q", urandom(8))[0]
+
+#-----------------------------------------------------------------------------
+def to_signed64(u):
+    if (u > (1<<63)):
+        return u - (1<<64)
+    else:
+        return u
+    
+#-----------------------------------------------------------------------------
+def to_unsigned64(s):
+    if (u < 0):
+        return u + (1<<64)
+    else:
+        return u
+
+#-----------------------------------------------------------------------------
+def validate_email_addr( email ):
+    from django.core.validators import validate_email
+    from django.core.exceptions import ValidationError
+    try:
+        validate_email( email )
+        return True
+    except ValidationError:
+        return False
+    
+#-----------------------------------------------------------------------------
 # Views
 #-----------------------------------------------------------------------------
 def home(request):
@@ -285,13 +317,13 @@ def signin(request):
             user.save()
             profile.save()
             # For some reason, we need to log in again now
-            user = authenticate(username='user'+str(profile.id), password=password)
+            user = authenticate(username=profile.user.username, password=password)
             login(request,user)
             
             return HttpResponseRedirect(reverse('home'))
         
     else:
-        user = authenticate(username='user'+str(profile.id), password=password)
+        user = authenticate(profile.user.username, password=password)
     
     if user is not None:
         if user.is_active:
@@ -502,10 +534,10 @@ def submit_story(request):
 
     # Is the story being published?
     if (not story.draft and (was_draft or new_story)):
-        story.ptime = datetime.now()
+        story.ptime = timezone.now()
     
     # Set modification time
-    story.mtime = datetime.now()
+    story.mtime = timezone.now()
     
     # No problems, update the database and redirect
     story.save()
@@ -679,7 +711,7 @@ def submit_prompt(request):
         return render(request, 'castle/edit_prompt.html', context)
     
     # Set modification time
-    prompt.mtime = datetime.now()
+    prompt.mtime = timezone.now()
 
     # No problems, update the database and redirect
     prompt.save()
@@ -887,10 +919,10 @@ def submit_blog(request):
 
     # Is the blog being published?
     if (not draft and (was_draft or new_blog)):
-        blog.ptime = datetime.now()
+        blog.ptime = timezone.now()
     
     # Set modification time
-    blog.mtime = datetime.now()
+    blog.mtime = timezone.now()
     
     # No problems, update the database and redirect
     blog.save()
@@ -943,7 +975,7 @@ def submit_comment(request):
             return story_view(request, story.id, comment.body, rating, u'Comment submission failed', errors)
 
     # Set modification time
-    comment.mtime = datetime.now()
+    comment.mtime = timezone.now()
     
     # No problems, update the database and redirect
     if (l > 0):
@@ -957,7 +989,7 @@ def submit_comment(request):
         else:
             rating_obj = Rating(user=profile, story=story)
         rating_obj.rating = rating
-        rating_obj.mtime = datetime.now()
+        rating_obj.mtime = timezone.now()
         rating_obj.save()
             
     if (blog):
@@ -965,5 +997,137 @@ def submit_comment(request):
     else:
         return HttpResponseRedirect(reverse('story', args=(story.id,)))
         
+#-----------------------------------------------------------------------------
+def profile_view(request, error_title=None, error_messages=None):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    
+    # Build context and render page
+    context = { 'profile'       : profile,
+                'length_limit'  : 1024,
+                'length_min'    : 1,
+                'error_title'   : error_title,
+                'error_messages': error_messages,
+            }
+
+    return render(request, 'castle/profile.html', context)
+        
+#-----------------------------------------------------------------------------
+@transaction.atomic
+def submit_profile(request):
+    # Get user profile
+    new_registration = False
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    else:
+        profile = Profile()
+        new_registration = True
+        
+    # Get data from form
+    pen_name        = request.POST.get('pen_name', '')
+    password        = request.POST.get('password', '')
+    new_password    = request.POST.get('new_password', '')
+    password_again  = request.POST.get('password', '')
+    site_url        = request.POST.get('site_url', '')
+    site_name       = request.POST.get('site_name', '')
+    biography       = request.POST.get('biography', '')
+    mature          = request.POST.get('mature', '')
+    email_addr      = request.POST.get('email_addr', '')
+    rules           = request.POST.get('rules', False)
+    
+    # Update and verify profile object
+    errors     = []
+    if (pen_name and ((profile.pen_name_uc is None) or (pen_name.upper() != profile.pen_name))):
+        # Pen name is set and it is different from the stored value
+        profile.pen_name = pen_name
+        profile.pen_name_uc = pen_name.upper()
+        if (Profile.objects.filter(pen_name_uc = pen_name.upper())):
+            errors.append(u'Sorry, that pen-name is already taken')
+    
+    if (new_registration):
+        # Password check for new user
+        if (len(password) < 6):
+            errors.append(u'Password must be at least 6 characters')
+        if (password != password_again):
+            errors.append(u'Password and password check did not match')
+    elif (new_password):
+        if (not request.user.check_password(password)):
+            errors.append(u'Old password incorrect')
+        if (len(new_password) < 6):
+            errors.append(u'Password must be at least 6 characters')
+        if (new_password != password_again):
+            errors.append(u'Password and password check did not match')
+    elif (password):
+        if (not request.user.check_password(password)):
+            errors.append(u'Old password incorrect')
+
+    if (site_url):
+        profile.site_url = site_url
+    if (site_name):
+        profile.site_name = site_name
+    if (new_registration or biography):
+        profile.biography = biography
+        if (len(biography) < 2):
+            errors.append(u'Biography must be at least 2 characters.  Tell us a bit about yourself')
+    if (mature):
+        profile.mature = True
+    else:
+        profile.mature = False
+    if ((new_registration or email_addr) and not validate_email_addr(email_addr)):
+        errors.append(u'Sorry, but we need an e-mail address')
+    if (not rules):
+        errors.append(u'You need to agree to the rules before you play')
+
+    # Set modification time
+    time_now = timezone.now()
+    profile.mtime = time_now
+    
+    # If there have been errors, re-display the page
+    if (errors):
+        if (new_registration):
+            return profile_view(request, 'Registration unsuccessful', errors)
+        else:
+            return profile_view(request, 'Profile update unsuccessful', errors)
+
+
+    # If new registration, we should create a new Django user
+    if (new_registration):
+        # Create a temporary user name because we need to call the
+        # user something whilst we create the profile entry
+        # We then go back and update the Django user name to express clearly
+        # the connection with the profile table
+        un = u'{:016x}'.format(random64())
+        user = User(
+            username = u'user{}'+un,
+            first_name = u'user',
+            last_name = un,
+            email = email_addr,
+            )
+        user.set_password(password)
+        user.save()
+        profile.user = user
+        profile.save()
+        un = unicode(profile.id)
+        user.username = u'user'+un
+        user.last_name = un;
+        user.save()
+        user = authenticate(username=profile.user.username, password=password)
+        login(request, user)
+    else:
+        profile.save()
+
+    # If this is a new user, or the e-mail address is changed, send a conf email
+    if (new_registration or email_addr):
+        # Get random 64 bit integer
+        token = random64()
+        token_s = to_signed64(token)
+        profile.email_auth = token_s
+        profile.email_time = time_now
+        send_conf_email(profile.email_addr, token)
+        profile.save()
+    
+    return HttpResponseRedirect(reverse('author', args=(profile.pen_name,)))
 
 #-----------------------------------------------------------------------------

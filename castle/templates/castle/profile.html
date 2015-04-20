@@ -1,0 +1,56 @@
+{% extends "castle/page_without_sidebar.html" %}
+{% load staticfiles %}
+{% load castle_tags %}
+
+{% block primary_panel %}
+          <form accept-charset="utf-8" action="/authors/u/submit/" class="form-signin" method="POST" name="profile_form" role="form">
+            {% csrf_token %}
+            <h2 class="form-signin-heading"><span class="glyphicon glyphicon-globe"></span> {% if profile %}Update your details{% else %}Please register{% endif %}</h2>
+            <h3 class="form-signin-heading">Enter your details</h3>
+            <div class="form-group">
+              <label for="pen_name">Pen name</label>
+              <input autofocus class="form-control" id="pen_name" name="pen_name" placeholder="Pen name" required type="text" value="{{ profile.pen_name }}" />
+            </div> <!-- id="" class="form-group" -->
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input class="form-control" id="password" name="password" placeholder="Password"{% if not profile %} required{% endif %} type="password" />
+            </div> <!-- id="" class="form-group" -->
+            {% if profile %}
+            <div class="form-group">
+              <label for="new_password">new password</label>
+              <input class="form-control" id="new_password" name="new_password" placeholder="New password" type="password" />
+            </div> <!-- id="" class="form-group" -->
+            {% endif %}
+            <div class="form-group">
+              <label for="password_again">Password check</label>
+              <input class="form-control" id="password_again" name="password_again" placeholder="Password check" type="password" />
+            </div> <!-- id="" class="form-group" -->
+            <div class="form-group">
+              <label for="site_url">Site URL</label>
+              <input class="form-control" id="site_url" name="site_url" placeholder="Site URL" type="text" value="{{ profile.site_url }}" />
+            </div> <!-- id="" class="form-group" -->
+            <div class="form-group">
+              <label for="site_name">Site name</label>
+              <input class="form-control" id="site_name" name="site_name" placeholder="Site name" type="text" value="{{ profile.site_name }}" />
+            </div> <!-- id="" class="form-group" -->
+            <div class="form-group">
+              <label for="biography">Bio</label>
+              <textarea class="form-control" id="biography" name="biography" placeholder="Biography" required rows="10">{{ profile.biography }}</textarea>
+            </div> <!-- id="" class="form-group" -->
+            <div class="checkbox">
+              <label><input checked name="mature" type="checkbox" {% if profile.mature %}checked {% endif %}/>Show mature content</label>
+            </div> <!-- id="" class="checkbox" -->
+            <div class="form-group">
+              <label for="email_addr">E-mail address</label>
+              <input class="form-control" id="email_addr" name="email_addr" placeholder="E-mail address" required type="text" value="{{ profile.email_addr }}" />
+            </div> <!-- id="" class="form-group" -->
+            <div class="checkbox">
+              <label><input checked name="rules" type="checkbox" {% if profile.id %}checked {% endif %}/>I agree to the <a href="/rules.html">Ficlatt&eacute; rules</a></label>
+            </div> <!-- id="" class="checkbox" -->
+            <input name="action" type="hidden" value="update profile" />
+            <input name="uid" type="hidden" value="1" />
+            <button class="btn btn-lg btn-success btn-block" type="submit">Submit</button>
+          </form>
+          <p>If you want to change your pen name, password and/or e-mail address, also enter your current password.</p>
+          <p>If you change your e-mail address, you will need to confirm it in the usual way</p>
+{% endblock %}

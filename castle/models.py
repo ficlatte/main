@@ -1,6 +1,7 @@
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 from datetime import datetime
 
 # Create your models here.
@@ -19,14 +20,14 @@ class Profile(models.Model):
     email_flags = models.IntegerField(default=0)
     email_auth  = models.BigIntegerField(default=0)
     email_time  = models.DateTimeField(blank=True, null=True)
-    old_auth    = models.CharField(max_length=64, blank=True, null=True)     # DEPRECATED pass md5 val
+    old_auth    = models.CharField(max_length=64, blank=True, null=True)     # DEPRECATED pass sha256 val
     old_salt    = models.CharField(max_length=16, blank=True, null=True)     # DEPRECATED pass salt
     prefs       = models.IntegerField(default=0)
     flags       = models.IntegerField(default=0)
     stored      = models.ForeignKey('Story', blank=True, null=True)            # User can make a note of a story for later use
-    ctime       = models.DateTimeField(default=datetime.now)
-    mtime       = models.DateTimeField(default=datetime.now)
-    atime       = models.DateTimeField(default=datetime.now)
+    ctime       = models.DateTimeField(default=timezone.now)
+    mtime       = models.DateTimeField(default=timezone.now)
+    atime       = models.DateTimeField(default=timezone.now)
     
     def __unicode__(self):
         return unicode(self.pen_name)
@@ -46,8 +47,8 @@ class Prompt(models.Model):
     body        = models.CharField(max_length=256)
     mature      = models.BooleanField(default=False)
     activity    = models.FloatField(default=0.0)
-    ctime       = models.DateTimeField(default=datetime.now)
-    mtime       = models.DateTimeField(default=datetime.now)
+    ctime       = models.DateTimeField(default=timezone.now)
+    mtime       = models.DateTimeField(default=timezone.now)
 
     def __unicode__(self):
         return unicode(self.title)
@@ -65,8 +66,8 @@ class Story(models.Model):
     ficly       = models.BooleanField(default=False)
     activity    = models.FloatField(default=0.0)
     prompt_text = models.CharField(max_length=256, blank=True, null=True)
-    ctime       = models.DateTimeField(default=datetime.now)
-    mtime       = models.DateTimeField(default=datetime.now)
+    ctime       = models.DateTimeField(default=timezone.now)
+    mtime       = models.DateTimeField(default=timezone.now)
     ptime       = models.DateTimeField(blank=True, null=True)
     ftime       = models.DateTimeField(blank=True, null=True)
 
@@ -91,8 +92,8 @@ class Blog(models.Model):
     title       = models.CharField(max_length=256)
     body        = models.CharField(max_length=20480)
     draft       = models.BooleanField(default=False)
-    ctime       = models.DateTimeField(default=datetime.now)
-    mtime       = models.DateTimeField(default=datetime.now)
+    ctime       = models.DateTimeField(default=timezone.now)
+    mtime       = models.DateTimeField(default=timezone.now)
     ptime       = models.DateTimeField(blank=True, null=True)
 
     def __unicode__(self):
@@ -103,8 +104,8 @@ class Rating(models.Model):
     user        = models.ForeignKey(Profile)
     story       = models.ForeignKey(Story)
     rating      = models.IntegerField(blank=True, null=True)
-    ctime       = models.DateTimeField(default=datetime.now)
-    mtime       = models.DateTimeField(default=datetime.now)
+    ctime       = models.DateTimeField(default=timezone.now)
+    mtime       = models.DateTimeField(default=timezone.now)
     
     def __unicode__(self):
         return self.user.__unicode__() + u' rates "' + self.story.__unicode__() + u'" by ' + self.story.user.__unicode__() + u' with score ' + unicode(self.rating)
@@ -119,8 +120,8 @@ class Comment(models.Model):
     body        = models.CharField(max_length=1024)
     story       = models.ForeignKey(Story, blank=True, null=True)
     blog        = models.ForeignKey(Blog,  blank=True, null=True)
-    ctime       = models.DateTimeField(default=datetime.now)
-    mtime       = models.DateTimeField(default=datetime.now)    
+    ctime       = models.DateTimeField(default=timezone.now)
+    mtime       = models.DateTimeField(default=timezone.now)    
 
     def __unicode__(self):
         if (self.story is not None):
@@ -145,22 +146,32 @@ class StoryLog(models.Model):
     COMMENT = 3
     PREQUEL = 4
     SEQUEL  = 5
-    
+    CHALLENGE = 6  # Created a challenge
+    STORY_MOD = 7  # Modified an extant story
+    PROMPT    = 8  # Created a writing prompt
+    PROMPT_MOD= 9   # Modified a writing prompt
+
     LOG_OPTIONS = (
-        (WRITE,   u'wrote'),
-        (VIEW,    u'viewed'),
-        (RATE,    u'rated'),
-        (COMMENT, u'commented on'),
-        (PREQUEL, u'wrote a prequel to'),
-        (SEQUEL,  u'wrote a sequel to'),
+        (WRITE,     u'wrote'),
+        (VIEW,      u'viewed'),
+        (RATE,      u'rated'),
+        (COMMENT,   u'commented on'),
+        (PREQUEL,   u'wrote a prequel to'),
+        (SEQUEL,    u'wrote a sequel to'),
+        (CHALLENGE, u'created challenge'),
+        (STORY_MOD, u'updated story'),
+        (PROMPT,    u'wrote prompt'),
+        (PROMPT_MOD,u'updated prompt'),
     )
     
     user        = models.ForeignKey(Profile)
     story       = models.ForeignKey(Story)
     log_type    = models.IntegerField(default=1, choices=LOG_OPTIONS)
     comment     = models.ForeignKey(Comment, blank=True, null=True)     # ID of comment, if this log is for a comment
-    quel        = models.ForeignKey(Story,   blank=True, null=True, related_name='activity_quel_set')     # ID of prequel/sequel if this log is for a prequel/sequel
-    ctime       = models.DateTimeField(default=datetime.now)
+    quel        = models.ForeignKey(Story,   blank=True, null=True,
+ related_name='activity_quel_set')     # ID of prequel/sequel if this log is for a prequel/sequel
+    prompt      = models.ForeignKey(Prompt, blank=True, null=True)
+    ctime       = models.DateTimeField(default=timezone.now)
     
     def get_opt(self, o):
         return LOG_OPTIONS[o][1]
@@ -173,7 +184,7 @@ class StoryLog(models.Model):
     def __unicode__(self):
         # FIXME: LOG_OPTIONS[self.log_type][1] is not the right way to access
         #        the LOG_OPTIONS structure
-        return u'User ' + self.user.__unicode__() + u' ' + self.LOG_OPTIONS[self.log_type][1] + u' story "' + self.story.__unicode__() + u'" by ' + self.story.user.__unicode__()
+        return unicode(self.id)+u': User ' + self.user.__unicode__() + u' ' + self.LOG_OPTIONS[self.log_type][1] + u' story "' + self.story.__unicode__() + u'" by ' + self.story.user.__unicode__()
         
 
 # Site log
