@@ -1039,7 +1039,7 @@ def submit_profile(request):
     
     # Update and verify profile object
     errors     = []
-    if (pen_name and ((profile.pen_name_uc is None) or (pen_name.upper() != profile.pen_name))):
+    if (pen_name and ((profile.pen_name_uc is None) or (pen_name.upper() != profile.pen_name_uc))):
         # Pen name is set and it is different from the stored value
         profile.pen_name = pen_name
         profile.pen_name_uc = pen_name.upper()
@@ -1080,6 +1080,15 @@ def submit_profile(request):
     if (not rules):
         errors.append(u'You need to agree to the rules before you play')
 
+    # If user is changing e-mail address, they need their password too
+    if (not new_registration and (
+            (email_addr and email_addr != profile.email_addr) or
+            (pen_name   and pen_name.upper() != profile.pen_name_uc))):
+        if (not password):
+            errors.append(u'When you change your pen name or e-mail address, you need to supply your password too.')
+        elif (not request.user.check_password(password)):
+            errors.append(u'Old password incorrect')
+
     # Set modification time
     time_now = timezone.now()
     profile.mtime = time_now
@@ -1103,7 +1112,7 @@ def submit_profile(request):
             username = u'user{}'+un,
             first_name = u'user',
             last_name = un,
-            email = email_addr,
+            email_addr = email_addr,
             )
         user.set_password(password)
         user.save()
@@ -1123,9 +1132,10 @@ def submit_profile(request):
         # Get random 64 bit integer
         token = random64()
         token_s = to_signed64(token)
+        profile.email_addr = email_addr
         profile.email_auth = token_s
         profile.email_time = time_now
-        send_conf_email(profile.email_addr, token)
+        send_conf_email(profile, token)
         profile.save()
     
     return HttpResponseRedirect(reverse('author', args=(profile.pen_name,)))
