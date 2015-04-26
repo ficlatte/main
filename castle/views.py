@@ -196,10 +196,10 @@ def to_signed64(u):
     
 #-----------------------------------------------------------------------------
 def to_unsigned64(s):
-    if (u < 0):
-        return u + (1<<64)
+    if (s < 0):
+        return s + (1<<64)
     else:
-        return u
+        return s
 
 #-----------------------------------------------------------------------------
 def validate_email_addr( email ):
@@ -1139,5 +1139,52 @@ def submit_profile(request):
         profile.save()
     
     return HttpResponseRedirect(reverse('author', args=(profile.pen_name,)))
+
+#-----------------------------------------------------------------------------
+def confirmation(request, yesno, uid, token):
+    profile = get_object_or_404(Profile, pk=uid)
+
+    logged_in_user = None
+    if (request.user.is_authenticated()):
+        logged_in_user = request.user.profile
+    
+    int_token = safe_int(token, -1)
+    
+    # Check to see if the UID and token are valid before we do anything else.
+    # Also, keep user feedback vague, as we don't want to leak user data
+    
+    # The request is valid if the profile object has a non-null email_auth
+    # and the token in the request matches it.  We send the token unsigned
+    # but the underlying database stores it signed, so we need to do a bit
+    # of munging before we do the comparison
+    if (not profile.email_auth):
+        return render(request, 'castle/status_message.html', 
+                      {'profile': logged_in_user,
+                      'status_type': 'info',
+                      'status_message': u'E-mail address already authenticated.'})
+    elif (int_token == to_unsigned64(profile.email_auth)):
+        # Request is authorised, now we look at the yes/no
+        if (yesno == 'yes'):
+            # It's a valid e-mail confirmation message
+            profile.email_auth = 0
+            profile.email_time = timezone.now()
+            profile.save()
+            return render(request, 'castle/status_message.html', 
+                          {'profile': logged_in_user,
+                           'status_type': 'success',
+                           'status_message': u'E-mail address confirmed successfully',})
+        elif (yesno == 'no'):
+            # FIXME: need to add e-mail to blacklist
+            return render(request, 'castle/status_message.html', 
+                          {'profile': logged_in_user,
+                           'status_type': 'danger',
+                           'status_message': u'E-mail address added to do-not-send list',})
+        else:
+            raise Http404
+    
+    return render(request, 'castle/status_message.html', 
+                      {'profile': logged_in_user,
+                      'status_type': 'danger',
+                      'status_message': u'Authentication token mismatch {} {}'.format(to_unsigned64(profile.email_auth), int_token)})
 
 #-----------------------------------------------------------------------------

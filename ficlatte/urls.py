@@ -34,4 +34,5 @@ urlpatterns = patterns('',
     url(r'^blog/submit/$', 'castle.views.submit_blog', name='submit_blog'),
     url(r'^comment/submit/$', 'castle.views.submit_comment', name='submit_comment'),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^confirmation/(?P<yesno>(?:yes|no))/(?P<uid>\d+)/(?P<token>\d+)/$', 'castle.views.confirmation', name='confirmation'),
 )
