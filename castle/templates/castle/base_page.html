@@ -60,7 +60,7 @@
             <ul class="nav navbar-nav navbar-right">
               {% if profile %}
               <li><p class="navbar-text">Signed in as:</p></li>
-              <li class="active"><a class="author_link" href="/authors/ethelthefrog">{{ profile.pen_name }}</a></li>
+              <li class="active">{{profile|author_link}}</li>
               <li><a href="/">Your desk</a></li>
               <li><a href="/notes">Notes</a></li>
               <li><a href="/logout">Log out</a></li>
