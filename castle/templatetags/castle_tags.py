@@ -11,6 +11,8 @@ from django.template.defaultfilters import stringfilter
 from django.conf import settings
 from castle.models import StoryLog
 import math
+import re
+import unicodedata
 
 register = template.Library()
 
@@ -152,13 +154,6 @@ def url(text):
 #-----------------------------------------------------------------------------
 @register.filter
 @stringfilter
-def encode_story(text):
-    # FIXME: this is has no functionality
-    return mark_safe(u'<p>' + escape(text) + u'</p>')
-
-#-----------------------------------------------------------------------------
-@register.filter
-@stringfilter
 def big_snippet(text):
     if (len(text) > 255):
         snippet = text[:255] + u'…'
@@ -272,4 +267,108 @@ def site_name(a):
     else:
         return u'Ficlatté dev site'
     
+#-----------------------------------------------------------------------------
+# ENCODE STORY FUNCTION.
+#-----------------------------------------------------------------------------
+def start_italic(mode):
+    if (mode == u''):
+        return (u'<em>', u'i')
+    if (mode == u'b'):
+        return (u'<em>', u'bi')
+    return (u'', mode)
+
+def end_italic(mode):
+    if (mode == u'i'):
+        return (u'</em>', u'')
+    if (mode == u'bi'):
+        return (u'</em>', u'b')
+    if (mode == u'ib'):
+        return (u'</strong></em><strong>', u'b')
+    return (u'', mode)
+
+def start_bold(mode):
+    if (mode == u''):
+        return (u'<strong>', u'b')
+    if (mode == u'i'):
+        return (u'<strong>', u'ib')
+    return (u'', mode)
+
+def end_bold(mode):
+    if (mode == u'b'):
+        return (u'</strong>', u'')
+    if (mode == u'ib'):
+        return (u'</strong>', u'i')
+    if (mode == u'bi'):
+        return (u'</em></strong><em>', u'i')
+    return (u'', mode)
+
+def end_all(mode):
+    if (mode == u'b'):
+        return u'</strong>'
+    if (mode == u'i'):
+        return u'</em>'
+    if (mode == u'bi'):
+        return u'</em></strong>'
+    if (mode == u'ib'):
+        return u'</strong></em>'
+    return u''
+
+def encode_story_line(line):
+    # Ensure line is unicode
+    line = unicode(line)
+    
+    # Blank lines get short shrift
+    if (len(line) < 1):
+        return mark_safe('<p></p>\n')
+    
+    mode = u''            # Start with nothing
+    ctype = 0
+    retval = u'<p>'
+    
+    for c in line:
+        cat = unicodedata.category(c)[0]
+        if (c == u'_'):         # We've got an underscore
+            if (ctype):          # We've had letters, end italics
+                (bit, mode) = end_italic(mode)
+                retval += bit
+            else:
+                (bit, mode) = start_italic(mode)
+                retval += bit
+        elif (c == u'*'):        # We've got an star
+            if (ctype):          # We've had letters, end bold
+                (bit, mode) = end_bold(mode)
+                retval += bit
+            else:                # We've not had letters, start bold
+                (bit, mode) = start_bold(mode)
+                retval += bit
+        elif (cat == 'Z'):
+            ctype = 0            # Space: we're in mode 0
+            retval += escape(c)
+        elif (cat == 'L'):
+            ctype = 1            # Letter: we're in mode 1
+            retval += escape(c)
+        else:
+            retval += escape(c)
+    
+    retval += end_all(mode) + u'</p>\n'
+    
+    return retval
+
+crlf = re.compile(r'(?:\r|\n|\r\n)')
+ws = re.compile(r'(\s+)')
+
+@register.filter
+@stringfilter
+def encode_story(text):
+    story_lines = crlf.split(text)
+    
+    retval = u''
+    for l in story_lines:
+        retval += encode_story_line(l)
+    return mark_safe(retval)
+
+def poo_encode_story(text):
+    # FIXME: this is has no functionality
+    return mark_safe(u'<p>' + escape(text) + u'</p>')
+
 #-----------------------------------------------------------------------------

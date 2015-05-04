@@ -323,7 +323,7 @@ def signin(request):
             return HttpResponseRedirect(reverse('home'))
         
     else:
-        user = authenticate(profile.user.username, password=password)
+        user = authenticate(username=profile.user.username, password=password)
     
     if user is not None:
         if user.is_active:
@@ -1185,6 +1185,6 @@ def confirmation(request, yesno, uid, token):
     return render(request, 'castle/status_message.html', 
                       {'profile': logged_in_user,
                       'status_type': 'danger',
-                      'status_message': u'Authentication token mismatch {} {}'.format(to_unsigned64(profile.email_auth), int_token)})
+                      'status_message': u'Authentication token mismatch'})
 
 #-----------------------------------------------------------------------------
