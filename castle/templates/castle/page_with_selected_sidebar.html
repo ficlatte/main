@@ -101,7 +101,7 @@
   
     {% if owner %}
           <a class="btn btn-info btn-block" href="/stories/edit/{{story.id}}" id="edit-link" type="button"><span class="glyphicon glyphicon-pencil"></span> Edit story</a>
-          <a class="btn btn-danger btn-block" href="/stories/delete/40116" id="delete-link" onclick="return confirm('Are you sure you want to delete this story? (there is no undelete function)');" type="button"><span class="glyphicon glyphicon-trash"></span> Delete story</a>
+          <a class="btn btn-danger btn-block" href="/stories/delete/{{story.id}}/" id="delete-link" onclick="return confirm('Are you sure you want to delete this story? (there is no undelete function)');" type="button"><span class="glyphicon glyphicon-trash"></span> Delete story</a>
     {% endif %}
     {% if story.tag_set.count > 0 or story.prompt or story.prequel_to or story.sequel_to %}
           <div class="well well-sm" id="inspiration">

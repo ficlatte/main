@@ -468,6 +468,30 @@ def edit_story(request, story_id):
 
 #-----------------------------------------------------------------------------
 @login_required
+def delete_story(request, story_id):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    # Get story
+    story = get_object_or_404(Story, pk=story_id)
+    
+    # Only story's author can delete a story
+    if (story.user != profile):
+        raise Http404
+    
+    # Do deletion
+    story.delete()
+
+    # Indicate successful deletion
+    return render(request, 'castle/status_message.html', 
+                    {'profile': profile,
+                    'status_type': 'success',
+                    'status_message': u'Story deleted',})
+
+#-----------------------------------------------------------------------------
+@login_required
 @transaction.atomic
 def submit_story(request):
     # Get user profile
