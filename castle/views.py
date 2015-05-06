@@ -6,6 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.db.models import Sum, Avg, Q
 from django.utils.http import urlquote_plus, urlquote
@@ -376,6 +377,15 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
     page_num = safe_int(request.GET.get('page_num', 1))
     comments = story.comment_set.all().order_by('ctime')[(page_num-1)*PAGE_COMMENTS:page_num*PAGE_COMMENTS]
 
+    # Log view
+    if (profile):
+        log = StoryLog(
+                user = profile,
+                story = story,
+                log_type = StoryLog.VIEW
+            )
+        log.save()
+
     # Count how many times the story has been viewed and rated
     viewed = StoryLog.objects.filter(story = story).exclude(user = author).count()
     rated  = Rating.objects.filter(story = story).exclude(user=author).count()
@@ -580,6 +590,28 @@ def submit_story(request):
                 td[t] = 1
                 tag_object = Tag(story=story, tag=t)
                 tag_object.save()
+
+    # Make log entry
+    log_type = StoryLog.WRITE
+    quel = None
+    if (sequel_to):
+        log_type = StoryLog.SEQUEL
+        quel = sequel_to
+    elif (prequel_to):
+        log_type = StoryLog.PREQUEL
+        quel = prequel_to
+
+    if (not new_story):
+        log_type = StoryLog.STORY_MOD
+        
+    log = StoryLog(
+        user = profile,
+        story = story,
+        quel = quel,
+        log_type = log_type,
+        prompt = prompt
+    )
+    log.save()
             
     return HttpResponseRedirect(reverse('story', args=(story.id,)))
 
@@ -739,6 +771,17 @@ def submit_prompt(request):
 
     # No problems, update the database and redirect
     prompt.save()
+    
+    # Log entry
+    log_type = StoryLog.PROMPT
+    if (not new_prompt):
+        log_type = StoryLog.PROMPT_MOD
+    log = StoryLog(
+        user = profile,
+        log_type = log_type,
+        prompt = prompt
+    )
+    log.save()
     
     return HttpResponseRedirect(reverse('prompt', args=(prompt.id,)))
 
@@ -961,11 +1004,22 @@ def submit_comment(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+    if (not profile):
+        raise Http404
     
     # Get bits and bobs
     errors     = []
+    old_rating = None
     blog       = get_foo(request.POST, Blog,  'bid')
     story      = get_foo(request.POST, Story, 'sid')
+    
+    if (story):
+        try:
+            r = Rating.objects.get(user=profile, story=story)
+            old_rating = r.rating
+        except ObjectDoesNotExist:
+            old_rating = None
+    
     rating     = request.POST.get('rating', None)
     if (rating is not None):
         rating = int(rating)
@@ -1015,6 +1069,26 @@ def submit_comment(request):
         rating_obj.rating = rating
         rating_obj.mtime = timezone.now()
         rating_obj.save()
+
+    # Make log entries but only for story comments
+    if (story):
+        # If comment body is longer than 0, log that comment has been made
+        if (l > 0):
+            log = StoryLog(
+                user = profile,
+                story = story,
+                log_type = StoryLog.COMMENT
+            )
+            log.save()
+        # If there was no previous rating and there is a rating,
+        # log that a rating has been made
+        if ((rating is not None) and (old_rating is None)):
+            log = StoryLog(
+                user = profile,
+                story = story,
+                log_type = StoryLog.RATE
+            )
+            log.save()
             
     if (blog):
         return HttpResponseRedirect(reverse('blog', args=(blog.id,)))
