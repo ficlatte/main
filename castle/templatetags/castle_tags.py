@@ -192,7 +192,6 @@ def story_link(story, tag=None):
 #-----------------------------------------------------------------------------
 @register.filter
 def activity_entry(log):
-    return 'log_id={}, user={}; story={}, type={}'.format(log.id, log.user.id,log.story.id, log.log_type)
     if (log.log_type == StoryLog.WRITE):
         return mark_safe(author_link(log.user)+u' wrote '+story_link(log.story))
     
@@ -204,6 +203,11 @@ def activity_entry(log):
         
     elif (log.log_type == StoryLog.PREQUEL):
         return mark_safe(author_link(log.user)+u' wrote '+story_link(log.story)+u', prequel to '+story_link(log.quel)+u' by '+author_link(log.quel.user))
+
+    elif (log.log_type == StoryLog.STORY_MOD):
+        return mark_safe(author_link(log.user)+u' updated '+story_link(log.story))
+
+    return 'log_id={}, user={}; story={}, type={}'.format(log.id, log.user.id,log.story.id, log.log_type)
         
     return mark_safe(author_link(log.user) + u' ' + log.get_type() + u' ' + story_link(log.story))
 

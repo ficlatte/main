@@ -77,7 +77,7 @@ def get_old_stories(page_size=10):
     
 #-----------------------------------------------------------------------------
 def get_activity_log(profile, entries):
-    log_entries = StoryLog.objects.exclude(log_type = StoryLog.VIEW).exclude(log_type = StoryLog.RATE).filter(Q(user = profile) | Q(story__user = profile)).order_by('ctime')[:entries]
+    log_entries = StoryLog.objects.exclude(log_type = StoryLog.VIEW).exclude(log_type = StoryLog.RATE).filter(Q(user = profile) | Q(story__user = profile)).order_by('-ctime')[:entries]
     
     return log_entries
 
@@ -1077,6 +1077,7 @@ def submit_comment(request):
             log = StoryLog(
                 user = profile,
                 story = story,
+                comment = comment,
                 log_type = StoryLog.COMMENT
             )
             log.save()
