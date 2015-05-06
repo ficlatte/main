@@ -35,7 +35,6 @@ PAGE_BLOG       = 10
 # Query functions
 #-----------------------------------------------------------------------------
 def get_popular_stories(page_num=1, page_size=10):
-    # FIXME: this code is MySQL specific
     db = getattr(settings, 'DB', 'mysql')
     if (db == 'mysql'):
         return Story.objects.raw(
@@ -49,7 +48,17 @@ def get_popular_stories(page_num=1, page_size=10):
         "GROUP BY l.story_id ORDER BY score DESC LIMIT " +
         str((page_num-1) * page_size) + "," + str(page_size))
     elif (db == 'postgres'):
-        return Story.objects.all()
+        return Story.objects.raw(
+        "SELECT s.id as id, " +
+        "SUM(1/(date_part(day, NOW() - l.ctime)+1)) AS score " +
+        "FROM castle_storylog AS l " +
+        "LEFT JOIN castle_story AS s ON s.id=l.story_id " +
+        "WHERE l.user_id != s.user_id " +
+        "AND l.log_type = " + str(StoryLog.VIEW) + " "+
+        "AND ((s.draft IS NULL) OR (NOT s.draft)) " +
+        "GROUP BY l.story_id ORDER BY score DESC LIMIT " +
+        str((page_num-1) * page_size) + "," + str(page_size))
+    return Story.objects.all()
     
 #-----------------------------------------------------------------------------
 def get_active_stories(page_num=1, page_size=10):
