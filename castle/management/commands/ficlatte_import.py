@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from castle.models import *
 from django.db import transaction
+from django.conf import settings
 import MySQLdb
 import binascii
 
@@ -245,19 +246,23 @@ class Command(BaseCommand):
 
             
     def handle(self, *args, **options):
-        self.db = MySQLdb.connect(db='ficlatte',passwd='MQvbCW9FFU6X3HVD',user='ficlatte')
+        odb = getattr(settings, 'OLDDB_DB', 'ficlatte')
+        odu = getattr(settings, 'OLDDB_USER', 'ficlatte')
+        odp = getattr(settings, 'OLDDB_PASSWORD', '')
+
+        self.db = MySQLdb.connect(db=odb,passwd=odp,user=odu)
         
-        #self.import_users()
-        #self.import_friendships()
-        #self.import_prompts()
-        #self.import_stories()
-        #self.import_story_links()
-        #self.import_blog()
-        #self.import_comments()
-        #self.import_tags()
-        #self.import_ratings()
+        self.import_users()
+        self.import_friendships()
+        self.import_prompts()
+        self.import_stories()
+        self.import_story_links()
+        self.import_blog()
+        self.import_comments()
+        self.import_tags()
+        self.import_ratings()
         self.import_story_log()
-        #self.import_misc()
+        self.import_misc()
         
         self.stdout.write('Balls')
         
