@@ -12,7 +12,7 @@ class Command(BaseCommand):
     @transaction.atomic
     def import_users(self):
         c = self.db.cursor()
-        c.execute('SELECT uid, pen_name, site_url, site_name, biography, mature, email_addr, auth, salt, ctime, flags, prefs FROM user WHERE uid = 1 AND email_auth = 0');
+        c.execute('SELECT uid, pen_name, site_url, site_name, biography, mature, email_addr, auth, salt, ctime, flags, prefs FROM user WHERE uid > 0 AND email_auth = 0');
         while (1):
             row = c.fetchone()
             if (not row):
@@ -40,9 +40,9 @@ class Command(BaseCommand):
             if (row[0] != 1):
                 user = User(
                     id = row[0],
-                    username = 'user'+str(row[0]),
+                    username = 'user'+unicode(row[0]),
                     first_name = 'user',
-                    last_name = str(row[0]),
+                    last_name = unicode(row[0]),
                     email = row[6],
                     date_joined = row[9],
                 )
@@ -53,7 +53,7 @@ class Command(BaseCommand):
             profile.user=user
             profile.save()
 
-            self.stdout.write('uid '+str(row[0])+ ' is '+row[1]+' Django uid is '+str(user.id))
+            self.stdout.write('uid '+unicode(row[0])+ ' is '+row[1]+' Django uid is '+unicode(user.id))
 
     @transaction.atomic
     def import_friendships(self):
@@ -63,7 +63,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write(str(row[0])+' is following '+str(row[1]))
+            self.stdout.write(unicode(row[0])+' is following '+unicode(row[1]))
             prof = Profile.objects.get(pk=int(row[0]))
             prof.friends.add(Profile.objects.get(pk=row[1]))
             prof.save()
@@ -76,7 +76,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write('Prompt '+str(row[0]))
+            self.stdout.write('Prompt '+unicode(row[0]))
             prompt = Prompt(
                 id = row[0],
                 user = Profile.objects.get(pk=row[1]),
@@ -96,7 +96,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write('Story '+str(row[0])+': '+str(row[2]))
+            self.stdout.write('Story '+unicode(row[0])+': '+unicode(row[2]))
             story = Story(
                 id = row[0],
                 user = Profile.objects.get(pk=row[1]),
@@ -119,7 +119,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write('Story '+str(row[0])+': '+str(row[2]))
+            self.stdout.write('Story '+unicode(row[0])+': '+unicode(row[2]))
             story = Story.objects.get(pk=row[0])
             if (row[1]):
                 story.prequel_to = Story.objects.get(pk=row[1])
@@ -137,7 +137,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write('Blog '+str(row[0]))
+            self.stdout.write('Blog '+unicode(row[0]))
             profile = Profile.objects.get(pk=row[1])
             blog = Blog(
                     id = row[0],
@@ -159,7 +159,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write('Comment '+str(row[0]))
+            self.stdout.write('Comment '+unicode(row[0]))
             profile = Profile.objects.get(pk=row[1])
             comment = Comment(
                     id = row[0],
@@ -181,7 +181,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write('Tag '+str(row[0])+' on '+str(row[1]))
+            self.stdout.write('Tag '+unicode(row[0])+' on '+unicode(row[1]))
             story = Story.objects.get(pk=row[1])
             tag = Tag(
                 tag = row[0],
@@ -197,7 +197,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write('Rating from '+str(row[0]))
+            self.stdout.write('Rating from '+unicode(row[0]))
             r = Rating(
                 user  = Profile.objects.get(pk=row[0]),
                 story = Story.objects.get(pk=row[1]),
@@ -214,7 +214,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write('Story log user '+str(row[0])+'; story='+str(row[1])+'; type='+str(row[2]))
+            self.stdout.write('Story log user '+unicode(row[0])+'; story='+unicode(row[1])+'; type='+unicode(row[2]))
             l = StoryLog(
                 user  = Profile.objects.get(pk=row[0]),
                 log_type = row[2],
