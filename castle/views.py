@@ -54,10 +54,10 @@ def get_popular_stories(page_num=1, page_size=10):
         "FROM castle_storylog AS l " +
         "LEFT JOIN castle_story AS s ON s.id=l.story_id " +
         "WHERE l.user_id != s.user_id " +
-        "AND l.log_type = " + str(StoryLog.VIEW) + " "+
+        "AND l.log_type = " + str(StoryLog.VIEW) +" "+
         "AND ((s.draft IS NULL) OR (NOT s.draft)) " +
-        "GROUP BY l.story_id ORDER BY score DESC LIMIT " +
-        str((page_num-1) * page_size) + "," + str(page_size))
+        "GROUP BY l.story_id ORDER BY score DESC LIMIT " + str(page_size) +" "+
+        "OFFSET " + str((page_num-1) * page_size))
     return Story.objects.all()
     
 #-----------------------------------------------------------------------------

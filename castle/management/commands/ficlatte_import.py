@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 from castle.models import *
 from django.db import transaction
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 import MySQLdb
 import binascii
 
@@ -53,7 +54,7 @@ class Command(BaseCommand):
             profile.user=user
             profile.save()
 
-            self.stdout.write('uid '+unicode(row[0])+ ' is '+row[1]+' Django uid is '+unicode(user.id))
+            self.stdout.write(u'uid '+unicode(row[0])+ u' is '+row[1]+u' Django uid is '+unicode(user.id))
 
     @transaction.atomic
     def import_friendships(self):
@@ -63,7 +64,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write(unicode(row[0])+' is following '+unicode(row[1]))
+            self.stdout.write(unicode(row[0])+u' is following '+unicode(row[1]))
             prof = Profile.objects.get(pk=int(row[0]))
             prof.friends.add(Profile.objects.get(pk=row[1]))
             prof.save()
@@ -76,7 +77,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write('Prompt '+unicode(row[0]))
+            self.stdout.write(u'Prompt '+unicode(row[0]))
             prompt = Prompt(
                 id = row[0],
                 user = Profile.objects.get(pk=row[1]),
@@ -96,7 +97,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write('Story '+unicode(row[0])+': '+unicode(row[2]))
+            self.stdout.write(u'Story '+unicode(row[0]))#+u': '+unicode(row[2]))
             story = Story(
                 id = row[0],
                 user = Profile.objects.get(pk=row[1]),
@@ -119,15 +120,18 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write('Story '+unicode(row[0])+': '+unicode(row[2]))
+            self.stdout.write(u'Story '+unicode(row[0])+u': '+unicode(row[2]))
             story = Story.objects.get(pk=row[0])
-            if (row[1]):
-                story.prequel_to = Story.objects.get(pk=row[1])
-            if (row[2]):
-                story.sequel_to = Story.objects.get(pk=row[2])
-            if (row[3]):
-                story.prompt = Prompt.objects.get(pk=row[3])
-            story.save()
+            try:
+                if (row[1]):
+                    story.prequel_to = Story.objects.get(pk=row[1])
+                if (row[2]):
+                    story.sequel_to = Story.objects.get(pk=row[2])
+                if (row[3]):
+                    story.prompt = Prompt.objects.get(pk=row[3])
+                story.save()
+            except ObjectDoesNotExist:
+                self.stdout.write("Link to deleted story")
                 
     @transaction.atomic
     def import_blog(self):
@@ -137,7 +141,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write('Blog '+unicode(row[0]))
+            self.stdout.write(u'Blog '+unicode(row[0]))
             profile = Profile.objects.get(pk=row[1])
             blog = Blog(
                     id = row[0],
@@ -159,7 +163,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write('Comment '+unicode(row[0]))
+            self.stdout.write(u'Comment '+unicode(row[0]))
             profile = Profile.objects.get(pk=row[1])
             comment = Comment(
                     id = row[0],
@@ -181,7 +185,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write('Tag '+unicode(row[0])+' on '+unicode(row[1]))
+            self.stdout.write(u'Tag '+unicode(row[0])+u' on '+unicode(row[1]))
             story = Story.objects.get(pk=row[1])
             tag = Tag(
                 tag = row[0],
@@ -197,36 +201,42 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write('Rating from '+unicode(row[0]))
-            r = Rating(
-                user  = Profile.objects.get(pk=row[0]),
-                story = Story.objects.get(pk=row[1]),
-                rating = row[2],
-                )
-            r.save()
+            self.stdout.write(u'Rating from '+unicode(row[0]))
+            try:
+                r = Rating(
+                    user  = Profile.objects.get(pk=row[0]),
+                    story = Story.objects.get(pk=row[1]),
+                    rating = row[2],
+                    )
+                r.save()
+            except ObjectDoesNotExist:
+                self.stdout.write("Rating of non-existant story "+unicode(row[1]))
 
     @transaction.atomic
     def import_story_log(self):
         c = self.db.cursor()
-        #c.execute('SELECT uid, sid, type, mid, time FROM story_log');
-        c.execute('SELECT uid, sid, type, mid, time FROM story_log where type!=1');
+        c.execute('SELECT uid, sid, type, mid, time FROM story_log');
+        #c.execute('SELECT uid, sid, type, mid, time FROM story_log where type!=1');
         while (1):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write('Story log user '+unicode(row[0])+'; story='+unicode(row[1])+'; type='+unicode(row[2]))
-            l = StoryLog(
-                user  = Profile.objects.get(pk=row[0]),
-                log_type = row[2],
-                ctime = row[4],
-                )
-            if (row[1]):
-                l.story = Story.objects.get(pk=row[1])
-            if ((row[2] == 4) or (row[2] == 5)):
-                l.quel = Story.objects.get(pk=row[3])
-            elif ((row[2] == 8) or (row[2] == 9)):
-                l.prompt = Prompt.objects.get(pk=row[3])
-            #l.save()
+            self.stdout.write(u'Story log user '+unicode(row[0])+u'; story='+unicode(row[1])+u'; type='+unicode(row[2]))
+            try:
+                l = StoryLog(
+                    user  = Profile.objects.get(pk=row[0]),
+                    log_type = row[2],
+                    ctime = row[4],
+                    )
+                if (row[1]):
+                    l.story = Story.objects.get(pk=row[1])
+                if ((row[2] == 4) or (row[2] == 5)):
+                    l.quel = Story.objects.get(pk=row[3])
+                elif ((row[2] == 8) or (row[2] == 9)):
+                    l.prompt = Prompt.objects.get(pk=row[3])
+                l.save()
+            except ObjectDoesNotExist:
+                self.stdout.write("Story log with non-exitant link")
 
     @transaction.atomic
     def import_misc(self):
@@ -236,7 +246,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write('misc '+row[0])
+            self.stdout.write(u'misc '+row[0])
             m = Misc(
                 key = row[0],
                 s_val = row[1],
@@ -264,5 +274,5 @@ class Command(BaseCommand):
         self.import_story_log()
         self.import_misc()
         
-        self.stdout.write('Balls')
+        self.stdout.write(u'Balls')
         
