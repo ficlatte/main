@@ -50,13 +50,13 @@ def get_popular_stories(page_num=1, page_size=10):
     elif (db == 'postgres'):
         return Story.objects.raw(
         "SELECT s.id as id, " +
-        "SUM(1/(date_part(day, NOW() - l.ctime)+1)) AS score " +
+        "SUM(1/(date_part('day', NOW() - l.ctime)+1)) AS score " +
         "FROM castle_storylog AS l " +
         "LEFT JOIN castle_story AS s ON s.id=l.story_id " +
         "WHERE l.user_id != s.user_id " +
         "AND l.log_type = " + str(StoryLog.VIEW) +" "+
         "AND ((s.draft IS NULL) OR (NOT s.draft)) " +
-        "GROUP BY l.story_id ORDER BY score DESC LIMIT " + str(page_size) +" "+
+        "GROUP BY s.id ORDER BY score DESC LIMIT " + str(page_size) +" "+
         "OFFSET " + str((page_num-1) * page_size))
     return Story.objects.all()
     
