@@ -678,7 +678,7 @@ def prompts(request):
 
     # Get prompts
     page_num = safe_int(request.GET.get('page_num', 1))
-    prompts = Prompt.objects.all().order_by('ctime')[(page_num-1)*PAGE_PROMPTS:page_num*PAGE_PROMPTS]
+    prompts = Prompt.objects.all().order_by('-ctime')[(page_num-1)*PAGE_PROMPTS:page_num*PAGE_PROMPTS]
     num_prompts = Prompt.objects.all().count()
 
     # Build context and render page
