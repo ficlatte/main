@@ -18,6 +18,7 @@
 {% endblock news_panel %}
 
 {% block primary_panel %}
+        {% if activity_log %}
           <div class="well well-sm">
             <h3>User&#39;s recent activity</h3>
             <ul id="user-activity-list">
@@ -26,7 +27,7 @@
               {% endfor %}
             </ul>
           </div> <!-- id="" class="well well-sm" -->
-          
+        {% endif %}
           <div class="well well-sm" id="whats-new">
             <h3>What&#39;s new</h3>
             <div class="row" id="featured-popular">
