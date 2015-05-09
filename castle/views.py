@@ -27,7 +27,7 @@ import hashlib
 #-----------------------------------------------------------------------------
 PAGE_COMMENTS   = 15
 PAGE_STORIES    = 15
-PAGE_BROWSE     = 3 #0
+PAGE_BROWSE     = 25
 PAGE_PROMPTS    = 20
 PAGE_BLOG       = 10
 
