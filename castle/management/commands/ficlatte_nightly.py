@@ -20,11 +20,11 @@ class Command(BaseCommand):
         if (db == 'mysql'):
             cursor.execute(
                 "UPDATE castle_story AS s SET activity = (SELECT "+
-                "sum(l.log_type / (timestampdiff(day,l.time,now())+1)) "+
+                "sum(l.log_type / (timestampdiff(day,l.ctime,now())+1)) "+
                 "FROM castle_storylog AS l "+
-                "WHERE s.sid=l.sid "+
-                "AND ((timestampdiff(day,l.time,now())) < 30) "+
-                "AND l.uid != l.tuid )")
+                "WHERE l.story_id IS NOT NULL AND s.id=l.story_id "+
+                "AND ((timestampdiff(day,l.ctime,now())) < 30) "+
+                "AND l.user_id != s.user_id )")
         elif (db == 'postgres'):
             cursor.execute(
                 "UPDATE castle_story AS s SET activity = (SELECT "+
@@ -34,13 +34,18 @@ class Command(BaseCommand):
                 "AND ((date_part('day', NOW() - l.ctime)) < 30) "+
                 "AND l.user_id != s.user_id )")
 
-#    my $sth0 = $dbh->prepare("UPDATE $story_table SET activity = 0");
-#    my $sth1 = $dbh->prepare("UPDATE $story_table AS s SET activity = (SELECT ".
-#        "sum(l.type / (timestampdiff(day,l.time,now())+1)) ".
-#        "FROM $log_table AS l ".
-#        "WHERE s.sid=l.sid ".
-#        "AND ((timestampdiff(day,l.time,now())) < 30) ".
-#        "AND l.uid != l.tuid )");
+        # Find most active story
+        ma = Story.objects.filter(activity__isnull = False).order_by('-activity')[0:1]
+        if (ma and (ma[0])):
+            # Find 'featured' object in Misc table and update with new most-active story
+            ff = Misc.objects.filter(key='featured')
+            if (ff):
+                f = ff[0]
+            else:
+                f = Misc(key='featured')
+            
+            f.i_val = ma[0].id
+            f.save()
 
         return None
 
