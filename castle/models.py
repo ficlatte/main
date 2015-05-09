@@ -64,7 +64,7 @@ class Story(models.Model):
     mature      = models.BooleanField(default=False)
     draft       = models.BooleanField(default=False)
     ficly       = models.BooleanField(default=False)
-    activity    = models.FloatField(default=0.0)
+    activity    = models.FloatField(default=0.0, null=True)
     prompt_text = models.CharField(max_length=256, blank=True, null=True)
     ctime       = models.DateTimeField(default=timezone.now)
     mtime       = models.DateTimeField(default=timezone.now)
