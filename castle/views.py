@@ -64,7 +64,7 @@ def get_popular_stories(page_num=1, page_size=10):
 def get_active_stories(page_num=1, page_size=10):
     first = (page_num-1) * page_size
     last  = first + page_size
-    return Story.objects.filter(activity__isnull=False, activity__gt = 0).order_by('activity')[first:last]
+    return Story.objects.filter(activity__isnull=False, activity__gt = 0).order_by('-activity')[first:last]
     
 #-----------------------------------------------------------------------------
 def get_num_active_stories():
