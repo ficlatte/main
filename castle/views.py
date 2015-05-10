@@ -955,6 +955,7 @@ def submit_blog(request):
     was_draft  = False
     if (not new_blog):         # Remember if the blog was draft
         was_draft = blog.draft
+    draft      = request.POST.get('is_draft', False)
 
     if (not profile.email_authenticated()):
         errors.append(u'You must have authenticated your e-mail address before posting a blog');
@@ -966,7 +967,7 @@ def submit_blog(request):
         # Populate blog object with data from submitted form
         blog.title  = request.POST.get('title', '')
         blog.body   = request.POST.get('body', '')
-        blog.draft  = request.POST.get('is_draft', False)
+        blog.draft  = draft
                 
         # Check for submission errors
         if (len(blog.title) < 1):
