@@ -923,7 +923,7 @@ def edit_blog(request, blog_id):
     if (request.user.is_authenticated()):
         profile = request.user.profile
     
-    if ((profile is None) or (not profile.has_perm("castle.post_blog"))):
+    if ((profile is None) or (not request.user.has_perm("castle.post_blog"))):
         raise Http404
 
     # Build context and render page
@@ -945,7 +945,7 @@ def submit_blog(request):
     if (request.user.is_authenticated()):
         profile = request.user.profile
     
-    if ((profile is None) or (not profile.has_perm("castle.post_blog"))):
+    if ((profile is None) or (not request.user.has_perm("castle.post_blog"))):
         raise Http404
 
     # Get bits and bobs
