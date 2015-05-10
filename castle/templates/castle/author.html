@@ -24,7 +24,7 @@
           </div> <!-- id="" class="panel panel-success" -->
 {% block paged_content %}
           <div class="well well-sm">
-            <h1>Stories</h1>
+            <h1>{% if drafts_page %}Drafts{% else %}Stories{% endif %}</h1>
             <div class="list-group">
               {% for story in story_list %}
               <div class="list-group-item">

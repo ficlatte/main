@@ -288,6 +288,31 @@ def author(request, pen_name):
     return render(request, 'castle/author.html', context)
 
 #-----------------------------------------------------------------------------
+@login_required
+def drafts(request):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    
+    # Build story list (owner sees their drafts)
+    page_num = safe_int(request.GET.get('page_num', 1))
+    num_stories = Story.objects.filter(user = profile, draft=True).count()
+    story_list = Story.objects.filter(user = profile, draft=True).order_by('-mtime')[(page_num-1)*PAGE_STORIES:page_num*PAGE_STORIES]
+
+    # Build context and render page
+    context = { 'profile'       : profile,
+                'author'        : profile,
+                'story_list'    : story_list,
+                'page_url'      : u'/authors/'+urlquote(profile.pen_name)+u'/',
+                'pages'         : bs_pager(page_num, PAGE_STORIES, num_stories),
+                'drafts_page'   : True,
+                'user_dashboard': True,
+                'other_user_sidepanel' : False,
+            }
+    return render(request, 'castle/author.html', context)
+
+#-----------------------------------------------------------------------------
 @transaction.atomic
 def signin(request):
     username = request.POST.get('username', None)
