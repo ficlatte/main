@@ -38,6 +38,7 @@ class Profile(models.Model):
     class Meta:
         permissions = (
             ("post_blog", "User can make blog posts"),
+            ("admin"    , "User can see dashboard, etc."),
         )
 
 # Story prompts

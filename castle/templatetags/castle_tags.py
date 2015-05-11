@@ -142,6 +142,22 @@ def author_link(profile, tag=None):
 
 #-----------------------------------------------------------------------------
 @register.filter
+def author_confirmed(profile, tag=None):
+    if (profile is None):
+        return u''
+    if (profile.email_authenticated()):
+        return u''
+    t1 = ''
+    t2 = ''
+    if (tag is not None):
+        t1 = u'<'+tag+u'>'
+        t2 = u'</'+tag.partition(' ')[0]+u'>'   # Get bit before first space
+    
+    # FIXME: Need proper URL magic here
+    return mark_safe(t1+u'<span style="color:red">  [Not confirmed]</span>'+t2)
+
+#-----------------------------------------------------------------------------
+@register.filter
 def author_span(profile, tag=None):
     return mark_safe(u'<span>Author: '+author_link(profile,tag)+u'</span>')
 
@@ -191,6 +207,20 @@ def story_link(story, tag=None):
 
 #-----------------------------------------------------------------------------
 @register.filter
+def prompt_link(prompt, tag=None):
+    if (story is None):
+        return u'<NULL PROMPT>'
+    t1 = ''
+    t2 = ''
+    if (tag is not None):
+        t1 = u'<'+tag+u'>'
+        t2 = u'</'+tag.partition(' ')[0]+u'>'   # Get bit before first space
+    
+    # FIXME: fix URL
+    return mark_safe(u'<a href="/prompt/' + unicode(prompt.id) + u'">' + t1 + escape(prompt.title) + t2 + u'</a>')
+
+#-----------------------------------------------------------------------------
+@register.filter
 def activity_entry(log):
     if (log.log_type == StoryLog.WRITE):
         return mark_safe(author_link(log.user)+u' wrote '+story_link(log.story))
@@ -206,6 +236,52 @@ def activity_entry(log):
 
     elif (log.log_type == StoryLog.STORY_MOD):
         return mark_safe(author_link(log.user)+u' updated '+story_link(log.story))
+
+    return 'log_id={}, user={}; story={}, type={}'.format(log.id, log.user.id,log.story.id, log.log_type)
+        
+    return mark_safe(author_link(log.user) + u' ' + log.get_type() + u' ' + story_link(log.story))
+
+#-----------------------------------------------------------------------------
+@register.filter
+def dashboard_entry(log):
+    #WRITE   = 0
+    #VIEW    = 1
+    #RATE    = 2
+    #COMMENT = 3
+    #PREQUEL = 4
+    #SEQUEL  = 5
+    #CHALLENGE = 6  # Created a challenge
+    #STORY_MOD = 7  # Modified an extant story
+    #PROMPT    = 8  # Created a writing prompt
+    #PROMPT_MOD= 9   # Modified a writing prompt
+
+    prompt_txt = u''
+    if (log.prompt):
+        prompt_txt = u' prompt '+prompt_link(log.prompt)
+
+    if (log.log_type == StoryLog.WRITE):
+        return mark_safe(author_link(log.user)+u' wrote '+story_link(log.story)+prompt_txt)
+    
+    elif (log.log_type == StoryLog.COMMENT):
+        return mark_safe(author_link(log.user)+u' wrote a comment on '+story_link(log.story)+u' by '+author_link(log.story.user))
+        
+    elif (log.log_type == StoryLog.RATE):
+        return mark_safe(author_link(log.user)+u' rated '+story_link(log.story)+u' by '+author_link(log.story.user))
+        
+    elif (log.log_type == StoryLog.SEQUEL):
+        return mark_safe(author_link(log.user)+u' wrote '+story_link(log.story)+u', sequel to '+story_link(log.quel)+u' by '+author_link(log.quel.user))
+        
+    elif (log.log_type == StoryLog.PREQUEL):
+        return mark_safe(author_link(log.user)+u' wrote '+story_link(log.story)+u', prequel to '+story_link(log.quel)+u' by '+author_link(log.quel.user))
+
+    elif (log.log_type == StoryLog.STORY_MOD):
+        return mark_safe(author_link(log.user)+u' updated '+story_link(log.story))
+
+    elif (log.log_type == StoryLog.PROMPT):
+        return mark_safe(author_link(log.user)+u' wrote prompt '+prompt_link(log.prompt))
+
+    elif (log.log_type == StoryLog.PROMPT_MOD):
+        return mark_safe(author_link(log.user)+u' updated prompt '+prompt_link(log.prompt))
 
     return 'log_id={}, user={}; story={}, type={}'.format(log.id, log.user.id,log.story.id, log.log_type)
         

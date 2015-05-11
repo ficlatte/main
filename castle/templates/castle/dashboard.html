@@ -1,0 +1,26 @@
+{% extends "castle/page_with_selected_sidebar.html" %}
+{% load staticfiles %}
+{% load castle_tags %}
+
+{% block primary_panel %}
+          <h1>Dashboard</h1>
+
+          <p>{{views}} story views in last 24 hours</p>
+          <p>Total users: {{users}}</p>
+          <p>active stories: {{act_stories}}</p>
+          <p>published stories: {{pub_stories}}</p>
+          <p>total stories (inc drafts): {{tot_stories}}</p>
+          <h3>Recent log entries</h3>
+          <ul>
+            {% for l in log %}
+            <li>{{ l.ctime|date:'Y-m-d_H:i' }}: {{ l|dashboard_entry }}</li>
+            {% endfor %}
+          </ul>
+          <h3>Recent users</h3>
+          <ul>
+            {% for u in recent_users %}
+              <li>{{ u.ctime|date:'Y-m-d_H:i' }}: {{ u|author_link }}{{ u|author_confirmed }}</li>
+            {% endfor %}
+          </ul>
+
+{% endblock primary_panel %}

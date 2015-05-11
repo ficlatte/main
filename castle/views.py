@@ -14,7 +14,7 @@ from django.conf import settings
 from django.utils import timezone
 from castle.models import *
 from castle.mail import *
-from datetime import datetime
+from datetime import datetime, timedelta
 from random import randint
 from struct import unpack
 from os import urandom
@@ -1320,5 +1320,48 @@ def confirmation(request, yesno, uid, token):
                       {'profile': logged_in_user,
                       'status_type': 'danger',
                       'status_message': u'Authentication token mismatch'})
+
+#-----------------------------------------------------------------------------
+@login_required
+def dashboard(request):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    
+    if ((profile is None) or (not request.user.has_perm("castle.admin"))):
+        raise Http404
+    
+    # Count number of views in last 24 hours:
+    date_from = timezone.now() - timedelta(days=1)
+    views = StoryLog.objects.filter(log_type=StoryLog.VIEW, ctime__gte=date_from).count()
+    
+    # Count users
+    users = Profile.objects.count()
+    
+    # Count stories
+    tot_stories = Story.objects.count()
+    act_stories = Story.objects.filter(activity__gt = 0).count()
+    pub_stories = Story.objects.exclude(draft=True).count()
+    
+    # Recent log entries
+    log = StoryLog.objects.exclude(log_type=StoryLog.VIEW).order_by('-ctime')[0:25]
+    
+    # Recent users
+    recent_users = Profile.objects.all().order_by('-ctime')[0:10]
+    
+    # Build context and render page
+    context = {
+        'profile'       : profile,
+        'views'         : views,
+        'users'         : users,
+        'tot_stories'   : tot_stories,
+        'act_stories'   : act_stories,
+        'pub_stories'   : pub_stories,
+        'log'           : log,
+        'recent_users'  : recent_users,
+        }
+
+    return render(request, 'castle/dashboard.html', context)
 
 #-----------------------------------------------------------------------------
