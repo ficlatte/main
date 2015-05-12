@@ -1,0 +1,18 @@
+{% extends "castle/page_without_sidebar.html" %}
+{% load staticfiles %}
+{% load castle_tags %}
+
+{% block primary_panel %}
+          <div id="tag-list">
+            <h3>All tags</h3>
+{% block paged_content %}
+            <div class="tag-cloud" id="tags">
+              {% for t in tags %}
+              <a class="btn btn-primary btn-xs" href="/tags/{{t.tag|iriencode}}/" rel="tag" type="button">{{t.tag}}</a>
+              {% endfor %}
+            </div> <!-- id="tags" class="tag-cloud" -->
+{% endblock paged_content %}
+{% block pager %}{{block.super}}{%endblock%}
+          </div> <!-- id="story-summary" class="" -->
+{% endblock primary_panel %}
+

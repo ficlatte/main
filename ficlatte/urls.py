@@ -36,6 +36,8 @@ urlpatterns = patterns('',
     url(r'^blog/new/$', 'castle.views.new_blog', name='new_blog'),
     url(r'^blog/submit/$', 'castle.views.submit_blog', name='submit_blog'),
     url(r'^comment/submit/$', 'castle.views.submit_comment', name='submit_comment'),
+    url(r'^tags/(?P<tag_name>[^/]+)/$', 'castle.views.tags', name='tags'),
+    url(r'^tags/$', 'castle.views.tags_null', name='tags_null'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^confirmation/(?P<yesno>(?:yes|no))/(?P<uid>\d+)/(?P<token>\d+)/$', 'castle.views.confirmation', name='confirmation'),
 )

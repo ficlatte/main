@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
-from django.db.models import Sum, Avg, Q
+from django.db.models import Sum, Avg, Q, Count
 from django.utils.http import urlquote_plus, urlquote
 from django.conf import settings
 from django.utils import timezone
@@ -30,7 +30,9 @@ PAGE_STORIES    = 15
 PAGE_BROWSE     = 25
 PAGE_PROMPTS    = 20
 PAGE_BLOG       = 10
+PAGE_ALLTAGS    = 200
 
+re_crlf = re.compile(r'(\r\n|\r|\n)')
 #-----------------------------------------------------------------------------
 # Query functions
 #-----------------------------------------------------------------------------
@@ -83,6 +85,28 @@ def get_old_stories(page_size=10):
     first = randint(0, end)
     last  = first + page_size
     return Story.objects.filter(draft = False).order_by('ptime')[first:last]
+
+#-----------------------------------------------------------------------------
+def get_tagged_stories(tag_name, page_num=1, page_size=10):
+    num = Tag.objects.filter(tag=tag_name.upper()).count()
+    if (num == 0):
+        return (0, None)
+
+    first = (page_num-1) * page_size
+    last  = first + page_size
+    stories = Story.objects.filter(draft = False, tag__tag=tag_name.upper()).order_by('-ptime')[first:last]
+    
+    return (num, stories)
+    
+#-----------------------------------------------------------------------------
+def get_all_tags(page_num=1, page_size=10):
+    first = (page_num-1) * page_size
+    last  = first + page_size
+    return Tag.objects.values('tag').annotate(n=Count('tag')).order_by('-n','tag')[first:last]
+    
+#-----------------------------------------------------------------------------
+def get_num_tags():
+    return Tag.objects.values('tag').distinct().count()
     
 #-----------------------------------------------------------------------------
 def get_activity_log(profile, entries):
@@ -570,7 +594,10 @@ def submit_story(request):
         story.body   = request.POST.get('body', '')
         story.mature = request.POST.get('is_mature', False)
         story.draft  = request.POST.get('is_draft', False)
-                
+        
+        # Condense all end-of-line markers into \n
+        story.body = re_crlf.sub(u"\n", story.body)
+        
         # Check for submission errors
         if (len(story.title) < 1):
             errors.append(u'Story title must be at least 1 character long')
@@ -1363,5 +1390,63 @@ def dashboard(request):
         }
 
     return render(request, 'castle/dashboard.html', context)
+
+#-----------------------------------------------------------------------------
+def tags(request, tag_name):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    page_num = safe_int(request.GET.get('page_num', 1))
+
+    # Find stories with this tag name (forced to upper case)
+    tag_name = tag_name.upper()
+    (num_stories, stories) = get_tagged_stories(tag_name, page_num, PAGE_BROWSE)
+    if (num_stories == 0):
+        # No stories found, give the user 
+        return tags_null(request, u'No stories tagged '+tag_name)
+
+    label = u'Stories tagged “'+unicode(tag_name)+u'”'
+    url = u'/tags/'+urlquote(tag_name)+u'/'
+
+    # Build context and render page
+    context = { 'profile'       : profile,
+                'stories'       : stories,
+                'page_url'      : url,
+                'pages'         : bs_pager(page_num, PAGE_BROWSE, num_stories),
+                'user_dashboard': 1,
+                'label'         : label,
+              }
+    return render(request, 'castle/browse.html', context)
+    
+#-----------------------------------------------------------------------------
+def tags_null(request, error_msg = None):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    page_num = safe_int(request.GET.get('page_num', 1))
+
+    # List all the tags
+    num_tags = get_num_tags()
+    tags     = get_all_tags(page_num, PAGE_ALLTAGS)
+
+    url = u'/tags/'
+    
+    error_title = u'Tag not found' if (error_msg) else None
+    error_messages = [error_msg] if (error_msg) else None
+
+    # Build context and render page
+    context = { 'profile'       : profile,
+                'tags'          : tags,
+                'page_url'      : url,
+                'pages'         : bs_pager(page_num, PAGE_ALLTAGS, num_tags),
+                'user_dashboard': 1,
+                'error_title'   : error_title,
+                'error_messages': error_messages,
+              }
+    return render(request, 'castle/all_tags.html', context)
 
 #-----------------------------------------------------------------------------
