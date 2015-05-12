@@ -874,7 +874,7 @@ def blogs(request):
 
     # Get blogs
     page_num = safe_int(request.GET.get('page_num', 1))
-    blogs = Blog.objects.exclude(draft=True).order_by('ptime')[(page_num-1)*PAGE_BLOG:page_num*PAGE_BLOG]
+    blogs = Blog.objects.exclude(draft=True).order_by('-ptime')[(page_num-1)*PAGE_BLOG:page_num*PAGE_BLOG]
     num_blogs = Blog.objects.exclude(draft = True).count()
 
     # Build context and render page
