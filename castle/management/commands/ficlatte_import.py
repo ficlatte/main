@@ -191,7 +191,7 @@ class Command(BaseCommand):
                 tag = row[0],
                 story = story,
                 )
-        tag.save()
+            tag.save()
     
     @transaction.atomic
     def import_ratings(self):

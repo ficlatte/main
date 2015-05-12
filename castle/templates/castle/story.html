@@ -34,7 +34,7 @@
                   {% else %}
                   <p>No prequels yet, why not write one?</p>
                   {% endif %}
-                  <p><a class="btn btn-success" href="/stories/new?prequel={{story.id}}" role="button">&laquo; Write a prequel</a></p>
+                  <p><a class="btn btn-success" href="/stories/new?prequel_to={{story.id}}" role="button">&laquo; Write a prequel</a></p>
                 </div> <!-- id="" class="panel-body" -->
               </div> <!-- id="" class="panel panel-success" -->
             </div> <!-- id="prequel-group" class="col-md-6" -->
@@ -56,7 +56,7 @@
                   {% else %}
                   <p>No sequels yet, why not write one?</p>
                   {% endif %}
-                  <p><a class="btn btn-success" href="/stories/new?sequel={{story.id}}" role="button">Write a sequel &raquo;</a></p>
+                  <p><a class="btn btn-success" href="/stories/new?sequel_to={{story.id}}" role="button">Write a sequel &raquo;</a></p>
                 </div> <!-- id="" class="panel-body" -->
               </div> <!-- id="" class="panel panel-success" -->
             </div> <!-- id="sequel-group" class="col-md-6" -->
