@@ -801,7 +801,10 @@ def submit_prompt(request):
         prompt.title  = request.POST.get('title', '')
         prompt.body   = request.POST.get('body', '')
         prompt.mature = request.POST.get('is_mature', False)
-                
+
+        # Condense all end-of-line markers into \n
+        prompt.body = re_crlf.sub(u"\n", prompt.body)
+
         # Check for submission errors
         if (len(prompt.title) < 1):
             errors.append(u'Prompt title must be at least 1 character long')
@@ -1020,7 +1023,10 @@ def submit_blog(request):
         blog.title  = request.POST.get('title', '')
         blog.body   = request.POST.get('body', '')
         blog.draft  = draft
-                
+
+        # Condense all end-of-line markers into \n
+        blog.body = re_crlf.sub(u"\n", blog.body)
+
         # Check for submission errors
         if (len(blog.title) < 1):
             errors.append(u'Blog title must be at least 1 character long')
@@ -1096,6 +1102,9 @@ def submit_comment(request):
 
         # Populate comment object with data from submitted form
         comment.body   = request.POST.get('body', '')
+
+        # Condense all end-of-line markers into \n
+        comment.body = re_crlf.sub(u"\n", comment.body)
 
         # Check for submission errors
         l = len(comment.body)
@@ -1229,7 +1238,9 @@ def submit_profile(request):
     if (site_name):
         profile.site_name = site_name
     if (new_registration or biography):
-        profile.biography = biography
+        # Condense all end-of-line markers into \n
+        profile.biography = re_crlf.sub(u"\n", biography)
+
         if (len(biography) < 2):
             errors.append(u'Biography must be at least 2 characters.  Tell us a bit about yourself')
     if (mature):
