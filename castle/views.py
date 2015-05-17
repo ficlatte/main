@@ -300,13 +300,18 @@ def author(request, pen_name):
         num_stories=Story.objects.filter(user = author, draft = False).count()
         story_list=Story.objects.filter(user = author, draft = False).order_by('-ptime')[(page_num-1)*PAGE_STORIES:page_num*PAGE_STORIES]
 
+    # Friendship?
+    is_friend = False
+    if (profile and author):
+        is_friend = profile.is_friend(author)
+
     # Build context and render page
     context = { 'profile'       : profile,
                 'author'        : author,
                 'story_list'    : story_list,
                 'page_url'      : u'/authors/'+urlquote(author.pen_name)+u'/',
                 'pages'         : bs_pager(page_num, PAGE_STORIES, num_stories),
-                'is_friend'     : profile.is_friend(author),
+                'is_friend'     : is_friend,
                 'user_dashboard': owner,
                 'other_user_sidepanel' : (not owner),
             }
