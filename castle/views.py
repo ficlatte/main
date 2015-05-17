@@ -302,8 +302,8 @@ def author(request, pen_name):
 
     # Friendship?
     is_friend = False
-#    if (profile and author):
-#        is_friend = profile.is_friend(author)
+    if (profile and author):
+        is_friend = profile.is_friend(author)
 
     # Build context and render page
     context = { 'profile'       : profile,
