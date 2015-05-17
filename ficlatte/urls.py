@@ -38,6 +38,8 @@ urlpatterns = patterns('',
     url(r'^comment/submit/$', 'castle.views.submit_comment', name='submit_comment'),
     url(r'^tags/(?P<tag_name>[^/]+)/$', 'castle.views.tags', name='tags'),
     url(r'^tags/$', 'castle.views.tags_null', name='tags_null'),
+    url(r'^friendship/add/(?P<user_id>\d+)/$', 'castle.views.add_friend', name='add_friend'),
+    url(r'^friendship/del/(?P<user_id>\d+)/$', 'castle.views.del_friend', name='del_friend'),    
     url(r'^admin/', include(admin.site.urls)),
     url(r'^confirmation/(?P<yesno>(?:yes|no))/(?P<uid>\d+)/(?P<token>\d+)/$', 'castle.views.confirmation', name='confirmation'),
 )

@@ -306,6 +306,7 @@ def author(request, pen_name):
                 'story_list'    : story_list,
                 'page_url'      : u'/authors/'+urlquote(author.pen_name)+u'/',
                 'pages'         : bs_pager(page_num, PAGE_STORIES, num_stories),
+                'is_friend'     : profile.is_friend(author),
                 'user_dashboard': owner,
                 'other_user_sidepanel' : (not owner),
             }
@@ -1459,5 +1460,37 @@ def tags_null(request, error_msg = None):
                 'error_messages': error_messages,
               }
     return render(request, 'castle/all_tags.html', context)
+
+#-----------------------------------------------------------------------------
+@login_required
+def add_friend(request, user_id):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    
+    # get friend object
+    friend = get_object_or_404(Profile, pk=user_id)
+    
+    # Add friend to profile's friendship list
+    profile.friends.add(friend)
+    
+    return HttpResponseRedirect(reverse('author', args=(friend.pen_name,)))
+
+#-----------------------------------------------------------------------------
+@login_required
+def del_friend(request, user_id):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    
+    # get friend object
+    friend = get_object_or_404(Profile, pk=user_id)
+    
+    # Add friend to profile's friendship list
+    profile.friends.remove(friend)
+    
+    return HttpResponseRedirect(reverse('author', args=(friend.pen_name,)))
 
 #-----------------------------------------------------------------------------

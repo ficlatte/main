@@ -35,6 +35,9 @@ class Profile(models.Model):
     def email_authenticated(self):
         return (self.email_auth == 0L)
     
+    def is_friend(self, other):
+        return self.friends.filter(user=other).exists()
+    
     class Meta:
         permissions = (
             ("post_blog", "User can make blog posts"),

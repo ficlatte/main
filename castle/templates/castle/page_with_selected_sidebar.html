@@ -70,7 +70,11 @@
               <h3 class="panel-title">{{author.pen_name}}</h3>
             </div> <!-- id="" class="panel-heading" -->
             <div class="panel-body">
+              {% if is_friend %}
+              <a class="btn btn-info btn-block" href="/friendship/del/{{author.id}}/" id="make-link" type="button">Un-follow {{author.pen_name}}</a>
+              {% else %}
               <a class="btn btn-success btn-block" href="/friendship/add/{{author.id}}/" id="make-link" type="button">Follow {{author.pen_name}}</a>
+              {% endif %}
               <hr />
               <h4>Friends <span>{{author|num_friends}}</span></h4>
               <div class="row">
