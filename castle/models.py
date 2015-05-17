@@ -36,7 +36,7 @@ class Profile(models.Model):
         return (self.email_auth == 0L)
     
     def is_friend(self, other):
-        return self.friends.filter(user=other).exists()
+        return self.friends.filter(id=other.id).exists()
     
     class Meta:
         permissions = (
