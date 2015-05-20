@@ -1,4 +1,5 @@
-{#
+{% extends "admin/base.html" %}
+{%comment%}
 This file is part of Ficlatté.
 Copyright (C) 2015 Paul Robertson
 
@@ -14,8 +15,7 @@ Copyright (C) 2015 Paul Robertson
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#}
-{% extends "admin/base.html" %}
+{%endcomment%}
 
 {% block title %}{{ title }} | {{ site_title|default:_('Ficlatté site admin') }}{% endblock %}
 

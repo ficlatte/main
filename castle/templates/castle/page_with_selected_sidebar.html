@@ -1,4 +1,5 @@
-{#
+{% extends "castle/page_with_sidebar.html" %}
+{%comment%}
 This file is part of Ficlatté.
 Copyright (C) 2015 Paul Robertson
 
@@ -14,16 +15,15 @@ Copyright (C) 2015 Paul Robertson
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#}
-{% extends "castle/page_with_sidebar.html" %}
+{%endcomment%}
 {% load staticfiles %}
 {% load castle_tags %}
 
 {% block secondary_panel %}
 
-  {#------------------------------------------------------------------#}
-  {# User dashboard #}
-  {#------------------------------------------------------------------#}
+  {%comment%}------------------------------------------------------------------{%endcomment%}
+  {%comment%} User dashboard {%endcomment%}
+  {%comment%}------------------------------------------------------------------{%endcomment%}
   {% if user_dashboard %}
     {% if profile %}
       {% if prompt_button %}
@@ -77,9 +77,9 @@ Copyright (C) 2015 Paul Robertson
     {% endif %}
   {% endif %}
 
-  {#------------------------------------------------------------------#}
-  {# Panel for a different user #}
-  {#------------------------------------------------------------------#}
+  {%comment%}------------------------------------------------------------------{%endcomment%}
+  {%comment%} Panel for a different user {%endcomment%}
+  {%comment%}------------------------------------------------------------------{%endcomment%}
   {% if other_user_sidepanel %}
     {% if author %}
           <div class="panel panel-warning">
@@ -115,9 +115,9 @@ Copyright (C) 2015 Paul Robertson
     {% endif %}
   {% endif %}
   
-  {#------------------------------------------------------------------#}
-  {# Story side-panel #}
-  {#------------------------------------------------------------------#}
+  {%comment%}------------------------------------------------------------------{%endcomment%}
+  {%comment%} Story side-panel {%endcomment%}
+  {%comment%}------------------------------------------------------------------{%endcomment%}
   {% if story_sidepanel %}
   
     {% if owner %}
@@ -173,9 +173,9 @@ Copyright (C) 2015 Paul Robertson
           <hr />
           <p class="small" id="licence">All stories on Ficlatt&eacute; are licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license">Creative Commons Attribution-Share Alike 3.0 License</a><a href="http://wiki.creativecommons.org/Sharing_Creative_Works">What does this mean?</a></p>
   {% endif %}
-  {#------------------------------------------------------------------#}
-  {# Prompt side panel #}
-  {#------------------------------------------------------------------#}
+  {%comment%}------------------------------------------------------------------{%endcomment%}
+  {%comment%} Prompt side panel {%endcomment%}
+  {%comment%}------------------------------------------------------------------{%endcomment%}
   {% if prompt_sidepanel and prompt %}
           <a class="btn btn-success btn-block" href="/stories/new?prid={{prompt.id}}/" id="prompt-link" type="button"><span class="glyphicon glyphicon-pencil"></span> Take prompt</a>
           {% if owner %}
