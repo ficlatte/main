@@ -441,12 +441,12 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
     prequels = []
     if (story.sequel_to):
         prequels.append(story.sequel_to)
-    prequels.extend(story.prequels.all())
+    prequels.extend(story.prequels.filter(Q(draft=False) | Q(user=profile)))
 
     sequels = []
     if (story.prequel_to):
         sequels.append(story.prequel_to)
-    sequels.extend(story.sequels.all())
+    sequels.extend(story.sequels.filter(Q(draft=False) | Q(user=profile)))
 
     # Get user rating in numeric and string forms
     rating = Rating.objects.filter(story=story).exclude(user=story.user).aggregate(avg=Avg('rating'))['avg']
