@@ -45,6 +45,9 @@ class Profile(models.Model):
     ctime       = models.DateTimeField(default=timezone.now)
     mtime       = models.DateTimeField(default=timezone.now)
     atime       = models.DateTimeField(default=timezone.now)
+
+    # Flags
+    HAS_AVATAR = 1
     
     def __unicode__(self):
         return unicode(self.pen_name)

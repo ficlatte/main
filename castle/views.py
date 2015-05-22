@@ -1514,3 +1514,15 @@ def del_friend(request, user_id):
     return HttpResponseRedirect(reverse('author', args=(friend.pen_name,)))
 
 #-----------------------------------------------------------------------------
+def static_view(request, template):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    context = {
+        'profile'       : profile
+        }
+    return render(request, 'castle/'+template, context)
+
+#-----------------------------------------------------------------------------
