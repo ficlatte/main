@@ -42,8 +42,11 @@ Copyright (C) 2015 Paul Robertson
               <h3 class="panel-title">User dashboard</h3>
             </div> <!-- id="" class="panel-heading" -->
             <div class="panel-body">
-              <span class="glyphicon glyphicon-user"></span>
-              <a href="/authors/u/profile/">Edit profile</a>
+              <p><span class="glyphicon glyphicon-user"></span>
+              <a href="/authors/u/profile/">Edit profile</a></p>
+              <p><span class="glyphicon glyphicon-camera"></span>
+              <a href="{% url 'avatar_upload' %}">Upload avatar</a></p>
+
               <hr />
               <h4>Your desk</h4>
               <ul class="list-unstyled">
@@ -56,22 +59,22 @@ Copyright (C) 2015 Paul Robertson
               </ul>
               <hr />
               <h4>Friends: <span>{{profile|num_friends}}</span></h4>
-              <div class="row">
+              <div class="friends-grid-outer">
                 {% for f in profile.friends.all %}
-                <div class="col-md-3">
+                  <div class="friends-grid-box"><div class="friends-grid-pic">
                   {{f|user_icon}}
-                </div> <!-- id="" class="col-md-3" -->
+                  </div></div>
                 {% endfor %}
-              </div> <!-- id="" class="row" -->
+              </div> <!-- id="" class="friends-grid-outer" -->
               <hr />
               <h4>Followers: <span>{{profile|num_followers}}</span></h4>
-              <div class="row">
+              <div class="friends-grid-outer">
                 {% for f in profile.followers.all %}
-                <div class="col-md-3">
+                  <div class="friends-grid-box"><div class="friends-grid-pic">
                   {{f|user_icon}}
-                </div> <!-- id="" class="col-md-3" -->
+                  </div></div>
                 {% endfor %}
-              </div> <!-- id="" class="row" -->
+              </div> <!-- id="" class="friends-grid-outer" -->
             </div> <!-- id="" class="panel-body" -->
           </div> <!-- id="" class="panel panel-warning" -->
     {% endif %}

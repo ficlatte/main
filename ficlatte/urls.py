@@ -60,6 +60,7 @@ urlpatterns = patterns('',
     url(r'^friendship/del/(?P<user_id>\d+)/$', 'castle.views.del_friend', name='del_friend'),    
     url(r'^admin/', include(admin.site.urls)),
     url(r'^confirmation/(?P<yesno>(?:yes|no))/(?P<uid>\d+)/(?P<token>\d+)/$', 'castle.views.confirmation', name='confirmation'),
+    url(r'^avatar_upload/', 'castle.views.avatar_upload', name='avatar_upload'),
     # Static-ish pages
     url(r'^(?P<template>rules\.html)$', 'castle.views.static_view', name="rules"),
     url(r'^(?P<template>privacy\.html)$', 'castle.views.static_view', name="rules"),

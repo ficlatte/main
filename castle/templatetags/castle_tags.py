@@ -24,7 +24,7 @@ from django.utils.html import escape
 from django.utils.http import urlquote
 from django.template.defaultfilters import stringfilter
 from django.conf import settings
-from castle.models import StoryLog
+from castle.models import StoryLog, Profile
 import math
 import re
 import unicodedata
@@ -305,20 +305,23 @@ def dashboard_entry(log):
 #-----------------------------------------------------------------------------
 @register.filter
 def avatar(profile):
-    # FIXME: fix URL
-    #which_icon = unicode(profile.id)
-    which_icon = 'default.png'
+    if (profile.flags & Profile.HAS_AVATAR):
+        which_icon = str(profile.id) + '.png'
+    else:
+        which_icon = 'default.png'
     
     return mark_safe(u'<a href="/authors/' + escape(profile.pen_name) + u'"><img alt="' + escape(profile.pen_name) + u'" class="img-rounded img-responsive" src="/static/img/avatar/' + which_icon + u'" /></a>')
 
 #-----------------------------------------------------------------------------
 @register.filter
 def user_icon(profile):
-    # FIXME: fix URL
-    #which_icon = unicode(profile.id)
-    which_icon = 'default.png'
+    if (profile.flags & Profile.HAS_AVATAR):
+        which_icon = str(profile.id) + '.png'
+    else:
+        which_icon = 'default.png'
     
-    return mark_safe(u'<a href="/authors/' + escape(profile.pen_name) + u'"><img alt="' + escape(profile.pen_name) + u'" class="img-rounded img-responsive" src="/static/img/icon/' + which_icon + u'" /></a>')
+    return mark_safe(u'<a href="/authors/' + escape(profile.pen_name) + u'"><img alt="' + escape(profile.pen_name) + u'" src="/static/img/icon/' + which_icon + u'"/></a>')
+    return mark_safe(u'<a href="/authors/' + escape(profile.pen_name) + u'"><img alt="' + escape(profile.pen_name) + u'" class="img-rounded img-responsive" src="/static/img/icon/' + which_icon + u'" height="48" width="48"/></a>')
 
 #-----------------------------------------------------------------------------
 @register.filter

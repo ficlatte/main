@@ -21,9 +21,9 @@ Copyright (C) 2015 Paul Robertson
 
 {% block primary_panel %}
     <h1>Upload avatar file</h1>
-    <form action="{% url 'dosh:statement_upload' %}" method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <table>{{ form }}</table>
-    <input type="submit" value="submit" />
+    <form action="{% url 'avatar_upload' %}" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <table>{{ form }}</table>
+      <input type="submit" value="submit" />
     </form>
 {% endblock %}

@@ -87,3 +87,21 @@ p#average-rating span#enabled {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+
+.friends-grid-outer {
+      overflow: hidden;
+}
+.friends-grid-box {
+      width: 25%;
+      padding-bottom: 25%;
+      position: relative;
+      float: left;
+}
+.friends-grid-pic {
+      position: absolute;
+      left: 0px;
+      right: 0px;
+      top: 0px;
+      bottom: 0px;
+      padding: 0px;
+}

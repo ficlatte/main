@@ -32,10 +32,12 @@ from castle.mail import *
 from datetime import datetime, timedelta
 from random import randint
 from struct import unpack
-from os import urandom
+import os
 import math
 import re
 import hashlib
+from .forms import AvatarUploadForm
+from .images import convert_avatars
 
 #-----------------------------------------------------------------------------
 # Global symbols
@@ -234,7 +236,7 @@ def safe_int(v, default=1):
 
 #-----------------------------------------------------------------------------
 def random64():
-    return unpack("!Q", urandom(8))[0]
+    return unpack("!Q", os.urandom(8))[0]
 
 #-----------------------------------------------------------------------------
 def to_signed64(u):
@@ -1524,5 +1526,38 @@ def static_view(request, template):
         'profile'       : profile
         }
     return render(request, 'castle/'+template, context)
+
+#-----------------------------------------------------------------------------
+@login_required
+def avatar_upload(request):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    if (request.method == 'POST'):
+        form = AvatarUploadForm(request.POST, request.FILES)
+        if (form.is_valid()):
+            # Happy
+            f = request.FILES['image_file']
+            path = getattr(settings, 'AVATAR_PATH', None)
+            fnm = path + '/tmp/' + str(profile.id)
+            destination = open(fnm, 'wb+')
+            for chunk in f.chunks():
+                destination.write(chunk)
+            destination.close()
+            convert_avatars(profile)
+            os.remove(fnm)
+            profile.flags = profile.flags | Profile.HAS_AVATAR
+            profile.save()
+            
+            return HttpResponseRedirect(reverse('profile'))
+    else:
+        form = AvatarUploadForm()
+
+    context = {
+        'form'          : form,
+        }
+    return render(request, 'castle/avatar_upload.html', context)
 
 #-----------------------------------------------------------------------------
