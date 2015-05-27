@@ -30,7 +30,7 @@ import subprocess
 
 def setlimits():
     resource.setrlimit(resource.RLIMIT_CPU, (1, 1))     # Limit CPU time
-    resource.setrlimit(resource.RLIMIT_NPROC, (5, 5))   # Limit child processes
+    #resource.setrlimit(resource.RLIMIT_NPROC, (10, 10)) # Limit child processes
     resource.setrlimit(resource.RLIMIT_CORE, (0, 0))    # Prevent core dump files
 
 def run_convert_avatar(profile):
@@ -39,8 +39,9 @@ def run_convert_avatar(profile):
     src_fnm = path + '/tmp/' + id
     dst_fnm = path + '/avatar/' + id + '.png'
 
-    p = subprocess.Popen(["/usr/bin/convert", src_fnm, '-resize', '113x113', dst_fnm], preexec_fn=setlimits)
+    p = subprocess.Popen(["/usr/bin/convert", src_fnm, '-resize', '113x113', '-limit', 'thread', '1', dst_fnm], preexec_fn=setlimits)
     p.wait()
+    return p.returncode
 
 def run_convert_icon(profile):
     id = str(profile.id)
@@ -48,9 +49,14 @@ def run_convert_icon(profile):
     src_fnm = path + '/tmp/' + id
     dst_fnm = path + '/icon/' + id + '.png'
 
-    p = subprocess.Popen(["/usr/bin/convert", src_fnm, '-resize', '46x46', dst_fnm], preexec_fn=setlimits)
+    p = subprocess.Popen(["/usr/bin/convert", src_fnm, '-resize', '46x46', '-limit', 'thread', '1', dst_fnm], preexec_fn=setlimits)
     p.wait()
+    print "return code is",p.returncode
+    return p.returncode
 
 def convert_avatars(profile):
-    run_convert_avatar(profile)
-    run_convert_icon(profile)
+    # non-zero return code indicates failure
+    failure = run_convert_avatar(profile)
+    if (not failure):
+        failure = run_convert_icon(profile)
+    return failure

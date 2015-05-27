@@ -1546,12 +1546,13 @@ def avatar_upload(request):
             for chunk in f.chunks():
                 destination.write(chunk)
             destination.close()
-            convert_avatars(profile)
+            failure = convert_avatars(profile)
             os.remove(fnm)
-            profile.flags = profile.flags | Profile.HAS_AVATAR
-            profile.save()
+            if (not failure):
+                profile.flags = profile.flags | Profile.HAS_AVATAR
+                profile.save()
             
-            return HttpResponseRedirect(reverse('profile'))
+            return HttpResponseRedirect(reverse('home'))
     else:
         form = AvatarUploadForm()
 
