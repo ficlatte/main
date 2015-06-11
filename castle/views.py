@@ -127,6 +127,8 @@ def get_num_tags():
     
 #-----------------------------------------------------------------------------
 def get_activity_log(profile, entries):
+    if (profile is None):
+        return None
     log_entries = StoryLog.objects.exclude(log_type = StoryLog.VIEW).exclude(log_type = StoryLog.RATE).filter(Q(user = profile) | Q(story__user = profile)).order_by('-ctime')[:entries]
     
     return log_entries

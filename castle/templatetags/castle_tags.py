@@ -223,7 +223,7 @@ def story_link(story, tag=None):
 #-----------------------------------------------------------------------------
 @register.filter
 def prompt_link(prompt, tag=None):
-    if (story is None):
+    if (prompt is None):
         return u'<NULL PROMPT>'
     t1 = ''
     t2 = ''
@@ -232,11 +232,14 @@ def prompt_link(prompt, tag=None):
         t2 = u'</'+tag.partition(' ')[0]+u'>'   # Get bit before first space
     
     # FIXME: fix URL
-    return mark_safe(u'<a href="/prompt/' + unicode(prompt.id) + u'">' + t1 + escape(prompt.title) + t2 + u'</a>')
+    return mark_safe(u'<a href="/prompts/' + unicode(prompt.id) + u'">' + t1 + escape(prompt.title) + t2 + u'</a>')
 
 #-----------------------------------------------------------------------------
 @register.filter
 def activity_entry(log):
+    if (log is None):
+        return u'None'
+    
     if (log.log_type == StoryLog.WRITE):
         return mark_safe(author_link(log.user)+u' wrote '+story_link(log.story))
     
@@ -251,6 +254,12 @@ def activity_entry(log):
 
     elif (log.log_type == StoryLog.STORY_MOD):
         return mark_safe(author_link(log.user)+u' updated '+story_link(log.story))
+
+    elif (log.log_type == StoryLog.PROMPT):
+        return mark_safe(author_link(log.user)+u' wrote prompt '+prompt_link(log.prompt))
+    
+    elif (log.log_type == StoryLog.PROMPT_MOD):
+        return mark_safe(author_link(log.user)+u' updated prompt '+prompt_link(log.prompt))
 
     return 'log_id={}, user={}; story={}, type={}'.format(log.id, log.user.id,log.story.id, log.log_type)
         

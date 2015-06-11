@@ -189,7 +189,7 @@ class StoryLog(models.Model):
     )
     
     user        = models.ForeignKey(Profile)
-    story       = models.ForeignKey(Story)
+    story       = models.ForeignKey(Story, blank=True, null=True)
     log_type    = models.IntegerField(default=1, choices=LOG_OPTIONS)
     comment     = models.ForeignKey(Comment, blank=True, null=True)     # ID of comment, if this log is for a comment
     quel        = models.ForeignKey(Story,   blank=True, null=True,
