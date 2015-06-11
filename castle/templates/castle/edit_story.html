@@ -19,7 +19,7 @@ Copyright (C) 2015 Paul Robertson
 {% load staticfiles %}
 {% load castle_tags %}
 
-{% block body_tag %} onload="draft_button()" {% endblock %}
+{% block body_tag %} onload="draft_button(); story_len();" {% endblock %}
 {% block top_script %}
 <script type="text/javascript">
 function draft_button()

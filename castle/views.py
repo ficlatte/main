@@ -911,8 +911,8 @@ def edit_prompt(request, prompt_id):
     # Build context and render page
     context = { 'profile'       : profile,
                 'prompt'        : prompt,
-                'length_limit'  : 1024,
-                'length_min'    : 60,
+                'length_limit'  : 256,
+                'length_min'    : 30,
                 'user_dashboard': 1,
             }
 
