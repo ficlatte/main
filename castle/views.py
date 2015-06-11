@@ -1307,7 +1307,7 @@ def submit_profile(request):
             username = u'user{}'+un,
             first_name = u'user',
             last_name = un,
-            email_addr = email_addr,
+            email = email_addr,
             )
         user.set_password(password)
         user.save()
