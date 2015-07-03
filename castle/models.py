@@ -26,7 +26,7 @@ from datetime import datetime
 # Extra user data
 class Profile(models.Model):
     user        = models.OneToOneField(User)
-    friends     = models.ManyToManyField('self', symmetrical=False, related_name='followers')
+    friends     = models.ManyToManyField('self', symmetrical=False, related_name='followers', blank=True)
     pen_name    = models.CharField(max_length=64)
     pen_name_uc = models.CharField(max_length=64)
     site_url    = models.URLField(max_length=254, blank=True, null=True)

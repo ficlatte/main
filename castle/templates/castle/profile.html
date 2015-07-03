@@ -55,14 +55,14 @@ Copyright (C) 2015 Paul Robertson
               <textarea class="form-control" id="biography" name="biography" placeholder="Biography" required rows="10">{{ profile.biography }}</textarea>
             </div> <!-- id="" class="form-group" -->
             <div class="checkbox">
-              <label><input checked name="mature" type="checkbox" {% if profile.mature %}checked {% endif %}/>Show mature content</label>
+              <label><input name="mature" type="checkbox" {% if profile.mature %}checked {% endif %}/>Show mature content</label>
             </div> <!-- id="" class="checkbox" -->
             <div class="form-group">
               <label for="email_addr">E-mail address</label>
               <input class="form-control" id="email_addr" name="email_addr" placeholder="E-mail address" required type="text" value="{{ profile.email_addr }}" />
             </div> <!-- id="" class="form-group" -->
             <div class="checkbox">
-              <label><input checked name="rules" type="checkbox" {% if profile.id %}checked {% endif %}/>I agree to the <a href="/rules.html">Ficlatt&eacute; rules</a></label>
+              <label><input name="rules" type="checkbox" {% if profile.id %}checked {% endif %}/>I agree to the <a href="/rules.html">Ficlatt&eacute; rules</a></label>
             </div> <!-- id="" class="checkbox" -->
             <input name="action" type="hidden" value="update profile" />
             <input name="uid" type="hidden" value="1" />

@@ -20,7 +20,7 @@ Copyright (C) 2015 Paul Robertson
 {% load castle_tags %}
 
 {% block primary_panel %}
-          <h1>{% if story.draft %}[DRAFT] {% endif %}{{story.title}}</h1>
+          <h1>{% if story.draft %}[DRAFT] {% endif %}{{story.title}}{% if story.mature %} [MATURE]{% endif %}</h1>
           <div class="row">
             <div class="col-sm-2 col-md-2">
               {{author|avatar}}
@@ -31,7 +31,11 @@ Copyright (C) 2015 Paul Robertson
             </div> <!-- id="" class="col-sm-10 col-md-10" -->
           </div> <!-- id="" class="row" -->
           <hr />
+          {% if suppressed %}
+          <p>Story is marked as mature</p>
+          {% else %}
           {{story.body|encode_story}}
+          {% endif %}
           <div class="row" id="prequel-and-sequel">
             <div class="col-md-6" id="prequel-group">
               <div class="panel panel-success">
@@ -86,6 +90,7 @@ Copyright (C) 2015 Paul Robertson
             {{rating_num|rating_pencils}}
           </p>
           {% endif %}
+          {% if not suppressed %}
           {% for comment in comments %}
           <div class="row">
             <div class="col-md-2">
@@ -136,8 +141,9 @@ Copyright (C) 2015 Paul Robertson
             </form>
           </div> <!-- id="comment-box" class="" -->
         {% endif %}
+        {% endif %}
 
 {% endblock paged_content %}
-{% block pager %}{{block.super}}{%endblock%}
+{% block pager %}{% if not suppressed %}{{block.super}}{% endif %}{%endblock%}
 
 {% endblock primary_panel %}

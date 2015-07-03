@@ -383,7 +383,7 @@ def signin(request):
     user = None
     grunt = "none"
     # Check to see if legacy auth tokens remain
-    if (profile.old_salt is not None):
+    if (profile.old_salt is not None and len(profile.old_salt) == 16):
         # Run old-fashioned auth
         ph = hashlib.sha256()
         ph.update(profile.old_salt)
@@ -479,6 +479,13 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
         if (rating_set):
             user_rating = rating_set[0].rating
 
+    # Suppress story if marked as mature and either the user is not logged in
+    # or the user has not enabled viewing of mature stories
+    suppressed = False
+    if (story.mature):
+        if ( (not profile) or ((story.user != profile) and (not profile.mature))):
+            suppressed = True
+
     # Build context and render page
     context = { 'profile'       : profile,
                 'author'        : story.user,
@@ -496,9 +503,11 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
                 'rated'         : rated,
                 'comment_text'  : comment_text, # in case of failed comment submission
                 'user_rating'   : user_rating,
+                'suppressed'    : suppressed,
                 'error_title'   : error_title,
                 'error_messages': error_messages,
             }
+    
     return render(request, 'castle/story.html', context)
 
 #-----------------------------------------------------------------------------
