@@ -216,9 +216,9 @@ def story_link(story, tag=None):
         t2 = u'</'+tag.partition(' ')[0]+u'>'   # Get bit before first space
     
     d = '[DRAFT] ' if (story.draft) else ''
-    
+    m = ' <span class="glyphicon glyphicon-flash" style="color:red"></span>' if (story.mature) else ''
     # FIXME: fix URL
-    return mark_safe(u'<a href="/stories/' + unicode(story.id) + u'">' + t1 + escape(d+story.title) + t2 + u'</a>')
+    return mark_safe(u'<a href="/stories/' + unicode(story.id) + u'">' + t1 + escape(d + story.title) + mark_safe(m) + t2 + u'</a>')
 
 #-----------------------------------------------------------------------------
 @register.filter
