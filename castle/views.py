@@ -1045,6 +1045,7 @@ def submit_blog(request):
     if (not new_blog):         # Remember if the blog was draft
         was_draft = blog.draft
     draft      = request.POST.get('is_draft', False)
+    bbcode     = request.POST.get('is_bbcode', False)
 
     if (not profile.email_authenticated()):
         errors.append(u'You must have authenticated your e-mail address before posting a blog');
@@ -1057,6 +1058,7 @@ def submit_blog(request):
         blog.title  = request.POST.get('title', '')
         blog.body   = request.POST.get('body', '')
         blog.draft  = draft
+        blog.bbcode = bbcode
 
         # Condense all end-of-line markers into \n
         blog.body = re_crlf.sub(u"\n", blog.body)

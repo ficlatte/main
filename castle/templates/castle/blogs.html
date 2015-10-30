@@ -30,7 +30,7 @@ Copyright (C) 2015 Paul Robertson
               {% for blog in blogs %}
               <div class="blog-post">
                 <h2 class="blog-post-title"><a href="/blog/{{blog.id}}">{{blog.title}}</a></h2>
-                {{blog.body|big_snippet}}
+                {{blog|blog_snippet}}
                 <p class="blog-post-meta">{{blog.user|author_span}} {{blog|num_comments_txt}} Posted <abbr class="dtposted" title="{{blog.ptime|date:'Y-m-d'}}">{{blog.ptime|age}}</abbr></p>
               </div> <!-- id="" class="blog-post" -->
               {% endfor %}

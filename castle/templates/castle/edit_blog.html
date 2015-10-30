@@ -76,6 +76,9 @@ function draft_button()
                   <div class="checkbox">
                     <label><input id="blog-is-draft" name="is_draft" onclick="draft_button()" tabindex="5" type="checkbox" {% if blog.draft %}checked {% endif %}/> Save as draft</label>
                   </div> <!-- id="" class="checkbox" -->
+                  <div class="checkbox">
+                    <label><input id="blog-is-bbcode" name="is_bbcode" onclick="draft_button()" tabindex="6" type="checkbox" {% if blog.bbcode %}checked {% endif %}/> Use <a href="https://en.wikipedia.org/wiki/BBCode">bbcode</a></label>
+                  </div> <!-- id="" class="checkbox" -->
                 </div> <!-- id="" class="col-sm-offset-2 col-sm-10" -->
               </div> <!-- id="" class="form-group" -->
               <div class="form-group">

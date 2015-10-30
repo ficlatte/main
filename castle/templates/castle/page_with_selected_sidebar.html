@@ -46,6 +46,8 @@ Copyright (C) 2015 Paul Robertson
               <a href="/authors/u/profile/">Edit profile</a></p>
               <p><span class="glyphicon glyphicon-camera"></span>
               <a href="{% url 'avatar_upload' %}">Upload avatar</a></p>
+              {% if perms.castle.post_blog %}<p><span class="glyphicon glyphicon-pencil"></span>
+              <a href="/blog/new/">New blog</a></p>{% endif %}
 
               <hr />
               <h4>Your desk</h4>

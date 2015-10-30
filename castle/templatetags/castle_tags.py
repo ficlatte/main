@@ -25,6 +25,7 @@ from django.utils.http import urlquote
 from django.template.defaultfilters import stringfilter
 from django.conf import settings
 from castle.models import StoryLog, Profile
+from bbcode import util as bbcode
 import math
 import re
 import unicodedata
@@ -474,8 +475,25 @@ def encode_story(text):
         retval += encode_story_line(l)
     return mark_safe(retval)
 
-def poo_encode_story(text):
-    # FIXME: this is has no functionality
-    return mark_safe(u'<p>' + escape(text) + u'</p>')
+#-----------------------------------------------------------------------------
+@register.filter
+def encode_blog(blog):
+    if (blog.bbcode):
+        return mark_safe(bbcode.to_html(blog.body))
+    else:
+        return encode_story(blog.body)
+
+#-----------------------------------------------------------------------------
+@register.filter
+def blog_snippet(blog):
+    if (len(blog.body) > 255):
+        snippet = blog.body[:255] + u'…'
+    else:
+        snippet = blog.body
+
+    if (blog.bbcode):
+        return mark_safe(bbcode.to_html(snippet))
+    else:
+        return encode_story(snippet)
 
 #-----------------------------------------------------------------------------

@@ -116,6 +116,7 @@ class Blog(models.Model):
     title       = models.CharField(max_length=256)
     body        = models.CharField(max_length=20480)
     draft       = models.BooleanField(default=False)
+    bbcode      = models.BooleanField(default=False)
     ctime       = models.DateTimeField(default=timezone.now)
     mtime       = models.DateTimeField(default=timezone.now)
     ptime       = models.DateTimeField(blank=True, null=True)
