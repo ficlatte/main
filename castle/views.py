@@ -1130,26 +1130,26 @@ def submit_comment(request):
 
     if (not profile.email_authenticated()):
         errors.append(u'You must have authenticated your e-mail address before posting a comment');
-    else:
-        # Create comment object
-        comment = Comment(user = profile,
-                          blog = blog,
-                          story = story)
 
-        # Populate comment object with data from submitted form
-        comment.body   = request.POST.get('body', '')
+    # Create comment object
+    comment = Comment(user = profile,
+                        blog = blog,
+                        story = story)
 
-        # Condense all end-of-line markers into \n
-        comment.body = re_crlf.sub(u"\n", comment.body)
+    # Populate comment object with data from submitted form
+    comment.body   = request.POST.get('body', '')
 
-        # Check for submission errors
-        l = len(comment.body)
-        if ((l < 1) and (rating is None)):
-            # Empty comments are allowed if the user is making a rating
-            errors.append(u'Comment body must be at least 1 character long')
-        
-        if (l > 1024):
-            errors.append(u'Comment is over 1024 characters (currently ' + unicode(l) + u')')
+    # Condense all end-of-line markers into \n
+    comment.body = re_crlf.sub(u"\n", comment.body)
+
+    # Check for submission errors
+    l = len(comment.body)
+    if ((l < 1) and (rating is None)):
+        # Empty comments are allowed if the user is making a rating
+        errors.append(u'Comment body must be at least 1 character long')
+    
+    if (l > 1024):
+        errors.append(u'Comment is over 1024 characters (currently ' + unicode(l) + u')')
 
     # If there have been errors, re-display the page
     if (errors):
