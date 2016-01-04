@@ -63,5 +63,6 @@ urlpatterns = patterns('',
     url(r'^avatar_upload/', 'castle.views.avatar_upload', name='avatar_upload'),
     # Static-ish pages
     url(r'^(?P<template>rules\.html)$', 'castle.views.static_view', name="rules"),
-    url(r'^(?P<template>privacy\.html)$', 'castle.views.static_view', name="rules"),
+    url(r'^(?P<template>privacy\.html)$', 'castle.views.static_view', name="privacy"),
+    url(r'^(?P<template>help\.html)$', 'castle.views.static_view', name="help"),
 )

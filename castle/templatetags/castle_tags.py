@@ -248,10 +248,10 @@ def activity_entry(log):
         return mark_safe(author_link(log.user)+u' wrote a comment on '+story_link(log.story))
         
     elif (log.log_type == StoryLog.SEQUEL):
-        return mark_safe(author_link(log.user)+u' wrote '+story_link(log.story)+u', sequel to '+story_link(log.quel)+u' by '+author_link(log.quel.user))
+        return mark_safe(author_link(log.user)+u' wrote a sequel, '+story_link(log.story)+u', to '+story_link(log.quel)+u' by '+author_link(log.quel.user))
         
     elif (log.log_type == StoryLog.PREQUEL):
-        return mark_safe(author_link(log.user)+u' wrote '+story_link(log.story)+u', prequel to '+story_link(log.quel)+u' by '+author_link(log.quel.user))
+        return mark_safe(author_link(log.user)+u' wrote a prequel, '+story_link(log.story)+u', to '+story_link(log.quel)+u' by '+author_link(log.quel.user))
 
     elif (log.log_type == StoryLog.STORY_MOD):
         return mark_safe(author_link(log.user)+u' updated '+story_link(log.story))
