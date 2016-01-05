@@ -608,6 +608,7 @@ def submit_story(request):
     sequel_to  = get_foo(request.POST, Story,  'sequel_to')
     prompt     = get_foo(request.POST, Prompt, 'prid')
     tags       = request.POST.get('tag_list', '')
+    ptext      = request.POST.get('prompt_text', None)
     new_story  = (story is None)
     was_draft  = False
     if (not new_story):         # Remember if the story was draft
@@ -628,6 +629,7 @@ def submit_story(request):
         story.body   = request.POST.get('body', '')
         story.mature = request.POST.get('is_mature', False)
         story.draft  = request.POST.get('is_draft', False)
+        story.prompt_text = ptext
         
         # Condense all end-of-line markers into \n
         story.body = re_crlf.sub(u"\n", story.body)

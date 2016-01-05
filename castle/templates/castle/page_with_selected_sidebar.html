@@ -136,6 +136,10 @@ Copyright (C) 2015 Paul Robertson
             {{story.prompt.body|encode_story}}
             <p><a href="/prompts/{{story.prompt.id}}/">{{story.prompt.title}}</a> by {{story.prompt.user|author_link}}</p>
     {% endif %}
+    {% if story.prompt_text %}
+            <h4>Author's prompt text:</h4>
+            {{story.prompt_text}}
+    {% endif %}
     {% if story.prequel_to %}
             {% if story.prompt %}<hr>{% endif %}
             <h4>Inspired by (prequel to)</h4>

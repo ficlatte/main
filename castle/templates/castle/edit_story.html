@@ -67,6 +67,13 @@ function draft_button()
                 </div> <!-- id="" class="col-sm-10" -->
               </div> <!-- id="" class="form-group" -->
               <div class="form-group">
+                <label class="col-sm-2 control-label" for="prompt_text">Prompt text</label>
+                <div class="col-sm-10">
+                  <input class="form-control" id="prompt_text" maxlength="64" name="prompt_text" tabindex="2" type="text" value="{{story.prompt_text}}" />
+                  <p class="help-block"><span class="glyphicon glyphicon-hand-up"></span> If you are writing to your own prompt, share it with us here</p>
+                </div> <!-- id="" class="col-sm-10" -->
+              </div> <!-- id="" class="form-group" -->
+              <div class="form-group">
                 <label class="col-sm-2 control-label" for="story_tag_list">Tags</label>
                 <div class="col-sm-10">
                   <input class="form-control" id="story_tag_list" name="tag_list" tabindex="3" value="{{tags}}" />
