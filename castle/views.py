@@ -526,7 +526,9 @@ def new_story(request):
     # Create a blank story to give the template some defaults
     story = Story(prequel_to = prequel_to,
                   sequel_to  = sequel_to,
-                  prompt     = prompt)
+                  prompt     = prompt,
+                  prompt_text = u'',
+                  )
 
     # Build context and render page
     context = { 'profile'       : profile,
