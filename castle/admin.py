@@ -30,6 +30,7 @@ admin.site.register(Comment)
 admin.site.register(StoryLog)
 admin.site.register(SiteLog)
 admin.site.register(Misc)
+admin.site.register(Subscription)
 
 class RatingInLine(admin.TabularInline):
     model = Rating

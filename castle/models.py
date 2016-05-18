@@ -49,6 +49,14 @@ class Profile(models.Model):
     # Flags
     HAS_AVATAR = 1
     
+    # Email flags
+    NUM_EMAIL_FLAGS = 4
+    
+    AUTOSUBSCRIBE_ON_STORY         = 1  # Subscribe to story's comments when user publishes a story
+    AUTOSUBSCRIBE_ON_STORY_COMMENT = 2  # Subscribe to story's comments when user publishes comment
+    AUTOSUBSCRIBE_ON_BLOG          = 4  # Subscribe to blog's comments when user publishes a blog
+    AUTOSUBSCRIBE_ON_BLOG_COMMENT  = 8  # Subscribe to blog's comments when user publishes comment
+
     def __unicode__(self):
         return unicode(self.pen_name)
     
@@ -232,5 +240,19 @@ class Misc(models.Model):
             r = r + u' s_val="'+unicode(self.s_val)+u'";'
         if (self.i_val is not None):
             r = r + u' i_val='+unicode(self.i_val)+u';'
+        return r
+            
+# E-mail subscriptions
+class Subscription(models.Model):
+    user        = models.ForeignKey(Profile)
+    story       = models.ForeignKey(Story, blank=True, null=True, related_name='subscriptions')
+    blog        = models.ForeignKey(Blog,  blank=True, null=True, related_name='subscriptions')
+    
+    def __unicode__(self):
+        r = unicode(self.user)
+        if (self.story is not None):
+            r += u' subscribed to story '+unicode(self.story)
+        if (self.blog is not None):
+            r += u' subscribed to blog post '+unicode(self.blog)
         return r
             

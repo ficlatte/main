@@ -25,7 +25,7 @@ Copyright (C) 2015 Paul Robertson
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <link href="{% static 'castle/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'castle/jumbotron.css' %}" rel="stylesheet" type="text/css" />
-    <title>{{0|site_name}}</title>
+    <title>{% if page_title %}{{page_title}} on {% endif %}{{0|site_name}}</title>
     <meta content="Paul Robertson" name="author" />
     <meta content="Perl" name="generator" />
     <meta content="Micro-fiction site" name="description" />

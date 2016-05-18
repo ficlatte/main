@@ -61,6 +61,14 @@ Copyright (C) 2015 Paul Robertson
               <label for="email_addr">E-mail address</label>
               <input class="form-control" id="email_addr" name="email_addr" placeholder="E-mail address" required type="text" value="{{ profile.email_addr }}" />
             </div> <!-- id="" class="form-group" -->
+            <fieldset class="panty-group">
+              <p>Subscribe to e-mail notifications:</p>
+              {% for em in email_flags %}
+              <div class="checkbox">
+                <label><input name="ef_{{em.code}}" type="checkbox" value="1" {% if em.is_set %}checked {% endif %}/>{{ em.descr }}</label>
+              </div> <!-- id="" class="checkbox" -->
+            {% endfor %}
+            </fieldset>
             <div class="checkbox">
               <label><input name="rules" type="checkbox" {% if profile.id %}checked {% endif %}/>I agree to the <a href="/rules.html">Ficlatt&eacute; rules</a></label>
             </div> <!-- id="" class="checkbox" -->

@@ -27,8 +27,8 @@ from django.db.models import Sum, Avg, Q, Count
 from django.utils.http import urlquote_plus, urlquote
 from django.conf import settings
 from django.utils import timezone
-from castle.models import *
-from castle.mail import *
+from .models import *
+from .mail import *
 from datetime import datetime, timedelta
 from random import randint
 from struct import unpack
@@ -328,6 +328,7 @@ def author(request, pen_name):
     context = { 'profile'       : profile,
                 'author'        : author,
                 'story_list'    : story_list,
+                'page_title'    : profile.pen_name,
                 'page_url'      : u'/authors/'+urlquote(author.pen_name)+u'/',
                 'pages'         : bs_pager(page_num, PAGE_STORIES, num_stories),
                 'is_friend'     : is_friend,
@@ -353,6 +354,7 @@ def drafts(request):
     context = { 'profile'       : profile,
                 'author'        : profile,
                 'story_list'    : story_list,
+                'page_title'    : profile.pen_name,
                 'page_url'      : u'/authors/'+urlquote(profile.pen_name)+u'/',
                 'pages'         : bs_pager(page_num, PAGE_STORIES, num_stories),
                 'drafts_page'   : True,
@@ -495,6 +497,7 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
                 'rating_str'    : rating_str,
                 'rating_num'    : rating,
                 'comments'      : comments,
+                'page_title'    : story.title,
                 'page_url'      : u'/stories/'+unicode(story_id)+u'/',
                 'pages'         : bs_pager(page_num, PAGE_COMMENTS, story.comment_set.count()),
                 'story_sidepanel':1 ,
@@ -533,6 +536,7 @@ def new_story(request):
     # Build context and render page
     context = { 'profile'       : profile,
                 'story'         : story,
+                'page_title'    : u'Write new story',
                 'tags'          : u'',
                 'length_limit'  : 1024,
                 'length_min'    : 60,
@@ -562,6 +566,7 @@ def edit_story(request, story_id):
     # Build context and render page
     context = { 'profile'       : profile,
                 'story'         : story,
+                'page_title'    : u'Edit story '+story.title,
                 'tags'          : tags,
                 'length_limit'  : 1024,
                 'length_min'    : 60,
@@ -655,6 +660,7 @@ def submit_story(request):
     # Build context and render page
         context = { 'profile'       : profile,
                     'story'         : story,
+                    'page_title'    : u'Edit story '+story.title,
                     'tags'          : tags,
                     'length_limit'  : 1024,
                     'length_min'    : 60,
@@ -742,6 +748,7 @@ def browse_stories(request, dataset=0):
     # Build context and render page
     context = { 'profile'       : profile,
                 'stories'       : stories,
+                'page_title'    : u'Stories, page '+unicode(page_num),
                 'page_url'      : url,
                 'pages'         : bs_pager(page_num, PAGE_BROWSE, num_stories),
                 'user_dashboard': 1,
@@ -774,6 +781,7 @@ def prompts(request):
     # Build context and render page
     context = { 'profile'       : profile,
                 'prompts'       : prompts,
+                'page_title'    : u'Prompts page '+unicode(page_num),
                 'prompt_button' : (profile is not None),
                 'user_dashboard': (profile is not None),
                 'page_url'      : u'/prompts/',
@@ -806,6 +814,7 @@ def prompt(request, prompt_id):
                 'prompt'        : prompt,
                 'stories'       : stories,
                 'owner'         : owner,
+                'page_title'    : u'Prompt '+prompt.title,
                 'prompt_sidepanel' : 1,
                 'page_url'      : u'/prompts/'+unicode(prompt.id)+u'/',
                 'pages'         : bs_pager(page_num, PAGE_STORIES, num_stories),
@@ -861,6 +870,7 @@ def submit_prompt(request):
                     'prompt'        : prompt,
                     'length_limit'  : 256,
                     'length_min'    : 30,
+                    'page_title'    : u'Edit prompt '+prompt.title,
                     'user_dashboard': 1,
                     'error_title'   : 'Prompt submission unsuccessful',
                     'error_messages': errors,
@@ -898,6 +908,7 @@ def new_prompt(request):
     # Build context and render page
     context = { 'profile'       : profile,
                 'story'         : Prompt(),      # Create blank story for default purposes
+                'page_title'    : u'Write new prompt',
                 'tags'          : u'',
                 'length_limit'  : 256,
                 'length_min'    : 30,
@@ -924,6 +935,7 @@ def edit_prompt(request, prompt_id):
     # Build context and render page
     context = { 'profile'       : profile,
                 'prompt'        : prompt,
+                'page_title'    : u'Edit prompt '+prompt.title,
                 'length_limit'  : 256,
                 'length_min'    : 30,
                 'user_dashboard': 1,
@@ -948,6 +960,7 @@ def blogs(request):
     # Build context and render page
     context = { 'profile'       : profile,
                 'blogs'         : blogs,
+                'page_title'    : u'Blog page '+page_num,
                 'page_url'      : u'/blog/',
                 'pages'         : bs_pager(1, 10, blogs.count()),
             }
@@ -970,6 +983,13 @@ def blog_view(request, blog_id, comment_text=None, error_title='', error_message
     page_num = safe_int(request.GET.get('page_num', 1))
     comments = blog.comment_set.all().order_by('ctime')[(page_num-1)*PAGE_COMMENTS:page_num*PAGE_COMMENTS]
 
+    # Is user subscribed?
+    subscribe_btn = False
+    if (profile is not None):
+        subscribe_btn = (blog.subscriptions.filter(user=profile).count()>0)
+        if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_BLOG_COMMENT) > 0:
+            subscribe_btn = True
+
     # Build context and render page
     context = { 'profile'       : profile,
                 'author'        : blog.user,
@@ -979,11 +999,63 @@ def blog_view(request, blog_id, comment_text=None, error_title='', error_message
                 'pages'         : bs_pager(page_num, PAGE_COMMENTS, blog.comment_set.count()),
                 'owner'         : owner,
                 'comment_text'  : comment_text,
+                'subscribe_btn' : subscribe_btn,
                 'error_title'   : error_title,
                 'error_messages': error_messages,
+                'page_title'    : u'Blog '+blog.title,
             }
     return render(request, 'castle/blog.html', context)
 
+#-----------------------------------------------------------------------------
+@login_required
+def blog_unsubscribe(request, blog_id, comment_text=None, error_title='', error_messages=None):
+    blog = get_object_or_404(Blog, pk=blog_id)
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    if (profile is None):
+        raise Http404
+    
+    Subscription.objects.filter(user=profile, blog=blog).delete()
+    
+    context = { 'thing'         : blog,
+                'thing_type'    : u'blog',
+                'thing_url'     : reverse('blog', args=[blog.id]),
+                'page_title'    : u'Unsubscribe blog '+blog.title,
+                'error_title'   : error_title,
+                'error_messages': error_messages,
+                'user_dashboard': True,
+                'profile'       : profile,
+        }
+    
+    return render(request, 'castle/unsubscribed.html', context)
+    
+#-----------------------------------------------------------------------------
+@login_required
+def story_unsubscribe(request, story_id, comment_text=None, error_title='', error_messages=None):
+    story = get_object_or_404(Story, pk=story_id)
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    if (profile is None):
+        raise Http404
+    
+    Subscription.objects.filter(user=profile, story=story).delete()
+    
+    context = { 'thing'         : story,
+                'thing_type'    : u'story',
+                'thing_url'     : reverse('story', args=[story.id]),
+                'page_title'    : u'Unsubscribe story '+story.title,
+                'error_title'   : error_title,
+                'error_messages': error_messages,
+                'user_dashboard': True,
+                'profile'       : profile,
+        }
+    
+    return render(request, 'castle/unsubscribed.html', context)
+    
 #-----------------------------------------------------------------------------
 @login_required
 def new_blog(request):
@@ -998,6 +1070,7 @@ def new_blog(request):
     # Build context and render page
     context = { 'profile'       : profile,
                 'blog'          : Blog(),      # Create blank blog for default purposes
+                'page_title'    : u'Write new blog',
                 'length_limit'  : 20480,
                 'length_min'    : 60,
                 'user_dashboard': 1,
@@ -1022,6 +1095,7 @@ def edit_blog(request, blog_id):
     # Build context and render page
     context = { 'profile'       : profile,
                 'blog'          : blog,
+                'page_title'    : u'Edit blog '+blog.title,
                 'length_limit'  : 20480,
                 'length_min'    : 60,
                 'user_dashboard': 1,
@@ -1083,6 +1157,7 @@ def submit_blog(request):
     # Build context and render page
         context = { 'profile'       : profile,
                     'blog'          : blog,
+                    'page_title'    : u'Edit blog '+blog.title,
                     'length_limit'  : 20480,
                     'length_min'    : 60,
                     'user_dashboard': 1,
@@ -1201,6 +1276,9 @@ def submit_comment(request):
                 log_type = StoryLog.RATE
             )
             log.save()
+    
+    # Send e-mail messages to subscribed users
+    send_notification_email_comment(comment)
             
     if (blog):
         return HttpResponseRedirect(reverse('blog', args=(blog.id,)))
@@ -1208,16 +1286,40 @@ def submit_comment(request):
         return HttpResponseRedirect(reverse('story', args=(story.id,)))
         
 #-----------------------------------------------------------------------------
+@login_required
 def profile_view(request, error_title=None, error_messages=None):
     # Get user profile
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+
+    # Do e-mail subscription bits
+    email_flags = []
+
+    email_flags.append({
+        'code'   : Profile.AUTOSUBSCRIBE_ON_STORY,
+        'is_set' : ((profile.email_flags & Profile.AUTOSUBSCRIBE_ON_STORY) > 0),
+        'descr' : u'when you publish a story'})
+    email_flags.append({
+        'code'   : Profile.AUTOSUBSCRIBE_ON_STORY_COMMENT, 
+        'is_set' : ((profile.email_flags & Profile.AUTOSUBSCRIBE_ON_STORY_COMMENT) > 0),
+        'descr' : u'when you comment on a story'})
+    if (request.user.has_perm("castle.post_blog")):
+        email_flags.append({
+            'code'   : Profile.AUTOSUBSCRIBE_ON_BLOG, 
+            'is_set' : ((profile.email_flags & Profile.AUTOSUBSCRIBE_ON_BLOG) > 0),
+            'descr' : u'when you publish a blog post'})
+    email_flags.append({
+        'code'   : Profile.AUTOSUBSCRIBE_ON_BLOG_COMMENT, 
+        'is_set' : ((profile.email_flags & Profile.AUTOSUBSCRIBE_ON_BLOG_COMMENT) > 0),
+        'descr' : u'when you comment on a blog post'})
     
     # Build context and render page
     context = { 'profile'       : profile,
                 'length_limit'  : 1024,
                 'length_min'    : 1,
+                'page_title'    : u'Profile of '+profile.pen_name,
+                'email_flags'   : email_flags,
                 'error_title'   : error_title,
                 'error_messages': error_messages,
             }
@@ -1229,6 +1331,7 @@ def profile_view(request, error_title=None, error_messages=None):
 def submit_profile(request):
     # Get user profile
     new_registration = False
+    new_email_addr = False
     if (request.user.is_authenticated()):
         profile = request.user.profile
     else:
@@ -1291,6 +1394,15 @@ def submit_profile(request):
         errors.append(u'Sorry, but we need an e-mail address')
     if (not rules):
         errors.append(u'You need to agree to the rules before you play')
+    
+    # E-mail preferences
+    eflags = 0
+    flag = 1
+    for i in range(Profile.NUM_EMAIL_FLAGS):
+        if 'ef_{}'.format(flag) in request.POST:
+            eflags = eflags | flag
+        flag *= 2
+    profile.email_flags = eflags
 
     # If user is changing e-mail address, they need their password too
     if (not new_registration and (
@@ -1300,6 +1412,8 @@ def submit_profile(request):
             errors.append(u'When you change your pen name or e-mail address, you need to supply your password too.')
         elif (not request.user.check_password(password)):
             errors.append(u'Old password incorrect')
+        else:
+            new_email_addr = True
 
     # Set modification time
     time_now = timezone.now()
@@ -1340,7 +1454,7 @@ def submit_profile(request):
         profile.save()
 
     # If this is a new user, or the e-mail address is changed, send a conf email
-    if (new_registration or email_addr):
+    if (new_registration or new_email_addr):
         # Get random 64 bit integer
         token = random64()
         token_s = to_signed64(token)
@@ -1433,6 +1547,7 @@ def dashboard(request):
         'profile'       : profile,
         'views'         : views,
         'users'         : users,
+        'page_title'    : u'Dashboard',
         'tot_stories'   : tot_stories,
         'act_stories'   : act_stories,
         'pub_stories'   : pub_stories,
@@ -1464,6 +1579,7 @@ def tags(request, tag_name):
     # Build context and render page
     context = { 'profile'       : profile,
                 'stories'       : stories,
+                'page_title'    : u'Tag '+tag_name,
                 'page_url'      : url,
                 'pages'         : bs_pager(page_num, PAGE_BROWSE, num_stories),
                 'user_dashboard': 1,
@@ -1492,6 +1608,7 @@ def tags_null(request, error_msg = None):
     # Build context and render page
     context = { 'profile'       : profile,
                 'tags'          : tags,
+                'page_title'    : u'Tag not found',
                 'page_url'      : url,
                 'pages'         : bs_pager(page_num, PAGE_ALLTAGS, num_tags),
                 'user_dashboard': 1,
@@ -1574,6 +1691,7 @@ def avatar_upload(request):
         form = AvatarUploadForm()
 
     context = {
+        'page_title'    : u'Upload avatar',
         'form'          : form,
         }
     return render(request, 'castle/avatar_upload.html', context)
