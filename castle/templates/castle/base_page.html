@@ -80,13 +80,13 @@ Copyright (C) 2015 Paul Robertson
               <li class="active">{{profile|author_link}}</li>
               <li><a href="/">Your desk</a></li>
               <!--<li><a href="/notes">Notes</a></li>-->
-              <li><a href="/logout">Log out</a></li>
+              <li><a href="{% url 'signout' %}">Log out</a></li>
               {% else %}
-              <li><a href="/login">Log in</a></li>
-              <li><a href="/register">Register</a></li>
+              <li><a href="{% url 'signin' %}">Log in</a></li>
+              <li><a href="{% url 'register' %}">Register</a></li>
               {% endif %}
-              <li><a href="/blog">Blog</a></li>
-              <li><a href="/help.html">Help</a></li>
+              <li><a href="{% url 'blogs' %}">Blog</a></li>
+              <li><a href="{% url 'help' template='help.html' %}">Help</a></li>
             </ul>
           </div> <!-- id="navbar" class="collapse navbar-collapse" -->
         </div> <!-- id="" class="container" -->
@@ -118,10 +118,11 @@ Copyright (C) 2015 Paul Robertson
             <div class="collapse navbar-collapse" id="navbar2">
               <ul class="nav navbar-nav">
                 <li><a href="/" id="nav-home" rel="home"><span class="glyphicon glyphicon-home"></span></a></li>
-                <li><a class="author_link" href="/authors/{{profile.pen_name}}">Your stories</a></li>
-                <li><a href="/stories/new" id="nav-write">Write</a></li>
-                <li><a href="/prompts" id="nav-prompts">Prompts</a></li>
-                <li><a href="/stories" id="nav-browse">Browse</a></li>
+                <li><a class="author_link" href="{% url 'author' profile.pen_name %}">Your stories</a></li>
+                <li><a href="{% url 'new_story' %}" id="nav-write">Write</a></li>
+                {% if perms.castle.post_blog %}<li><a href="{% url 'new_blog'%}" id="nav-write-blog">Write blog</a></li>{% endif %}
+                <li><a href="{% url 'prompts' %}" id="nav-prompts">Prompts</a></li>
+                <li><a href="{% url 'recent_stories' %}" id="nav-browse">Browse</a></li>
               </ul>
             </div> <!-- id="navbar2" class="collapse navbar-collapse" -->
           </div> <!-- id="" class="container-fluid" -->

@@ -179,6 +179,14 @@ Copyright (C) 2015 Paul Robertson
     {% endif %}
             <li id="num-ratings">Story viewed {{viewed}} times and rated {{rated}} times</li>
           </ul>
+    {% if profile %}
+          <hr />
+      {% if subscribed %}
+          <p><a href="{% url 'story-unsub' story.id %}">Unsubscribe from e-mail notifications on this story</a></p>
+      {% else %}
+          <p><a href="{% url 'story-sub' story.id %}">Send me e-mail notifications of comments</a></p>
+      {% endif %}
+    {% endif %}
           <hr />
           <p class="small" id="licence">All stories on Ficlatt&eacute; are licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license">Creative Commons Attribution-Share Alike 3.0 License</a><a href="http://wiki.creativecommons.org/Sharing_Creative_Works">What does this mean?</a></p>
   {% endif %}

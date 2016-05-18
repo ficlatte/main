@@ -488,6 +488,11 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
         if ( (not profile) or ((story.user != profile) and (not profile.mature))):
             suppressed = True
 
+    # Is user subscribed?
+    subscribed = False
+    if ((profile) and (Subscription.objects.filter(story=story, user=profile).count()>0)):
+        subscribed = True
+
     # Build context and render page
     context = { 'profile'       : profile,
                 'author'        : story.user,
@@ -497,6 +502,7 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
                 'rating_str'    : rating_str,
                 'rating_num'    : rating,
                 'comments'      : comments,
+                'subscribed'    : subscribed,
                 'page_title'    : story.title,
                 'page_url'      : u'/stories/'+unicode(story_id)+u'/',
                 'pages'         : bs_pager(page_num, PAGE_COMMENTS, story.comment_set.count()),
@@ -696,6 +702,11 @@ def submit_story(request):
                 tag_object = Tag(story=story, tag=t)
                 tag_object.save()
 
+    # Auto-subscribe to e-mail notifications according to user's preferences
+    if (new_story):
+        if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_STORY):
+            Subscription.objects.get_or_create(user=profile, story=story)
+            
     # Make log entry
     log_type = StoryLog.WRITE
     quel = None
@@ -748,7 +759,7 @@ def browse_stories(request, dataset=0):
     # Build context and render page
     context = { 'profile'       : profile,
                 'stories'       : stories,
-                'page_title'    : u'Stories, page '+unicode(page_num),
+                'page_title'    : u'Stories, page {}'.format(page_num),
                 'page_url'      : url,
                 'pages'         : bs_pager(page_num, PAGE_BROWSE, num_stories),
                 'user_dashboard': 1,
@@ -781,7 +792,7 @@ def prompts(request):
     # Build context and render page
     context = { 'profile'       : profile,
                 'prompts'       : prompts,
-                'page_title'    : u'Prompts page '+unicode(page_num),
+                'page_title'    : u'Prompts page {}'.format(page_num),
                 'prompt_button' : (profile is not None),
                 'user_dashboard': (profile is not None),
                 'page_url'      : u'/prompts/',
@@ -960,7 +971,7 @@ def blogs(request):
     # Build context and render page
     context = { 'profile'       : profile,
                 'blogs'         : blogs,
-                'page_title'    : u'Blog page '+page_num,
+                'page_title'    : u'Blog page {}'.format(page_num),
                 'page_url'      : u'/blog/',
                 'pages'         : bs_pager(1, 10, blogs.count()),
             }
@@ -984,11 +995,9 @@ def blog_view(request, blog_id, comment_text=None, error_title='', error_message
     comments = blog.comment_set.all().order_by('ctime')[(page_num-1)*PAGE_COMMENTS:page_num*PAGE_COMMENTS]
 
     # Is user subscribed?
-    subscribe_btn = False
+    subscribed = False
     if (profile is not None):
-        subscribe_btn = (blog.subscriptions.filter(user=profile).count()>0)
-        if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_BLOG_COMMENT) > 0:
-            subscribe_btn = True
+        subscribed = (blog.subscriptions.filter(user=profile).count()>0)
 
     # Build context and render page
     context = { 'profile'       : profile,
@@ -999,7 +1008,7 @@ def blog_view(request, blog_id, comment_text=None, error_title='', error_message
                 'pages'         : bs_pager(page_num, PAGE_COMMENTS, blog.comment_set.count()),
                 'owner'         : owner,
                 'comment_text'  : comment_text,
-                'subscribe_btn' : subscribe_btn,
+                'subscribed'    : subscribed,
                 'error_title'   : error_title,
                 'error_messages': error_messages,
                 'page_title'    : u'Blog '+blog.title,
@@ -1055,6 +1064,31 @@ def story_unsubscribe(request, story_id, comment_text=None, error_title='', erro
         }
     
     return render(request, 'castle/unsubscribed.html', context)
+    
+#-----------------------------------------------------------------------------
+@login_required
+def story_subscribe(request, story_id, comment_text=None, error_title='', error_messages=None):
+    story = get_object_or_404(Story, pk=story_id)
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    if (profile is None):
+        raise Http404
+    
+    Subscription.objects.get_or_create(user=profile, story=story)
+    
+    context = { 'thing'         : story,
+                'thing_type'    : u'story',
+                'thing_url'     : reverse('story', args=[story.id]),
+                'page_title'    : u'Unsubscribe story '+story.title,
+                'error_title'   : error_title,
+                'error_messages': error_messages,
+                'user_dashboard': True,
+                'profile'       : profile,
+        }
+    
+    return render(request, 'castle/subscribed.html', context)
     
 #-----------------------------------------------------------------------------
 @login_required
@@ -1177,6 +1211,11 @@ def submit_blog(request):
     # No problems, update the database and redirect
     blog.save()
             
+    # Auto-subscribe to e-mail notifications according to user's preferences
+    if (new_blog):
+        if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_BLOG):
+            Subscription.objects.get_or_create(user=profile, blog=blog)
+            
     return HttpResponseRedirect(reverse('blog', args=(blog.id,)))
 
 #-----------------------------------------------------------------------------
@@ -1279,7 +1318,16 @@ def submit_comment(request):
     
     # Send e-mail messages to subscribed users
     send_notification_email_comment(comment)
-            
+
+    # Auto-subscribe to e-mail notifications according to user's preferences
+    if (profile):
+        if (blog):
+            if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_BLOG_COMMENT):
+                Subscription.objects.get_or_create(user=profile, blog=blog)
+        elif (story):
+            if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_STORY_COMMENT):
+                Subscription.objects.get_or_create(user=profile, story=story)
+
     if (blog):
         return HttpResponseRedirect(reverse('blog', args=(blog.id,)))
     else:
