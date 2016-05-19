@@ -19,6 +19,8 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
+import django.contrib.auth.views
+import castle.views
 
 urlpatterns = patterns('',
     # Examples:
@@ -26,8 +28,10 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^$',      'castle.views.home', name='home'),
-    url(r'^login/$',      TemplateView.as_view(template_name='castle/login.html')),
-    url(r'^signin/$',     'castle.views.signin',  name='signin'),
+    url(r'^login/$', django.contrib.auth.views.login, {'template_name': 'castle/login.html'}, name='signin'),
+    url(r'^logout/$', castle.views.signout, name='signout'),
+#    url(r'^login/$',      TemplateView.as_view(template_name='castle/login.html'), name='signin'),
+#    url(r'^signin/$',     'castle.views.signin',  name='signin'),
     url(r'^logout/$',     'castle.views.signout', name='signout'),
     url(r'^dashboard/$',  'castle.views.dashboard', name='dashboard'),
     url(r'^authors/(?P<pen_name>[^/]+)/$', 'castle.views.author', name='author'),
