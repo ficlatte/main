@@ -328,7 +328,7 @@ def author(request, pen_name):
     context = { 'profile'       : profile,
                 'author'        : author,
                 'story_list'    : story_list,
-                'page_title'    : profile.pen_name,
+                'page_title'    : author.pen_name,
                 'page_url'      : u'/authors/'+urlquote(author.pen_name)+u'/',
                 'pages'         : bs_pager(page_num, PAGE_STORIES, num_stories),
                 'is_friend'     : is_friend,
