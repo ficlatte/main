@@ -27,7 +27,7 @@ Copyright (C) 2015 Paul Robertson
           </div> <!-- id="errors" class="alert alert-danger" -->
 {% endif %}
       <div>
-        <form method="post" class="form-signin" action="{% url 'django.contrib.auth.views.login' %}">
+        <form action="/signin/" class="form-signin" id="log-in-form" method="POST" role="form">
           {% csrf_token %}
           <input name="action" type="hidden" value="log in" />
           <h2 class="form-signin-heading">Please sign in</h2>

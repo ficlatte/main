@@ -368,6 +368,7 @@ def drafts(request):
 def signin(request):
     username = request.POST.get('username', None)
     password = request.POST.get('password', None)
+    nxt = request.POST.get('next', None)
 
     if ((username is None) or (password is None)):
         raise Http404
@@ -406,7 +407,10 @@ def signin(request):
             user = authenticate(username=profile.user.username, password=password)
             login(request,user)
             
-            return HttpResponseRedirect(reverse('home'))
+            if (nxt):
+                return HttpResponseRedirect(nxt)
+            else:
+                return HttpResponseRedirect(reverse('home'))
         
     else:
         user = authenticate(username=profile.user.username, password=password)
@@ -414,7 +418,11 @@ def signin(request):
     if user is not None:
         if user.is_active:
             login(request, user)
-            return HttpResponseRedirect(reverse('home'))
+            
+            if (nxt):
+                return HttpResponseRedirect(nxt)
+            else:
+                return HttpResponseRedirect(reverse('home'))
         else:
             return HttpResponse("Account disabled")
     else:
@@ -1334,7 +1342,25 @@ def submit_comment(request):
         return HttpResponseRedirect(reverse('story', args=(story.id,)))
         
 #-----------------------------------------------------------------------------
-@login_required
+def new_email_flag_entry(request, items, profile, code, descr, perm=None):
+    node = {}
+    
+    node['code']  = code
+    node['descr'] = descr
+    if (profile):
+        node['is_set'] = ((profile.email_flags & code) > 0)
+    else:
+        node['is_set'] = True
+    
+    # If permissions required, check
+    if (perm):
+        if (request.user.has_perm(perm)):
+            items.append(node)
+    else:
+        items.append(node)
+
+#-----------------------------------------------------------------------------
+#@login_required
 def profile_view(request, error_title=None, error_messages=None):
     # Get user profile
     profile = None
@@ -1344,29 +1370,22 @@ def profile_view(request, error_title=None, error_messages=None):
     # Do e-mail subscription bits
     email_flags = []
 
-    email_flags.append({
-        'code'   : Profile.AUTOSUBSCRIBE_ON_STORY,
-        'is_set' : ((profile.email_flags & Profile.AUTOSUBSCRIBE_ON_STORY) > 0),
-        'descr' : u'when you publish a story'})
-    email_flags.append({
-        'code'   : Profile.AUTOSUBSCRIBE_ON_STORY_COMMENT, 
-        'is_set' : ((profile.email_flags & Profile.AUTOSUBSCRIBE_ON_STORY_COMMENT) > 0),
-        'descr' : u'when you comment on a story'})
-    if (request.user.has_perm("castle.post_blog")):
-        email_flags.append({
-            'code'   : Profile.AUTOSUBSCRIBE_ON_BLOG, 
-            'is_set' : ((profile.email_flags & Profile.AUTOSUBSCRIBE_ON_BLOG) > 0),
-            'descr' : u'when you publish a blog post'})
-    email_flags.append({
-        'code'   : Profile.AUTOSUBSCRIBE_ON_BLOG_COMMENT, 
-        'is_set' : ((profile.email_flags & Profile.AUTOSUBSCRIBE_ON_BLOG_COMMENT) > 0),
-        'descr' : u'when you comment on a blog post'})
+    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_STORY, u'when you publish a story')
+    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_STORY_COMMENT, u'when you comment on a story')
+    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_BLOG, u'when you publish a blog post', 'castle.post_blog')
+    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_BLOG_COMMENT, u'when you comment on a blog post')
+    
+    # Page title
+    if (profile):
+        page_title = u'Profile of '+profile.pen_name
+    else:
+        page_title = u'Register new user'
     
     # Build context and render page
     context = { 'profile'       : profile,
                 'length_limit'  : 1024,
                 'length_min'    : 1,
-                'page_title'    : u'Profile of '+profile.pen_name,
+                'page_title'    : page_title,
                 'email_flags'   : email_flags,
                 'error_title'   : error_title,
                 'error_messages': error_messages,
