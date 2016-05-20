@@ -54,7 +54,6 @@ def send_notification_email_comment(com):
     if (com.story):
         parent = com.story
         parent_type = u'story'
-        is_story = True
         subs = Subscription.objects.filter(story=parent)
         url1 = u'{}{}'.format(url, reverse('story', args=[parent.id]))
         unsub_url = u'{}{}'.format(url, reverse('story-unsub', args=[parent.id]))
@@ -62,17 +61,16 @@ def send_notification_email_comment(com):
     elif (com.blog):
         parent = com.blog
         parent_type = u'blog'
-        is_story = False
         subs = Subscription.objects.filter(blog=parent)
         url1 = u'{}{}'.format(url, reverse('blog', args=[parent.id]))
         unsub_url = u'{}{}'.format(url, reverse('blog-unsub', args=[parent.id]))
+        
     else:
         # Neither a blog nor a story, something weird is going on,
         # so just bug out here
         return None
     
-    # Run down the list of subscribers and send each one an e-mail
-    
+    # Build e-mail text
     subject  = u'Ficlatte comment on '+parent.title+u' by '+com.user.pen_name
     
     message  = u"Hi.\nThis is the Ficlatte server.  You are currently subscribed to "
@@ -88,6 +86,9 @@ def send_notification_email_comment(com):
     message += u'{}{}'.format(url, reverse('profile'))
     message += u'\n\nKeep writing!\n\nThe Ficlatte team\n'
 
+    # Loop through everyone subscribed to this thread
     for s in subs:
-        send_notification_email(s.user, subject, message)
+        # But only send messages to people other than the comment author
+        if (s.user != com.user):
+            send_notification_email(s.user, subject, message)
 
