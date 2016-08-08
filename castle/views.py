@@ -636,38 +636,38 @@ def submit_story(request):
         was_draft = story.draft
 
     if (not profile.email_authenticated()):
-        errors.append(u'You must have authenticated your e-mail address before posting a story');
-    else:
-        # Get story object, either existing or new
-        if (story is None):
-            story = Story(user       = profile,
-                          prequel_to = prequel_to,
-                          sequel_to  = sequel_to,
-                          prompt     = prompt)
+        errors.append(u'You must have authenticated your e-mail address before posting a story')
 
-        # Populate story object with data from submitted form
-        story.title  = request.POST.get('title', '')
-        story.body   = request.POST.get('body', '')
-        story.mature = request.POST.get('is_mature', False)
-        story.draft  = request.POST.get('is_draft', False)
-        story.prompt_text = ptext
-        
-        # Condense all end-of-line markers into \n
-        story.body = re_crlf.sub(u"\n", story.body)
-        
-        # Check for submission errors
-        if (len(story.title) < 1):
-            errors.append(u'Story title must be at least 1 character long')
-        
-        l = len(story.body)
-        if ((not story.draft) and (l < 60)):
-            errors.append(u'Story body must be at least 60 characters long')
-        
-        if ((not story.draft) and (l > 1024)):
-            errors.append(u'Story is over 1024 characters (currently ' + unicode(l) + u')')
+    # Get story object, either existing or new
+    if (story is None):
+        story = Story(user       = profile,
+                      prequel_to = prequel_to,
+                      sequel_to  = sequel_to,
+                      prompt     = prompt)
 
-        if ((    story.draft) and (l > 1536)):
-            errors.append(u'Draft is over 1536 characters (currently ' + unicode(l) + u')')
+    # Populate story object with data from submitted form
+    story.title  = request.POST.get('title', '')
+    story.body   = request.POST.get('body', '')
+    story.mature = request.POST.get('is_mature', False)
+    story.draft  = request.POST.get('is_draft', False)
+    story.prompt_text = ptext
+    
+    # Condense all end-of-line markers into \n
+    story.body = re_crlf.sub(u"\n", story.body)
+    
+    # Check for submission errors
+    if (len(story.title) < 1):
+        errors.append(u'Story title must be at least 1 character long')
+    
+    l = len(story.body)
+    if ((not story.draft) and (l < 60)):
+        errors.append(u'Story body must be at least 60 characters long')
+    
+    if ((not story.draft) and (l > 1024)):
+        errors.append(u'Story is over 1024 characters (currently ' + unicode(l) + u')')
+
+    if ((    story.draft) and (l > 1536)):
+        errors.append(u'Draft is over 1536 characters (currently ' + unicode(l) + u')')
     
     # If there have been errors, re-display the page
     if (errors):

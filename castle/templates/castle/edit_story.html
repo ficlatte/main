@@ -48,6 +48,7 @@ function draft_button()
             <form accept-charset="utf-8" action="/stories/submit/" class="form-horizontal" id="story-form" method="post" role="form">
               {% csrf_token %}
               <input name="sid" type="hidden" value="{{story.id}}" />
+              <input name="pen_name" type="hidden" value="{{profile.pen_name}}" />
               <input name="prequel_to" type="hidden" value="{{story.prequel_to.id}}" />
               <input name="sequel_to" type="hidden" value="{{story.sequel_to.id}}" />
               <input name="prid" type="hidden" value="{{story.prompt.id}}" />
