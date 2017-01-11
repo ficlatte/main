@@ -1,0 +1,13 @@
+::
+: django-bbcode: AUTHORS.txt
+::
+
+This file contains a list of active developers of django-bbcode.  See the file
+COPYRIGHT.txt for a full list of contributers and other copyright holders.
+
+Mark Friedenbach
+  Email: mark_friedenbach@yahoo.com
+
+::
+: End of File
+::
