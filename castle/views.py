@@ -280,10 +280,16 @@ def home(request):
         featured_query = Story.objects.filter(id=featured_id[0].i_val)
         if (featured_query):
             featured = featured_query[0]
+    
+    # Get latest blog
+    try:
+        blog = Blog.objects.all().order_by('-id')[0]
+    except IndexError:
+        blog = None
         
     # Build context and render page
     context = { 'profile'       : profile,
-                'blog_latest'   : Blog.objects.all().order_by('-id')[0],
+                'blog_latest'   : blog,
                 'featured'      : featured,
                 'popular'       : get_popular_stories(1,4),
                 'active'        : get_active_stories(1,10),

@@ -87,6 +87,8 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Ficlatte bits and bobs
 ficlatte/settings.py
 data-punt.pl
 data-punt.py
