@@ -175,7 +175,7 @@ def author_confirmed(profile, tag=None):
 #-----------------------------------------------------------------------------
 @register.filter
 def author_span(profile, tag=None):
-    return mark_safe(u'<span>Author: '+author_link(profile,tag)+u'</span>')
+    return mark_safe(u'<span class="byline">Author: '+author_link(profile,tag)+u'</span>')
 
 #-----------------------------------------------------------------------------
 @register.filter
