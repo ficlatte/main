@@ -39,19 +39,6 @@ div#news ul.meta li {
 	margin-right: 10px;
 }
 
-div.col-md-4 span.byline {
-	font-size: 12px;
-}
-
-span.byline {
-	font-style: italic;
-}
-
-div.col-sm-10 p, div.col-md-10 p {
-	font-size: 12px;
-}
-
-
 div#tag-cloud a {
         margin-bottom: 5px;
 }
@@ -116,4 +103,18 @@ p#average-rating span#enabled {
       top: 0px;
       bottom: 0px;
       padding: 0px;
+}
+
+/* Page features */
+
+div.col-md-4 span.byline {
+	font-size: 12px;
+}
+
+span.byline {
+	font-style: italic;
+}
+
+div.col-sm-10 p, div.col-md-10 p {
+	font-size: 12px;
 }
