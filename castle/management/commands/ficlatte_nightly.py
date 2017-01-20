@@ -21,6 +21,7 @@ from castle.models import *
 from django.db import transaction, connection
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 
 class Command(BaseCommand):
     help = 'Import old Ficlatte database into Django database'
@@ -64,6 +65,11 @@ class Command(BaseCommand):
             
             f.i_val = ma[0].id
             f.save()
+            
+            # Record featured story as having been featured
+            if (ma[0].ftime is None):
+                ma[0].ftime = timezone.now()
+                ma[0].save()
 
         return None
 

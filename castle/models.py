@@ -42,9 +42,9 @@ class Profile(models.Model):
     prefs       = models.IntegerField(default=0)
     flags       = models.IntegerField(default=0)
     stored      = models.ForeignKey('Story', blank=True, null=True)            # User can make a note of a story for later use
-    ctime       = models.DateTimeField(default=timezone.now)
-    mtime       = models.DateTimeField(default=timezone.now)
-    atime       = models.DateTimeField(default=timezone.now)
+    ctime       = models.DateTimeField(default=timezone.now)    # Creation time
+    mtime       = models.DateTimeField(default=timezone.now)    # Modification time
+    atime       = models.DateTimeField(default=timezone.now)    # Can't remember what this was supposed to be for
 
     # Flags
     HAS_AVATAR = 1
@@ -79,8 +79,8 @@ class Prompt(models.Model):
     body        = models.CharField(max_length=256)
     mature      = models.BooleanField(default=False)
     activity    = models.FloatField(default=0.0)
-    ctime       = models.DateTimeField(default=timezone.now)
-    mtime       = models.DateTimeField(default=timezone.now)
+    ctime       = models.DateTimeField(default=timezone.now)    # Creation time
+    mtime       = models.DateTimeField(default=timezone.now)    # Modification time
 
     def __unicode__(self):
         return unicode(self.title)
@@ -125,9 +125,9 @@ class Blog(models.Model):
     body        = models.CharField(max_length=20480)
     draft       = models.BooleanField(default=False)
     bbcode      = models.BooleanField(default=False)
-    ctime       = models.DateTimeField(default=timezone.now)
-    mtime       = models.DateTimeField(default=timezone.now)
-    ptime       = models.DateTimeField(blank=True, null=True)
+    ctime       = models.DateTimeField(default=timezone.now)    # Creation time
+    mtime       = models.DateTimeField(default=timezone.now)    # Modifcation time
+    ptime       = models.DateTimeField(blank=True, null=True)   # Publication time
 
     def __unicode__(self):
         return unicode(self.title)
