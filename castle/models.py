@@ -98,10 +98,10 @@ class Story(models.Model):
     ficly       = models.BooleanField(default=False)
     activity    = models.FloatField(default=0.0, null=True)
     prompt_text = models.CharField(max_length=256, blank=True, null=True)
-    ctime       = models.DateTimeField(default=timezone.now)
-    mtime       = models.DateTimeField(default=timezone.now)
-    ptime       = models.DateTimeField(blank=True, null=True)
-    ftime       = models.DateTimeField(blank=True, null=True)
+    ctime       = models.DateTimeField(default=timezone.now)    # Creation time
+    mtime       = models.DateTimeField(default=timezone.now)    # Modification time
+    ptime       = models.DateTimeField(blank=True, null=True)   # Publication time
+    ftime       = models.DateTimeField(blank=True, null=True)   # Featured time (first only)
 
     def __unicode__(self):
         return unicode(self.title)
