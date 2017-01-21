@@ -173,11 +173,12 @@ Copyright (C) 2015 Paul Robertson
     {% endif %}
           <ul class="list-unstyled" id="story-stats">
     {% if story.draft %}
-            <li id="mtime">Edited <abbr title="{{story.mtime|date:'Y-m-d'}}">{{story.mtime|age}}</abbr>. </p>
+            <li id="mtime">Edited <abbr title="{{story.mtime|date:'Y-m-d'}}">{{story.mtime|age}}</abbr>. </li>
     {% else %}
-            <li id="ptime">Published <abbr title="{{story.ptime|date:'Y-m-d'}}">{{story.ptime|age}}</abbr>. </p>
+            <li id="ptime">Published <abbr title="{{story.ptime|date:'Y-m-d'}}">{{story.ptime|age}}</abbr>. </li>
+	   {% if story.ftime %}<li id="ftime">Featured <abbr title="{{story.ftime|date:'Y-m-d'}}">{{story.ftime|age}}. </li>{% endif %}
     {% endif %}
-            <li id="num-ratings">Story viewed {{viewed}} times and rated {{rated}} times</li>
+            <li id="num-ratings">Story viewed {{viewed}} times and rated {{rated}} times.</li>
           </ul>
     {% if profile %}
           <hr />
