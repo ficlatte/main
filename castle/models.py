@@ -255,4 +255,3 @@ class Subscription(models.Model):
         if (self.blog is not None):
             r += u' subscribed to blog post '+unicode(self.blog)
         return r
-            

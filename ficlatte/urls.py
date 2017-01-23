@@ -19,8 +19,10 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
+from django.core.urlresolvers import reverse_lazy
 import django.contrib.auth.views
 import castle.views
+import castle.models
 
 urlpatterns = patterns('',
     # Examples:
@@ -68,6 +70,10 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^confirmation/(?P<yesno>(?:yes|no))/(?P<uid>\d+)/(?P<token>\d+)/$', 'castle.views.confirmation', name='confirmation'),
     url(r'^avatar_upload/', 'castle.views.avatar_upload', name='avatar_upload'),
+    url(r'^password_reset/$', django.contrib.auth.views.password_reset, {'post_reset_redirect': reverse_lazy('password_reset_done'), 'html_email_template_name': 'castle/registration/password_reset_email.html', 'template_name': 'castle/registration/password_reset_form.html'}, name='password_reset'),
+    url(r'^password_reset/done/$', django.contrib.auth.views.password_reset_done, {'template_name': 'castle/registration/password_reset_done.html'}, name='password_reset_done'),
+    url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', django.contrib.auth.views.password_reset_confirm, {'template_name': 'castle/registration/password_reset_confirm.html'}, name='password_reset_confirm'),
+    url(r'^reset/done/$', django.contrib.auth.views.password_reset_complete, {'template_name': 'castle/registration/password_reset_complete.html'}, name='password_reset_complete'),
     # Static-ish pages
     url(r'^(?P<template>rules\.html)$', 'castle.views.static_view', name="rules"),
     url(r'^(?P<template>privacy\.html)$', 'castle.views.static_view', name="privacy"),

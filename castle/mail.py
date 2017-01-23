@@ -92,3 +92,19 @@ def send_notification_email_comment(com):
         if (s.user != com.user):
             send_notification_email(s.user, subject, message)
 
+def send_pass_reset_email(profile, token):
+    url = getattr(settings, 'SITE_URL', 'http://www.example.com/')
+    
+    mail_message  = "To initiate the password reset process for your Ficlatte account,\n";
+    mail_message += "click the link below:\n\n";
+    mail_message += "{}/passwordreset/{}/{}\n\n".format(url, profile.id, token);
+    mail_message += "If clicking the link above doesn't work, please copy and paste\n";
+    mail_message += "the URL into a new browser window instead.\n\n";
+    mail_message += "Best regards,\n\n";
+    mail_message += "The Ficlatte team\n";
+    
+    send_mail('Ficlatte password reset',
+              mail_message,
+              'Ficlatte Team <noreply@ficlatte.com>',
+              [profile.email_addr],
+              fail_silently = False)
