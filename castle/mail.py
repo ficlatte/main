@@ -88,6 +88,6 @@ def send_notification_email_comment(com):
 
     # Loop through everyone subscribed to this thread
     for s in subs:
-        # But only send messages to people other than the comment author
-        if (s.user != com.user):
+        # But only send messages to people other than the comment author, and only if there is comment text
+        if (s.user != com.user and com.body):
             send_notification_email(s.user, subject, message)
