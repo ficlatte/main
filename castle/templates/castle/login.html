@@ -36,6 +36,10 @@ Copyright (C) 2015 Paul Robertson
           <button class="btn btn-lg btn-success btn-block" type="submit" value="login">Sign in</button>
           <input type="hidden" name="next" value="{{ next }}" />
         </form>
+
+	<div class="password-reset-link">
+		<a href="{% url 'password_reset' %}">Forgot password</a>
+	</div>
       </div> <!-- id="" class="" -->
 
 {% endblock main_content %}
