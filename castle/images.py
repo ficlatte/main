@@ -25,14 +25,27 @@ from django.conf import settings
 from castle.models import *
 import os
 import sys
-import resource
 import subprocess
 
-def setlimits():
-    resource.setrlimit(resource.RLIMIT_CPU, (1, 1))     # Limit CPU time
-    #resource.setrlimit(resource.RLIMIT_NPROC, (10, 10)) # Limit child processes
-    resource.setrlimit(resource.RLIMIT_CORE, (0, 0))    # Prevent core dump files
+#-----------------------------------------------------------------------------
+# 'resource' module doesn't exist on all platforms, so catch and ignore failure
+try:
+    import resource
+except ImportError:
+    pass
 
+#-----------------------------------------------------------------------------
+def setlimits():
+    try:
+        resource.setrlimit(resource.RLIMIT_CPU, (1, 1))     # Limit CPU time
+        #resource.setrlimit(resource.RLIMIT_NPROC, (10, 10)) # Limit child processes
+        resource.setrlimit(resource.RLIMIT_CORE, (0, 0))    # Prevent core dump files
+    except NameError:
+        # Import of "resource" module failed
+        # but we can get by without it
+        pass
+
+#-----------------------------------------------------------------------------
 def run_convert_avatar(profile):
     id = str(profile.id)
     path = getattr(settings, 'AVATAR_PATH', None)
@@ -43,6 +56,7 @@ def run_convert_avatar(profile):
     p.wait()
     return p.returncode
 
+#-----------------------------------------------------------------------------
 def run_convert_icon(profile):
     id = str(profile.id)
     path = getattr(settings, 'AVATAR_PATH', None)
@@ -54,9 +68,12 @@ def run_convert_icon(profile):
     print "return code is",p.returncode
     return p.returncode
 
+#-----------------------------------------------------------------------------
 def convert_avatars(profile):
     # non-zero return code indicates failure
     failure = run_convert_avatar(profile)
     if (not failure):
         failure = run_convert_icon(profile)
     return failure
+
+#-----------------------------------------------------------------------------
