@@ -16,19 +16,19 @@ $ mysql -u root -p
 
 and, at the mysql prompt:
 
-mysql> CREATE DATABASE ficlatte CHARACTER SET UTF8;
-mysql> CREATE USER ficlatte@localhost IDENTIFIED BY 'password';
-mysql> GRANT ALL PRIVILEGES ON ficlatte.* TO ficlatte@localhost;
+mysql> CREATE DATABASE ficlatte CHARACTER SET UTF8;  
+mysql> CREATE USER ficlatte@localhost IDENTIFIED BY 'password';  
+mysql> GRANT ALL PRIVILEGES ON ficlatte.* TO ficlatte@localhost;  
 mysql> exit
 
-Install Django
+Install Django  
 $ sudo -k pip install django==1.8.4
 
-Get Django started
-$ cd ficlatte_directory
-$ cd ficlatte
-$ cp settings-example.py settings.py
-$ vi/emacs/whatever settings.py
+Get Django started  
+$ cd ficlatte_directory  
+$ cd ficlatte  
+$ cp settings-example.py settings.py  
+$ vi/emacs/whatever settings.py  
 
 and edit the settings file (see https://docs.djangoproject.com/en/1.8/ref/settings/ ).  Under DATABASES, make sure that the NAME is set to the name of the database ('ficlatte' if you followed the instructions above), that USER is set to the database username (also 'ficlatte' if you followed the instructions) and that PASSWORD is set to the password, which really should not be 'password'.  It would be useful for you to set up the EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER and EMAIL_HOST_PASSWORD to settings provided by your e-mail provider.  This will allow the system to send you notification e-mails (handy for those pesky new-user verification e-mails).  If you want to fake e-mail verification, use the admin interface to edit the user's profile entry directly and set email_auth to 0.
 
