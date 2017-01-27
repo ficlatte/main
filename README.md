@@ -8,7 +8,7 @@ It's for writing micro-fiction.
 # Getting started (on Linux)
 You'll need to install MySQL, Python 2.7 and Django 1.8.4 (which is a bit behind the head for now)
 
-$ sudo apt install python-pip python-dev mysql-server libmysqlclient-dev
+$ sudo apt install python-pip python-dev mysql-server libmysqlclient-dev python-mysqldb
 
 then
 
