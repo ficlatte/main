@@ -1,0 +1,31 @@
+{% extends 'castle/base_page.html' %}
+{% comment %}
+This file is part of Ficlatté.
+Copyright (C) 2015 Paul Robertson
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of version 3 of the GNU Affero General Public
+    License as published by the Free Software Foundation
+    
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+{% endcomment %}
+{% load staticfiles %}
+{% load castle_tags %}
+
+{% block main_content %}
+  <p>
+    We've resent your email confirmation to activate your Ficlatte account, if an account exists with the email you entered.
+    You should receive it shortly.
+  </p>
+  <p>
+    If you don't receive an email, please make sure you've entered the address you registered with,
+    and check your spam folder.
+  </p>
+{% endblock %}
