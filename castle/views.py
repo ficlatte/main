@@ -1763,7 +1763,7 @@ def del_friend(request, user_id):
     return HttpResponseRedirect(reverse('author', args=(friend.pen_name,)))
 
 #-----------------------------------------------------------------------------
-def static_view(request, template):
+def static_view(request, template_name):
     # Get user profile
     profile = None
     if (request.user.is_authenticated()):
@@ -1772,7 +1772,7 @@ def static_view(request, template):
     context = {
         'profile'       : profile
         }
-    return render(request, 'castle/'+template, context)
+    return render(request, 'castle/'+template_name, context)
 
 #-----------------------------------------------------------------------------
 @login_required
