@@ -24,8 +24,6 @@ SECRET_KEY = 'yxr5rs5bn#cbwf(kmo334drq#@16h5*^6x$09eml!tb=8el^s)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
-
 ALLOWED_HOSTS = []
 
 
@@ -38,6 +36,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
     'castle',
     'bbcode',
 )
@@ -58,7 +57,19 @@ WSGI_APPLICATION = 'ficlatte.wsgi.application'
 
 # Filesystem locations
 #TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
-
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'APP_DIRS': True,
+        'OPTIONS': {
+			'debug': DEBUG,
+            'context_processors': [
+                "django.contrib.auth.context_processors.auth",
+                "django.core.context_processors.request",
+            ]
+        } 
+    },
+]
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
