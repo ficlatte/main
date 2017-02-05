@@ -1,5 +1,5 @@
-{% extends "castle/page_with_selected_sidebar.html" %}
-{%comment%}
+{% extends 'castle/base_page.html' %}
+{% comment %}
 This file is part of Ficlatté.
 Copyright (C) 2015 Paul Robertson
 
@@ -15,15 +15,17 @@ Copyright (C) 2015 Paul Robertson
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-{%endcomment%}
+{% endcomment %}
 {% load staticfiles %}
 {% load castle_tags %}
 
-{% block primary_panel %}
-    <h1>Upload avatar file</h1>
-    <form action="{% url 'avatar_upload' %}" method="post" enctype="multipart/form-data">
-      {% csrf_token %}
-      <table>{{ form }}</table>
-      <input type="submit" value="submit" />
-    </form>
+{% block main_content %}
+  <p>
+    We've resent your email confirmation to activate your Ficlatte account, if an account exists with the email you entered.
+    You should receive it shortly.
+  </p>
+  <p>
+    If you don't receive an email, please make sure you've entered the address you registered with,
+    and check your spam folder.
+  </p>
 {% endblock %}

@@ -315,6 +315,9 @@ def author(request, pen_name):
 
     # Is logged-in user the author?
     owner = ((profile is not None) and (profile == author))
+    
+    # Has the author's email been confirmed?
+    email_conf = (author.email_auth == 0)
 
     # Build story list (owner sees their drafts)
     page_num = safe_int(request.GET.get('page_num', 1))
@@ -334,6 +337,7 @@ def author(request, pen_name):
     context = { 'profile'       : profile,
                 'author'        : author,
                 'story_list'    : story_list,
+                'email_conf'	: email_conf,
                 'page_title'    : author.pen_name,
                 'page_url'      : u'/authors/'+urlquote(author.pen_name)+u'/',
                 'pages'         : bs_pager(page_num, PAGE_STORIES, num_stories),
@@ -1588,6 +1592,42 @@ def confirmation(request, yesno, uid, token):
 
 #-----------------------------------------------------------------------------
 @login_required
+def resend_email_conf(request):
+	# Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile        
+    
+    # Get data from form
+    pen_name        = profile.pen_name
+    email_addr      = profile.email_addr
+    email_auth		= profile.email_auth
+    email_time		= profile.email_time
+    
+    # Set modification time
+    time_now = timezone.now()
+
+    # Has the author's email address been confirmed?
+    email_conf = (profile.email_auth == 0)
+    if (not email_conf):
+        # Get random 64 bit integer
+        token = random64()
+        token_s = to_signed64(token)
+        profile.email_auth = token_s
+        profile.email_time = time_now
+        send_conf_email(profile, token)
+        profile.save()
+        
+    #Build context and render page
+    context = {
+		'page_title'		: u'Resend email confirmation',
+		'email_conf'		: email_conf,
+		}
+        
+    return render(request, 'castle/registration/resend_email_confirmation.html', context)
+
+#-----------------------------------------------------------------------------
+@login_required
 def dashboard(request):
     # Get user profile
     profile = None
@@ -1723,7 +1763,7 @@ def del_friend(request, user_id):
     return HttpResponseRedirect(reverse('author', args=(friend.pen_name,)))
 
 #-----------------------------------------------------------------------------
-def static_view(request, template):
+def static_view(request, template_name):
     # Get user profile
     profile = None
     if (request.user.is_authenticated()):
@@ -1732,7 +1772,7 @@ def static_view(request, template):
     context = {
         'profile'       : profile
         }
-    return render(request, 'castle/'+template, context)
+    return render(request, 'castle/'+template_name, context)
 
 #-----------------------------------------------------------------------------
 @login_required

@@ -20,15 +20,31 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
 from django.core.urlresolvers import reverse_lazy
+from django.contrib.sitemaps.views import sitemap
+from castle.sitemap import *
 import django.contrib.auth.views
 import castle.views
 import castle.models
+
+# Define sitemaps
+sitemaps = {
+    'blog':	BlogSitemap,
+    'stories': StorySitemap,
+    'prompts': PromptSitemap,
+    'tags': TagSitemap,
+    'authors': AuthorSitemap,
+    'static': StaticViewSitemap,
+}
 
 urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'ficlatte.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
-
+    
+    # Sitemap
+    url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    
+    #Dynamic Pages
     url(r'^$',      'castle.views.home', name='home'),
     url(r'^login/$', django.contrib.auth.views.login, {'template_name': 'castle/login.html'}, name='login'),
     url(r'^logout/$', castle.views.signout, name='signout'),
@@ -70,12 +86,17 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^confirmation/(?P<yesno>(?:yes|no))/(?P<uid>\d+)/(?P<token>\d+)/$', 'castle.views.confirmation', name='confirmation'),
     url(r'^avatar_upload/', 'castle.views.avatar_upload', name='avatar_upload'),
+    url(r'^resend_email_conf/$', 'castle.views.resend_email_conf', name='resend_email_conf'),
     url(r'^password_reset/$', django.contrib.auth.views.password_reset, {'post_reset_redirect': reverse_lazy('password_reset_done'), 'html_email_template_name': 'castle/registration/password_reset_email.html', 'template_name': 'castle/registration/password_reset_form.html'}, name='password_reset'),
     url(r'^password_reset/done/$', django.contrib.auth.views.password_reset_done, {'template_name': 'castle/registration/password_reset_done.html'}, name='password_reset_done'),
     url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', django.contrib.auth.views.password_reset_confirm, {'template_name': 'castle/registration/password_reset_confirm.html'}, name='password_reset_confirm'),
     url(r'^reset/done/$', django.contrib.auth.views.password_reset_complete, {'template_name': 'castle/registration/password_reset_complete.html'}, name='password_reset_complete'),
+    
     # Static-ish pages
-    url(r'^(?P<template>rules\.html)$', 'castle.views.static_view', name="rules"),
-    url(r'^(?P<template>privacy\.html)$', 'castle.views.static_view', name="privacy"),
-    url(r'^(?P<template>help\.html)$', 'castle.views.static_view', name="help"),
+    #url(r'^(?P<template>rules\.html)$', 'castle.views.static_view', name="rules"),
+    #url(r'^(?P<template>privacy\.html)$', 'castle.views.static_view', name="privacy"),
+    #url(r'^(?P<template>help\.html)$', 'castle.views.static_view', name="help"),
+    url(r'^rules/$', 'castle.views.static_view', {'template_name': 'rules.html'}, name="rules"),
+    url(r'^privacy/$', 'castle.views.static_view', {'template_name': 'privacy.html'}, name="privacy"),
+    url(r'^help/$', 'castle.views.static_view', {'template_name': 'help.html'}, name="help"),
 )

@@ -82,11 +82,11 @@ Copyright (C) 2015 Paul Robertson
               <!--<li><a href="/notes">Notes</a></li>-->
               <li><a href="{% url 'signout' %}">Log out</a></li>
               {% else %}
-              <li><a href="{% url 'login' %}?next=/">Log in</a></li>
+              <li><a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}">Log in</a></li>
               <li><a href="{% url 'register' %}">Register</a></li>
               {% endif %}
               <li><a href="{% url 'blogs' %}">Blog</a></li>
-              <li><a href="{% url 'help' template='help.html' %}">Help</a></li>
+              <li><a href="{% url 'help' %}" target="_blank">Help</a></li>
             </ul>
           </div> <!-- id="navbar" class="collapse navbar-collapse" -->
         </div> <!-- id="" class="container" -->
