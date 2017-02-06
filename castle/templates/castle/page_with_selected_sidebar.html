@@ -36,6 +36,17 @@ Copyright (C) 2015 Paul Robertson
             </div> <!-- id="" class="panel-body" -->
           </div> <!-- id="" class="panel panel-info" -->
       {% endif %}
+      
+      {% if challenge_button %}
+          <div class="panel panel-info">
+            <div class="panel-heading">
+              <h3 class="panel-title">Challenges</h3>
+            </div> <!-- id="" class="panel-heading" -->
+            <div class="panel-body">
+              <a class="btn btn-success btn-block" href="/challenges/new/" id="new-challenge-link" type="button"><span class="glyphicon glyphicon-pencil"></span> &nbsp; Create a challenge</a>
+            </div> <!-- id="" class="panel-body" -->
+          </div> <!-- id="" class="panel panel-info" -->
+      {% endif %}
 
           <div class="panel panel-warning">
             <div class="panel-heading">
@@ -58,6 +69,8 @@ Copyright (C) 2015 Paul Robertson
               <h4>Your library</h4>
               <ul class="list-unstyled">
                 <li><a href="/authors/{{profile.pen_name|url}}/">Published stories</a> <span>{{profile|num_stories}}</span></li>
+                <li><a href="/authors/u/prompts/">Published prompts</a> <span>{{profile|num_prompts}}</span></li>
+                <li><a href="/authors/u/challenges/">Challenges offered</a> <span>{{profile|num_challenges}}</span></li>
               </ul>
               <hr />
               <h4>Friends: <span>{{profile|num_friends}}</span></h4>
@@ -124,12 +137,20 @@ Copyright (C) 2015 Paul Robertson
   {%comment%} Story side-panel {%endcomment%}
   {%comment%}------------------------------------------------------------------{%endcomment%}
   {% if story_sidepanel %}
-  
+	
+	{% if story.challenge and ch_owner and ch_after and not ch_winner and not owner %}
+			<form accept-charset="utf-8" action="/challenges/{{story.challenge.id}}/winner/{{story.id}}/" class="form-horizontal" id="winner-select-form" method="POST" role="form">
+              {% csrf_token %}
+              <input name="sid" type="hidden" value="{{story.id}}" />
+              <input name="chid" type="hidden" value="{{story.challenge.id}}" />
+			  <button class="btn btn-success btn-block" id="winner-select" type="submit"><span class="glyphicon glyphicon-bookmark"></span> Select as winner</button>
+			</form>
+    {% endif %}
     {% if owner %}
           <a class="btn btn-info btn-block" href="/stories/edit/{{story.id}}/" id="edit-link" type="button"><span class="glyphicon glyphicon-pencil"></span> Edit story</a>
           <a class="btn btn-danger btn-block" href="/stories/delete/{{story.id}}/" id="delete-link" onclick="return confirm('Are you sure you want to delete this story? (there is no undelete function)');" type="button"><span class="glyphicon glyphicon-trash"></span> Delete story</a>
     {% endif %}
-    {% if story.tag_set.count > 0 or story.prompt or story.prequel_to or story.sequel_to %}
+    {% if story.tag_set.count > 0 or story.prompt or story.challenge or story.prequel_to or story.sequel_to %}
           <div class="well well-sm" id="inspiration">
     {% if story.prompt %}
             <h4>Story prompt:</h4>
@@ -139,6 +160,11 @@ Copyright (C) 2015 Paul Robertson
     {% if story.prompt_text %}
             <h4>Author's prompt text:</h4>
             {{story.prompt_text}}
+    {% endif %}
+    {% if story.challenge %}
+            <h4>Story challenge:</h4>
+            {{story.challenge.body|encode_story}}
+            <p><a href="/challenges/{{story.challenge.id}}/">{{story.challenge.title}}</a> by {{story.challenge.user|author_link}}</p>
     {% endif %}
     {% if story.prequel_to %}
             {% if story.prompt %}<hr>{% endif %}
@@ -188,6 +214,13 @@ Copyright (C) 2015 Paul Robertson
           <p><a href="{% url 'story-sub' story.id %}">Send me e-mail notifications of comments</a></p>
       {% endif %}
     {% endif %}
+    {% if st_winner %}
+		  <hr />
+		  <h4>Challenge winner! <span class="glyphicon glyphicon-flag" style="color:red"></span></h4>
+		  <ul class="challenge-story-winner">
+				<li>Challenge: <a href="/challenges/{{ st_ch_id }}/">{{ st_ch_title }}</a>
+		  </ul>
+    {% endif %}
           <hr />
           <p class="small" id="licence">All stories on Ficlatt&eacute; are licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license">Creative Commons Attribution-Share Alike 3.0 License</a>. <a href="http://wiki.creativecommons.org/Sharing_Creative_Works">What does this mean?</a></p>
   {% endif %}
@@ -197,13 +230,75 @@ Copyright (C) 2015 Paul Robertson
   {% if prompt_sidepanel and prompt %}
           <a class="btn btn-success btn-block" href="/stories/new?prid={{prompt.id}}" id="prompt-link" type="button"><span class="glyphicon glyphicon-pencil"></span> Take prompt</a>
           {% if owner %}
-          <a class="btn btn-info btn-block" href="/prompts/edit/{{prompt.id}}/" id="prompt-link" type="button"><span class="glyphicon glyphicon-pencil"></span> Edit prompt</a>
+          <!-- <a class="btn btn-info btn-block" href="/prompts/edit/{{prompt.id}}/" id="prompt-link" type="button"><span class="glyphicon glyphicon-pencil"></span> Edit prompt</a> -->
           {% endif %}
           <ul class="list-unstyled" id="story-stats">
             <li id="pubdate"><small>Prompt published {{prompt.ctime|date:"jS F Y"}}</small></li>
           </ul>
           <hr />
-          <p class="small" id="licence">All prompts on Ficlatt&eacute; are licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license">Creative Commons Attribution-Share Alike 3.0 License</a><a href="http://wiki.creativecommons.org/Sharing_Creative_Works">What does this mean?</a></p>
+          <p class="small" id="licence">All prompts on Ficlatt&eacute; are licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license">Creative Commons Attribution-Share Alike 3.0 License</a>. <a href="http://wiki.creativecommons.org/Sharing_Creative_Works">What does this mean?</a></p>
+  {% endif %}
+  {%comment%}------------------------------------------------------------------{%endcomment%}
+  {%comment%} Challenge side panel {%endcomment%}
+  {%comment%}------------------------------------------------------------------{%endcomment%}
+  {% if challenge_sidepanel and challenge %}
+	  {% if ch_before %}
+		  <span class="btn btn-success btn-block ch_before" id="challenge-link" type="button"><span class="glyphicon glyphicon-time"></span> Challenge hasn't begun</span>
+	  {% elif ch_after %}
+		  <span class="btn btn-success btn-block ch_after" id="challenge-link" type="button"><span class="glyphicon glyphicon-hourglass"></span> Challenge complete</span>
+	  {% else %}		  
+          <a class="btn btn-success btn-block" href="/stories/new?chid={{challenge.id}}" id="challenge-link" type="button"><span class="glyphicon glyphicon-pencil"></span> Accept Challenge!</a>
+      {% endif %}          
+          
+          {% if owner %}
+          <!-- <a class="btn btn-info btn-block" href="/challenges/edit/{{challenge.id}}/" id="challenge-link" type="button"><span class="glyphicon glyphicon-pencil"></span> Edit challenge</a> -->
+          {% endif %}
+          <ul class="list-unstyled" id="story-stats">
+            <li id="pubdate">Challenge created: {{challenge.ctime|date:"jS F Y"}}</li>
+            <li id="startdate">{% if ch_before %}Challenge starts: {% else %}Challenge started:{% endif %} {{challenge.stime|date:"jS F Y"}}</li>
+            <li id="enddate">{% if ch_after %}Challenge ended: {% else %}Challenge ends:{% endif %} {{challenge.etime|date:"jS F Y"}}</li>
+          </ul>
+          <hr />
+          
+          {% if ch_after and ch_winner %}
+          <h2>Winning Story</h2>
+          <h4 class="entry_title"><a class="story_link" href="/stories/{{win_story_id}}">{{win_story}}</a> <span class="glyphicon glyphicon-flag" style="color:red"></span></h4>
+		  <ul class="challenge-story-winner">
+			<li>{{ win_author|author_span }}</li>
+			<li>Posted <abbr class="published" title="{{s.ptime|date:'Y-m-d'}}">{{win_ptime|age}}</abbr></li>
+		  </ul>          
+          <hr />
+          {% endif %}
+          <p class="small" id="licence">All challenges on Ficlatt&eacute; are licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license">Creative Commons Attribution-Share Alike 3.0 License</a>. <a href="http://wiki.creativecommons.org/Sharing_Creative_Works">What does this mean?</a></p>
+          <hr />
+          <h2>Comments <small>({{challenge|num_comments}} so far!)</small></h2>
+          <ul class="challenge-comments">
+			{% for comment in comments %}
+			<li class="challenge-comment">
+				{{comment.user|author_link:'h4'}}
+				{{comment.body|encode_story}}
+				<ul class="list-inline">
+					<li class="posted">Posted <abbr class="dtposted" title="{{comment.ctime|date:'Y-m-d'}}">{{comment.ctime|age}}</abbr></li>
+				</ul>
+			</li>
+			{% endfor %}
+          </ul>
+          <hr />
+          {% if profile %}
+          <div id="comment-box">
+            <form action="/comment/submit/" id="comment-form" method="post" role="form">
+              {% csrf_token %}
+              <input id="comment_sid" name="chid" type="hidden" value="{{challenge.id}}" />
+              <div class="form-group">
+                  <label class="control-label" for="comment_body">Leave a comment</label>
+                  <textarea class="form-control" id="comment_body" maxlength="1024" name="body" rows="7"></textarea>
+              </div> <!-- id="" class="form-group" -->
+              <div class="form-group">
+                <input alt="Submit comment" type="submit" value="Submit" />
+              </div> <!-- id="" class="form-group" -->
+            </form>
+          </div> <!-- id="comment-box" class="" -->
+          {% endif %}
   {% endif %}
           
 {% endblock secondary_panel %}

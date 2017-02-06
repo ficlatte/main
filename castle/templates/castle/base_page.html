@@ -23,13 +23,13 @@ Copyright (C) 2015 Paul Robertson
     <meta charset="utf-8" />
     <meta content="IE=edge" http-equiv="X-UA-Compatible" />
     <meta content="width=device-width, initial-scale=1" name="viewport" />
-    <link href="{% static 'castle/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
-    <link href="{% static 'castle/jumbotron.css' %}" rel="stylesheet" type="text/css" />
-    <title>{% if page_title %}{{page_title}} on {% endif %}{{0|site_name}}</title>
     <meta content="Paul Robertson" name="author" />
     <meta content="Perl" name="generator" />
     <meta content="Micro-fiction site" name="description" />
     <meta content="amazing" name="keywords" />
+    <title>{% if page_title %}{{page_title}} on {% endif %}{{0|site_name}}</title>
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css" />
   </head>
 
   <body {% block body_tag %} {% endblock %} >
@@ -121,6 +121,7 @@ Copyright (C) 2015 Paul Robertson
                 <li><a class="author_link" href="{% url 'author' profile.pen_name %}">Your stories</a></li>
                 <li><a href="{% url 'new_story' %}" id="nav-write">Write</a></li>
                 {% if perms.castle.post_blog %}<li><a href="{% url 'new_blog'%}" id="nav-write-blog">Write blog</a></li>{% endif %}
+                <li><a href="{% url 'challenges' %}" id="nav-challenges">Challenges</a></li>
                 <li><a href="{% url 'prompts' %}" id="nav-prompts">Prompts</a></li>
                 <li><a href="{% url 'recent_stories' %}" id="nav-browse">Browse</a></li>
               </ul>

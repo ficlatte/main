@@ -69,7 +69,35 @@ def num_stories(obj):
 @register.filter
 def num_drafts(obj):
     return obj.story_set.filter(draft = True).count()
+   
+#-----------------------------------------------------------------------------
+@register.filter
+def num_prompts(obj):
+    return obj.prompt_set.count()
 
+#-----------------------------------------------------------------------------
+@register.filter
+def num_prompts_txt(obj):
+    c = obj.prompt_set.count()
+    if (c == 1):
+        return u'1 prompt';
+    else:
+        return unicode(c) + u' prompts'
+        
+#-----------------------------------------------------------------------------
+@register.filter
+def num_challenges(obj):
+    return obj.challenge_set.count()
+
+#-----------------------------------------------------------------------------
+@register.filter
+def num_challenges_txt(obj):
+    c = obj.challenge_set.count()
+    if (c == 1):
+        return u'1 challenge';
+    else:
+        return unicode(c) + u' challenges'
+   
 #-----------------------------------------------------------------------------
 @register.filter
 def profile_comments_txt(profile):
@@ -234,6 +262,20 @@ def prompt_link(prompt, tag=None):
     
     # FIXME: fix URL
     return mark_safe(u'<a href="/prompts/' + unicode(prompt.id) + u'">' + t1 + escape(prompt.title) + t2 + u'</a>')
+    
+#-----------------------------------------------------------------------------
+@register.filter
+def challenge_link(challenge, tag=None):
+    if (challenge is None):
+        return u'<NULL CHALLENGE>'
+    t1 = ''
+    t2 = ''
+    if (tag is not None):
+        t1 = u'<'+tag+u'>'
+        t2 = u'</'+tag.partition(' ')[0]+u'>'   # Get bit before first space
+    
+    # FIXME: fix URL
+    return mark_safe(u'<a href="/challenges/' + unicode(challenge.id) + u'">' + t1 + escape(challenge.title) + t2 + u'</a>')
 
 #-----------------------------------------------------------------------------
 @register.filter
@@ -261,6 +303,18 @@ def activity_entry(log):
     
     elif (log.log_type == StoryLog.PROMPT_MOD):
         return mark_safe(author_link(log.user)+u' updated prompt '+prompt_link(log.prompt))
+        
+    elif (log.log_type == StoryLog.CHALLENGE):
+        return mark_safe(author_link(log.user)+u' created challenge '+challenge_link(log.challenge))
+    
+    elif (log.log_type == StoryLog.CHALLENGE_MOD):
+        return mark_safe(author_link(log.user)+u' updated challenge '+challenge_link(log.challenge))
+        
+    elif (log.log_type == StoryLog.CHALLENGE_ENT):
+        return mark_safe(author_link(log.user)+u' entered '+story_link(log.story)+u' into the challenge '+challenge_link(log.challenge))
+    
+    elif (log.log_type == StoryLog.CHALLENGE_WON):
+        return mark_safe(author_link(log.user)+u' won the challenge '+challenge_link(log.challenge)+u' with '+story_link(log.story))
 
     return 'log_id={}, user={}; story={}, type={}'.format(log.id, log.user.id,log.story.id, log.log_type)
         
@@ -279,6 +333,10 @@ def dashboard_entry(log):
     #STORY_MOD = 7  # Modified an extant story
     #PROMPT    = 8  # Created a writing prompt
     #PROMPT_MOD= 9   # Modified a writing prompt
+    #CHALLENGE	= 10 # Created a challenge
+    #CHALLENGE_MOD = 11 # Modified a challenge
+    #CHALLENGE_ENT = 12 # Entered a challenge
+    #CHALLENGE_WON = 13 # Won a challenge
 
     prompt_txt = u''
     if (log.prompt):
@@ -307,6 +365,18 @@ def dashboard_entry(log):
 
     elif (log.log_type == StoryLog.PROMPT_MOD):
         return mark_safe(author_link(log.user)+u' updated prompt '+prompt_link(log.prompt))
+        
+    elif (log.log_type == StoryLog.CHALLENGE):
+        return mark_safe(author_link(log.user)+u' created challenge '+challenge_link(log.challenge))
+
+    elif (log.log_type == StoryLog.CHALLENGE_MOD):
+        return mark_safe(author_link(log.user)+u' updated challenge '+challenge_link(log.challenge))
+    
+    elif (log.log_type == StoryLog.CHALLENGE_ENT):
+        return mark_safe(author_link(log.user)+u' entered '+story_link(log.story)+u' into the challenge '+challenge_link(log.challenge))
+    
+    elif (log.log_type == StoryLog.CHALLENGE_WON):
+        return mark_safe(author_link(log.user)+u' won the challenge '+challenge_link(log.challenge)+u' with '+story_link(log.story))
 
     return 'log_id={}, user={}; story={}, type={}'.format(log.id, log.user.id,log.story.id, log.log_type)
         
