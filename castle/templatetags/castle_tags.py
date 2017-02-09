@@ -287,7 +287,10 @@ def activity_entry(log):
         return mark_safe(author_link(log.user)+u' wrote '+story_link(log.story))
     
     elif (log.log_type == StoryLog.COMMENT):
-        return mark_safe(author_link(log.user)+u' wrote a comment on '+story_link(log.story))
+		if (log.story):
+			return mark_safe(author_link(log.user)+u' wrote a comment on '+story_link(log.story))
+		else:
+			return mark_safe(author_link(log.user)+u' wrote a comment on '+challenge_link(log.challenge))
         
     elif (log.log_type == StoryLog.SEQUEL):
         return mark_safe(author_link(log.user)+u' wrote a sequel, '+story_link(log.story)+u', to '+story_link(log.quel)+u' by '+author_link(log.quel.user))
@@ -346,7 +349,10 @@ def dashboard_entry(log):
         return mark_safe(author_link(log.user)+u' wrote '+story_link(log.story)+prompt_txt)
     
     elif (log.log_type == StoryLog.COMMENT):
-        return mark_safe(author_link(log.user)+u' wrote a comment on '+story_link(log.story)+u' by '+author_link(log.story.user))
+		if (log.story):
+			return mark_safe(author_link(log.user)+u' wrote a comment on '+story_link(log.story)+u' by '+author_link(log.story.user))
+		else:
+			return mark_safe(author_link(log.user)+u' wrote a comment on '+challenge_link(log.challenge)+u' by '+author_link(log.challenge.user))
         
     elif (log.log_type == StoryLog.RATE):
         return mark_safe(author_link(log.user)+u' rated '+story_link(log.story)+u' by '+author_link(log.story.user))
