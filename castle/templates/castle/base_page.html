@@ -103,7 +103,6 @@ Copyright (C) 2015 Paul Robertson
           </div> <!-- id="" class="row" -->
         </div> <!-- id="" class="jumbotron" -->
       </div> <!-- id="" class="container" -->
-      {% if profile %}
       <div class="container">
         <nav class="navbar navbar-default">
           <div class="container-fluid">
@@ -118,9 +117,11 @@ Copyright (C) 2015 Paul Robertson
             <div class="collapse navbar-collapse" id="navbar2">
               <ul class="nav navbar-nav">
                 <li><a href="/" id="nav-home" rel="home"><span class="glyphicon glyphicon-home"></span></a></li>
+                {% if profile %}
                 <li><a class="author_link" href="{% url 'author' profile.pen_name %}">Your stories</a></li>
                 <li><a href="{% url 'new_story' %}" id="nav-write">Write</a></li>
                 {% if perms.castle.post_blog %}<li><a href="{% url 'new_blog'%}" id="nav-write-blog">Write blog</a></li>{% endif %}
+                {% endif %}
                 <li><a href="{% url 'challenges' %}" id="nav-challenges">Challenges</a></li>
                 <li><a href="{% url 'prompts' %}" id="nav-prompts">Prompts</a></li>
                 <li><a href="{% url 'recent_stories' %}" id="nav-browse">Browse</a></li>
@@ -129,7 +130,6 @@ Copyright (C) 2015 Paul Robertson
           </div> <!-- id="" class="container-fluid" -->
         </nav>
       </div> <!-- id="" class="container" -->
-      {% endif %}
     </div> <!-- id="header" class="" -->
 
 {% block news_panel %}
