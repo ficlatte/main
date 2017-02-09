@@ -220,3 +220,10 @@ li.challenge-comment:nth-child(odd) {
 li.challenge-comment ul li.posted {
 	font-size: 12px;
 }
+
+/* Subscriptions */
+
+.subscribe-success, .unsubscribe-success {
+	padding: 10px 10px 0 10px;
+	background: #d6e9c6;
+}
