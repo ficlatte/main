@@ -150,10 +150,16 @@ div.col-sm-10 p, div.col-md-10 p {
 	padding-right: 5px;
 }
 
-/* Password Reset */
+/* Login Page */
 
 .password-reset-link {
 	max-width: 110px;
+	margin: 0 auto;
+	display: block;
+}
+
+.register-link {
+	max-width: 230px;
 	margin: 0 auto;
 	display: block;
 }
