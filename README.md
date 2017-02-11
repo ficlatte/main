@@ -22,7 +22,7 @@ mysql> GRANT ALL PRIVILEGES ON ficlatte.* TO ficlatte@localhost;
 mysql> exit
 
 Install Django  
-$ sudo -k pip install django==1.8.4
+$ sudo -H pip install django==1.8.4
 
 Get Django started  
 $ cd ficlatte_directory  
