@@ -52,7 +52,24 @@ function draft_button()
               <input name="prequel_to" type="hidden" value="{{story.prequel_to.id}}" />
               <input name="sequel_to" type="hidden" value="{{story.sequel_to.id}}" />
               <input name="prid" type="hidden" value="{{story.prompt.id}}" />
+              <input name="chid" type="hidden" value="{{story.challenge.id}}" />
               <p id="play-nice"><a href="/rules.html">Please play by the Ficlatt&eacute; rules</a></p>
+{% if story.prequel_to %}
+              <div class="panel panel-info">
+                <div class="panel-heading">Inspiration: &quot;{{story.prequel_to.title}}&quot;</div>
+                <div class="panel-body">
+                {{story.prequel_to.body|encode_story}}
+                </div> <!-- id="" class="panel-body" -->
+              </div> <!-- id="" class="panel panel-info" -->
+{% endif %}
+{% if story.sequel_to %}
+              <div class="panel panel-info">
+                <div class="panel-heading">Inpsiration: &quot;{{story.sequel_to.title}}&quot;</div>
+                <div class="panel-body">
+                {{story.sequel_to.body|encode_story}}
+                </div> <!-- id="" class="panel-body" -->
+              </div> <!-- id="" class="panel panel-info" -->
+{% endif %}
 {% if story.prompt %}
               <div class="panel panel-info">
                 <div class="panel-heading">Prompt: &quot;{{story.prompt.title}}&quot;</div>
@@ -60,6 +77,17 @@ function draft_button()
                 {{story.prompt.body|encode_story}}
                 </div> <!-- id="" class="panel-body" -->
               </div> <!-- id="" class="panel panel-info" -->
+{% endif %}
+{% if story.challenge %}
+              <div class="panel panel-info">
+                <div class="panel-heading">Challenge: &quot;{{story.challenge.title}}&quot;</div>
+                <div class="panel-body">
+                {{story.challenge.body|encode_story}}
+                </div> <!-- id="" class="panel-body" -->
+              </div> <!-- id="" class="panel panel-info" -->
+               {% if not ch_is_open %}
+                  <p>This challenge is closed.</p>
+                {% endif %}
 {% endif %}
               <div class="form-group">
                 <label class="col-sm-2 control-label" for="story_title">Title</label>
@@ -110,7 +138,11 @@ function draft_button()
               </div> <!-- id="" class="form-group" -->
               <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
+                  {% if story.challenge and not ch_is_open %}
+                  <p>This challenge is closed.</p>
+                  {% else %}
                   <button class="btn btn-success" id="text-submit" tabindex="6" type="submit">Publish!</button>
+                  {% endif %}
                 </div> <!-- id="" class="col-sm-offset-2 col-sm-10" -->
               </div> <!-- id="" class="form-group" -->
             </form>

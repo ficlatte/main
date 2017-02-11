@@ -59,7 +59,11 @@ Copyright (C) 2015 Paul Robertson
                   <div class="panel-body">
                     {% if featured %}
                     <h3>{{featured|story_link}}</h3>
-                    {{featured.body|big_snippet}}
+                        {% if suppressed %}
+							<p>Story is marked as mature</p>
+						{% else %}
+							{{featured.body|big_snippet}}
+						{% endif %}
                     <div class="row">
                       <div class="col-md-4">
                         {{featured.user|avatar}}

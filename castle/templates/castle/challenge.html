@@ -21,22 +21,22 @@ Copyright (C) 2015 Paul Robertson
 
 {% block primary_panel %}
 
-          <h1>{{prompt.title}}{% if prompt.mature %} <small><span class="glyphicon glyphicon-flash" style="color:red"></span></small>{% endif %}</h1>
+          <h1>{{challenge.title}}{% if challenge.mature %} <small><span class="glyphicon glyphicon-flash" style="color:red"></span></small>{% endif %}</h1>
           <div class="row">
             <div class="col-sm-2 col-md-2">
-              {{prompt.user|avatar}}
+              {{challenge.user|avatar}}
             </div> <!-- id="" class="col-sm-2 col-md-2" -->
             <div class="col-sm-10 col-md-10">
-              {{prompt.user|author_span}}
-              {{prompt.user.biography|encode_story}}
+              {{challenge.user|author_span}}
+              {{challenge.user.biography|encode_story}}
             </div> <!-- id="" class="col-sm-10 col-md-10" -->
           </div> <!-- id="" class="row" -->
           <hr />
           <div class="content-body">
-          {% if suppressed %}
-          <p>Prompt is marked as mature</p>
+		  {% if suppressed %}
+          <p>Challenge is marked as mature</p>
           {% else %}
-          {{prompt.body|encode_story}}
+          {{challenge.body|encode_story}}
           {% endif %}
           </div>
           <hr />
@@ -47,21 +47,23 @@ Copyright (C) 2015 Paul Robertson
               <ul class="story_list">
                 {% for s in stories %}
                 <li class="story_list_item">
-					<h4 class="entry_title"><a class="story_link" href="/stories/{{s.id}}">{{s.title}}</a> {% if s.mature %}<span class="glyphicon glyphicon-flash" style="color:red"></span>{% endif %}</h4>
+					<h4 class="entry_title"><a class="story_link" href="/stories/{{s.id}}">{{s.title}}</a> {% if s.mature %}<span class="glyphicon glyphicon-flash" style="color:red"></span>{% endif %}{% if s.ch_winner %}<span class="glyphicon glyphicon-flag" style="color:red"></span>{% endif %}</h4>
 					<blockquote class="entry_content small">
 						{% if s.mature %}
 							{% if not profile.mature and s.user != profile %}
 								<p>Story is marked as mature</p>
 							{% else %}
-								{{s.body|small_snippet}}
+									{s.body|small_snippet}}
 							{% endif %}
-						{% else %}
-							{{s.body|small_snippet}}
+							{% else %}
+								{{s.body|small_snippet}}
 						{% endif %}
 					</blockquote>
 					<ul class="story_foot">
 						<li class="author">{{s.user|author_span}}</li>
-						<li class="posted">Posted <abbr class="published" title="{{s.ptime|date:'Y-m-d'}}">{{s.ptime|age}}</abbr></li>
+						<li class="posted">
+							Posted <abbr class="published" title="{{s.ptime|date:'Y-m-d'}}">{{s.ptime|age}}</abbr>
+						</li>
 					</ul>
 				</li>
                 {% endfor %}

@@ -84,7 +84,23 @@ class Prompt(models.Model):
 
     def __unicode__(self):
         return unicode(self.title)
-    
+        
+# Challenges
+class Challenge(models.Model):
+    user        = models.ForeignKey(Profile)
+    title       = models.CharField(max_length=128)
+    body        = models.CharField(max_length=1024)
+    mature      = models.BooleanField(default=False)
+    activity    = models.FloatField(default=0.0)
+    ctime       = models.DateTimeField(default=timezone.now)    # Creation time
+    mtime       = models.DateTimeField(default=timezone.now)    # Modification time
+    stime		= models.DateField(default=timezone.now)	# Challenge start date
+    etime		= models.DateField(default=timezone.now)	# Challenge end date
+    winner		= models.ForeignKey('Story', related_name='winner', null=True)
+
+    def __unicode__(self):
+        return unicode(self.title)
+
 # Stories
 class Story(models.Model):
     user        = models.ForeignKey(Profile)
@@ -93,6 +109,8 @@ class Story(models.Model):
     prequel_to  = models.ForeignKey('self', blank=True, null=True, related_name='prequels')
     sequel_to   = models.ForeignKey('self', blank=True, null=True, related_name='sequels')
     prompt      = models.ForeignKey(Prompt, blank=True, null=True)
+    challenge	= models.ForeignKey(Challenge, blank=True, null=True)
+    ch_winner	= models.FloatField(default=0.0, null=True)
     mature      = models.BooleanField(default=False)
     draft       = models.BooleanField(default=False)
     ficly       = models.BooleanField(default=False)
@@ -152,6 +170,8 @@ class Comment(models.Model):
     user        = models.ForeignKey(Profile, related_name='comments_made')       # User making the comment
     body        = models.CharField(max_length=1024)
     story       = models.ForeignKey(Story, blank=True, null=True)
+    prompt		= models.ForeignKey(Prompt, blank=True, null=True)
+    challenge	= models.ForeignKey(Challenge, blank=True, null=True)
     blog        = models.ForeignKey(Blog,  blank=True, null=True)
     ctime       = models.DateTimeField(default=timezone.now)
     mtime       = models.DateTimeField(default=timezone.now)    
@@ -183,27 +203,35 @@ class StoryLog(models.Model):
     STORY_MOD = 7  # Modified an extant story
     PROMPT    = 8  # Created a writing prompt
     PROMPT_MOD= 9   # Modified a writing prompt
+    CHALLENGE = 10  # Created a challenge
+    CHALLENGE_MOD = 11 # Modified a challenge
+    CHALLENGE_ENT = 12 # Entered a challenge
+    CHALLENGE_WON = 13 # Won a challenge
 
     LOG_OPTIONS = (
-        (WRITE,     u'wrote'),
-        (VIEW,      u'viewed'),
-        (RATE,      u'rated'),
-        (COMMENT,   u'commented on'),
-        (PREQUEL,   u'wrote a prequel to'),
-        (SEQUEL,    u'wrote a sequel to'),
-        (CHALLENGE, u'created challenge'),
-        (STORY_MOD, u'updated story'),
-        (PROMPT,    u'wrote prompt'),
-        (PROMPT_MOD,u'updated prompt'),
+        (WRITE,     	u'wrote'),
+        (VIEW,      	u'viewed'),
+        (RATE,      	u'rated'),
+        (COMMENT,   	u'commented on'),
+        (PREQUEL,   	u'wrote a prequel to'),
+        (SEQUEL,    	u'wrote a sequel to'),
+        (CHALLENGE, 	u'created challenge'),
+        (STORY_MOD, 	u'updated story'),
+        (PROMPT,    	u'wrote prompt'),
+        (PROMPT_MOD,	u'updated prompt'),
+        (CHALLENGE, 	u'created a challenge'),
+        (CHALLENGE_MOD, u'updated a challenge'),
+        (CHALLENGE_ENT, u'entered a challenge'),
+        (CHALLENGE_WON, u'won a challenge'),
     )
     
     user        = models.ForeignKey(Profile)
     story       = models.ForeignKey(Story, blank=True, null=True)
     log_type    = models.IntegerField(default=1, choices=LOG_OPTIONS)
     comment     = models.ForeignKey(Comment, blank=True, null=True)     # ID of comment, if this log is for a comment
-    quel        = models.ForeignKey(Story,   blank=True, null=True,
- related_name='activity_quel_set')     # ID of prequel/sequel if this log is for a prequel/sequel
+    quel        = models.ForeignKey(Story,   blank=True, null=True, related_name='activity_quel_set')     # ID of prequel/sequel if this log is for a prequel/sequel
     prompt      = models.ForeignKey(Prompt, blank=True, null=True)
+    challenge	= models.ForeignKey(Challenge, blank=True, null=True)
     ctime       = models.DateTimeField(default=timezone.now)
     
     def get_opt(self, o):

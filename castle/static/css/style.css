@@ -105,6 +105,28 @@ p#average-rating span#enabled {
       padding: 0px;
 }
 
+/* Story list display */
+
+ul.story_list {
+	padding-left: 0;
+}
+
+li.story_list_item:nth-child(even) {
+	padding: 0 10px 10px 10px;
+	margin: 10px;
+	border: 1px solid #bbb;
+	border-radius: 4px;
+	background: #d8d8d8;
+}
+
+li.story_list_item:nth-child(odd) {
+	padding: 0 10px 10px 10px;
+	margin: 10px;
+	border: 1px solid #bbb;
+	border-radius: 4px;
+	background: #f0f0f0;
+}
+
 /* Author stuff */
 
 div.col-md-4 span.byline {
@@ -128,10 +150,16 @@ div.col-sm-10 p, div.col-md-10 p {
 	padding-right: 5px;
 }
 
-/* Password Reset */
+/* Login Page */
 
 .password-reset-link {
 	max-width: 110px;
+	margin: 0 auto;
+	display: block;
+}
+
+.register-link {
+	max-width: 230px;
 	margin: 0 auto;
 	display: block;
 }
@@ -148,4 +176,54 @@ div.col-sm-10 p, div.col-md-10 p {
 .form-signin input[name="new_password2"] {
 	margin-top: -1px;
 	border-radius: 0 0 4px 4px;
+}
+
+/* Challenge Stuff */
+
+span.ch_after, span.ch_after:hover {
+	background-color: #ccc;
+	border-color: #aaa;
+}
+
+button#winner-select {
+	margin-bottom: 5px;
+}
+
+ul.challenge-story-winner {
+	padding-left: 0;
+}
+
+ul.challenge-comments {
+	margin: 0 15px 5px 0;
+	padding-bottom: 0;
+	padding-left: 0;
+}
+
+li.challenge-comment {
+	margin-bottom: 5px;
+}
+
+li.challenge-comment:nth-child(even) {
+	padding: 0 10px 10px 10px;
+	border: 1px solid #bbb;
+	border-radius: 4px;
+	background: #d8d8d8;
+}
+
+li.challenge-comment:nth-child(odd) {
+	padding: 0 10px 10px 10px;
+	border: 1px solid #bbb;
+	border-radius: 4px;
+	background: #f0f0f0;
+}
+
+li.challenge-comment ul li.posted {
+	font-size: 12px;
+}
+
+/* Subscriptions */
+
+.subscribe-success, .unsubscribe-success {
+	padding: 10px 10px 0 10px;
+	background: #d6e9c6;
 }

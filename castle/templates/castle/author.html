@@ -32,7 +32,7 @@ Copyright (C) 2015 Paul Robertson
                 <div class="col-sm-8 col-md-8">
                   {{author|author_link:"h1"}}
                   <p id="user-desc">Joined Ficlatt&eacute; in <span>{{author.ctime|date:"F Y"}}</span></p>
-                  <p id="user-stats">{{author|num_stories_txt}}, {{author|profile_comments_txt}}, {{author|num_friends_txt}}</p>
+                  <p id="user-stats">{{author|num_stories_txt}}, {{author|num_challenges_txt}}, {{author|num_prompts_txt}}, {{author|profile_comments_txt}}, and {{author|num_friends_txt}}</p>
                 </div> <!-- id="" class="col-sm-8 col-md-8" -->
               </div> <!-- id="" class="row" -->
             </div> <!-- id="" class="panel-heading" -->
@@ -42,8 +42,9 @@ Copyright (C) 2015 Paul Robertson
           </div> <!-- id="" class="panel panel-success" -->
 {% block paged_content %}
           <div class="well well-sm">
-            <h1>{% if drafts_page %}Drafts{% else %}Stories{% endif %}</h1>
+            <h1>{% if drafts_page %}Drafts{% elif stories_page %}Stories{% elif challenges_page %}Challenges{% elif prompts_page %}Prompts{% endif %}</h1>
             <div class="list-group">
+			  {% if story_list %}
               {% for story in story_list %}
               <div class="list-group-item">
                 {{story|story_link:'h4 class="list-group-item-heading"'}}
@@ -55,6 +56,23 @@ Copyright (C) 2015 Paul Robertson
                 {% endif %}
               </div> <!-- id="" class="list-group-item" -->
               {% endfor %}
+              {% elif challenge_list %}
+              {% for challenge in challenge_list %}
+              <div class="list-group-item">
+                {{challenge|challenge_link:'h4 class="list-group-item-heading"'}}
+                <span class="list-group-item-text">{{challenge.body|small_snippet}}</span>
+                <p class="list-group-item-text" id="story-stats">Created <abbr title="{{challenge.ctime|date:'Y-m-d'}}">{{challenge.ctime|age}}</abbr>. </p>
+              </div> <!-- id="" class="list-group-item" -->
+              {% endfor %}
+              {% elif prompt_list %}
+              {% for prompt in prompt_list %}
+              <div class="list-group-item">
+                {{prompt|prompt_link:'h4 class="list-group-item-heading"'}}
+                <span class="list-group-item-text">{{prompt.body|small_snippet}}</span>
+                <p class="list-group-item-text" id="story-stats">Published <abbr title="{{prompt.ctime|date:'Y-m-d'}}">{{prompt.ctime|age}}</abbr>. </p>
+              </div> <!-- id"" class="list-group-item" -->
+              {% endfor %}
+              {% endif %}
             </div> <!-- id="" class="list-group" -->
 {% endblock paged_content %}
 {% block pager %}{{block.super}}{%endblock%}
