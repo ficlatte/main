@@ -155,7 +155,7 @@ Copyright (C) 2015 Paul Robertson
     {% if story.prompt %}
             <h4>Story prompt:</h4>
             {{story.prompt.body|encode_story}}
-            <p><a href="/prompts/{{story.prompt.id}}/">{{story.prompt.title}}</a> by {{story.prompt.user|author_link}}</p>
+            <p>{{story.prompt|prompt_link}} by {{story.prompt.user|author_link}}</p>
     {% endif %}
     {% if story.prompt_text %}
             <h4>Author's prompt text:</h4>
@@ -164,14 +164,14 @@ Copyright (C) 2015 Paul Robertson
     {% if story.challenge %}
             <h4>Story challenge:</h4>
             {{story.challenge.body|encode_story}}
-            <p><a href="/challenges/{{story.challenge.id}}/">{{story.challenge.title}}</a> by {{story.challenge.user|author_link}}</p>
+            <p>{{story.challenge|challenge_link}} by {{story.challenge.user|author_link}}</p>
     {% endif %}
     {% if story.prequel_to %}
             {% if story.prompt %}<hr>{% endif %}
             <h4>Inspired by (prequel to)</h4>
             {{story.prequel_to.body|small_snippet}}
             <small>
-              <a href="/stories/{{story.prequel_to.id}}/">{{story.prequel_to.title}}</a>
+              {{stories.prequel_to|story_link}}
               <br />
               {{story.prequel_to.user|author_span}}
             </small>
@@ -181,7 +181,7 @@ Copyright (C) 2015 Paul Robertson
             <h4>Inspired by (sequel to)</h4>
             {{story.sequel_to.body|small_snippet}}
             <small>
-              <a href="/stories/{{story.sequel_to.id}}/">{{story.sequel_to.title}}</a>
+              {{story.sequel_to|story_link}}
               <br />
               {{story.sequel_to.user|author_span}}
             </small>
@@ -218,7 +218,7 @@ Copyright (C) 2015 Paul Robertson
 		  <hr />
 		  <h4>Challenge winner! <span class="glyphicon glyphicon-flag" style="color:red"></span></h4>
 		  <ul class="challenge-story-winner">
-				<li>Challenge: <a href="/challenges/{{ st_ch_id }}/">{{ st_ch_title }}</a>
+				<li>Challenge: {{story.challenge|challenge_link}}
 		  </ul>
     {% endif %}
           <hr />
@@ -262,7 +262,7 @@ Copyright (C) 2015 Paul Robertson
           
           {% if ch_after and ch_winner %}
           <h2>Winning Story</h2>
-          <h4 class="entry_title"><a class="story_link" href="/stories/{{win_story.id}}">{{win_story.title}}</a> {% if win_story.mature %}<span class="glyphicon glyphicon-flash" style="color:red"></span>{% endif %}<span class="glyphicon glyphicon-flag" style="color:red"></span></h4>
+          <h4 class="entry_title">{{win_story|story_link}}</h4>
 		  <ul class="challenge-story-winner">
 			<li>{{ win_story.user|author_span }}</li>
 			<li>Posted <abbr class="published" title="{{s.ptime|date:'Y-m-d'}}">{{win_story.ptime|age}}</abbr></li>

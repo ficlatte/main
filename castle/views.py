@@ -540,8 +540,7 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
 	ch_winner = None
 	ch_after = False
 	st_winner = None
-	st_ch_id = None
-	st_ch_title = None
+	
 	if story.challenge:
 		ch_author = story.challenge.user_id
 		ch_owner = ((profile is not None) and (profile.user_id == ch_author))
@@ -561,8 +560,8 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
 	# Display info for winning story, if it exists
 		if story.id == story.challenge.winner_id:
 			st_winner = True
-			st_ch_id = story.challenge.id
-			st_ch_title = story.challenge.title
+			#st_ch_id = story.challenge.id
+			#st_ch_title = story.challenge.title
 
     # Collect prequels and sequels
 	prequels = []
@@ -633,8 +632,6 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
                 'ch_winner'		: ch_winner,
                 'ch_after'		: ch_after,
                 'st_winner'		: st_winner,
-                'st_ch_id'		: st_ch_id,
-                'st_ch_title'	: st_ch_title,
                 'viewed'        : viewed,
                 'rated'         : rated,
                 'comment_text'  : comment_text, # in case of failed comment submission
