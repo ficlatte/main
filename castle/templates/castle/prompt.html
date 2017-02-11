@@ -32,11 +32,13 @@ Copyright (C) 2015 Paul Robertson
             </div> <!-- id="" class="col-sm-10 col-md-10" -->
           </div> <!-- id="" class="row" -->
           <hr />
+          <div class="content-body">
           {% if suppressed %}
           <p>Prompt is marked as mature</p>
           {% else %}
           {{prompt.body|encode_story}}
           {% endif %}
+          </div>
           <hr />
           <div id="story-summary">
 {% block paged_content %}
@@ -44,7 +46,24 @@ Copyright (C) 2015 Paul Robertson
             <div class="story_list_div">
               <ul class="story_list">
                 {% for s in stories %}
-                <li class="story_list_item"><h4 class="entry_title"><a class="story_link" href="/stories/{{s.id}}">{{s.title}}</a></h4><blockquote class="entry_content small">{{s.body|small_snippet}}</blockquote><ul class="story_foot"><li class="author">{{s.user|author_span}}</li><li class="posted">Posted <abbr class="published" title="{{s.ptime|date:'Y-m-d'}}">{{s.ptime|age}}</abbr></li></ul></li>
+                <li class="story_list_item">
+					<h4 class="entry_title"><a class="story_link" href="/stories/{{s.id}}">{{s.title}}</a> {% if s.mature %}<span class="glyphicon glyphicon-flash" style="color:red"></span>{% endif %}</h4>
+					<blockquote class="entry_content small">
+						{% if s.mature %}
+							{% if not profile.mature and s.user != profile %}
+								<p>Story is marked as mature</p>
+							{% else %}
+								{{s.body|small_snippet}}
+							{% endif %}
+						{% else %}
+							{{s.body|small_snippet}}
+						{% endif %}
+					</blockquote>
+					<ul class="story_foot">
+						<li class="author">{{s.user|author_span}}</li>
+						<li class="posted">Posted <abbr class="published" title="{{s.ptime|date:'Y-m-d'}}">{{s.ptime|age}}</abbr></li>
+					</ul>
+				</li>
                 {% endfor %}
               </ul>
             </div> <!-- id="" class="story_list_div" -->

@@ -33,7 +33,15 @@ Copyright (C) 2015 Paul Robertson
 						<li id="startdate">Challenge start date: {{c.stime|date:"jS F Y"}}</li>
 						<li id="enddate">Challenge end date: {{c.etime|date:"jS F Y"}}</li>
 						<blockquote class="entry_content">
-									    {{c.body|small_snippet}}
+							{% if c.mature %}
+								{% if not profile.mature and c.user != profile %}
+									<p>Challenge is marked as mature</p>
+								{% else %}
+									{{c.body|small_snippet}}
+								{% endif %}
+							{% else %}
+								{{c.body|small_snippet}}
+							{% endif %}
 						</blockquote>
 						<ul class="story_foot">
 							<li class="author">{{c.user|author_span}}</li>

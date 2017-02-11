@@ -282,6 +282,13 @@ def home(request):
         if (featured_query):
             featured = featured_query[0]
 
+    # Suppress story if marked as mature and either the user is not logged in
+    # or the user has not enabled viewing of mature stories
+	suppressed = False
+	if (featured.mature):
+		if ( (not profile) or ((featured.user != profile) and (not profile.mature))):
+			suppressed = True
+
     # Get latest blog
     try:
         blog = Blog.objects.all().order_by('-id')[0]
@@ -298,6 +305,7 @@ def home(request):
                 'old'           : get_old_stories(10),
                 'activity_log'  : get_activity_log(profile, 10),
                 'user_dashboard': 1,
+                'suppressed'	: suppressed,
               }
     return render(request, 'castle/index.html', context)
 
@@ -965,7 +973,7 @@ def prompt(request, prompt_id):
     # or the user has not enabled viewing of mature challenges
 	suppressed = False
 	if (prompt.mature):
-		if ( (not profile) or ((owner != profile) and (not profile.mature))):
+		if ( (not profile) or ((prompt.user != profile) and (not profile.mature))):
 			suppressed = True
 
     # Build context and render page
@@ -1178,22 +1186,16 @@ def challenge(request, challenge_id, comment_text=None, error_title='', error_me
 		ch_after = True
 
 	# Winning story and author
-	win_story_id = None
+	win_story_id = challenge.winner_id
 	win_story = None
-	win_author = None
-	win_ptime = None
 	if ch_winner:
-		win_story_id = challenge.winner_id
-		story = get_object_or_404(Story, pk=win_story_id)
-		win_story = story.title
-		win_author = story.user
-		win_ptime = story.ptime
+		win_story = get_object_or_404(Story, pk=win_story_id)
 
 	# Suppress challenge if marked as mature and either the user is not logged in
     # or the user has not enabled viewing of mature challenges
 	suppressed = False
 	if (challenge.mature):
-		if ( (not profile) or ((owner != profile) and (not profile.mature))):
+		if ( (not profile) or ((challenge.user != profile) and (not profile.mature))):
 			suppressed = True
 
     # Build context and render page
@@ -1211,9 +1213,6 @@ def challenge(request, challenge_id, comment_text=None, error_title='', error_me
                 'ch_after'			  : ch_after,
                 'ch_winner'			  : ch_winner,
                 'win_story'			  : win_story,
-                'win_story_id'		  : win_story_id,
-                'win_author'		  : win_author,
-                'win_ptime'			  :	win_ptime,
                 'suppressed'		  : suppressed,
                 'error_title'		  : error_title,
                 'error_messages'	  : error_messages,

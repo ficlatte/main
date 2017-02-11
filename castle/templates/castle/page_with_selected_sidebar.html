@@ -262,10 +262,10 @@ Copyright (C) 2015 Paul Robertson
           
           {% if ch_after and ch_winner %}
           <h2>Winning Story</h2>
-          <h4 class="entry_title"><a class="story_link" href="/stories/{{win_story_id}}">{{win_story}}</a> <span class="glyphicon glyphicon-flag" style="color:red"></span></h4>
+          <h4 class="entry_title"><a class="story_link" href="/stories/{{win_story.id}}">{{win_story.title}}</a> {% if win_story.mature %}<span class="glyphicon glyphicon-flash" style="color:red"></span>{% endif %}<span class="glyphicon glyphicon-flag" style="color:red"></span></h4>
 		  <ul class="challenge-story-winner">
-			<li>{{ win_author|author_span }}</li>
-			<li>Posted <abbr class="published" title="{{s.ptime|date:'Y-m-d'}}">{{win_ptime|age}}</abbr></li>
+			<li>{{ win_story.user|author_span }}</li>
+			<li>Posted <abbr class="published" title="{{s.ptime|date:'Y-m-d'}}">{{win_story.ptime|age}}</abbr></li>
 		  </ul>          
           <hr />
           {% endif %}

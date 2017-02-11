@@ -245,9 +245,10 @@ def story_link(story, tag=None):
         t2 = u'</'+tag.partition(' ')[0]+u'>'   # Get bit before first space
     
     d = '[DRAFT] ' if (story.draft) else ''
-    m = ' <span class="glyphicon glyphicon-flash" style="color:red"></span>' if (story.mature) else ''
+    m = u'<span class="glyphicon glyphicon-flash" style="color:red"></span>' if (story.mature) else ''
+    w = u'<span class="glyphicon glyphicon-flag" style="color:red"></span>' if (story.ch_winner) else ''
     # FIXME: fix URL
-    return mark_safe(u'<a href="/stories/' + unicode(story.id) + u'">' + t1 + escape(d + story.title) + mark_safe(m) + t2 + u'</a>')
+    return mark_safe(u'<a href="/stories/' + unicode(story.id) + u'">' + t1 + escape(d + story.title) + u' ' + mark_safe(m) + mark_safe(w) + t2 + u'</a>') 
 
 #-----------------------------------------------------------------------------
 @register.filter
@@ -260,8 +261,9 @@ def prompt_link(prompt, tag=None):
         t1 = u'<'+tag+u'>'
         t2 = u'</'+tag.partition(' ')[0]+u'>'   # Get bit before first space
     
+    m = ' <span class="glyphicon glyphicon-flash" style="color:red"></span>' if (prompt.mature) else ''
     # FIXME: fix URL
-    return mark_safe(u'<a href="/prompts/' + unicode(prompt.id) + u'">' + t1 + escape(prompt.title) + t2 + u'</a>')
+    return mark_safe(u'<a href="/prompts/' + unicode(prompt.id) + u'">' + t1 + escape(prompt.title) + mark_safe(m) + t2 + u'</a>')
     
 #-----------------------------------------------------------------------------
 @register.filter
@@ -274,8 +276,9 @@ def challenge_link(challenge, tag=None):
         t1 = u'<'+tag+u'>'
         t2 = u'</'+tag.partition(' ')[0]+u'>'   # Get bit before first space
     
+    m = ' <span class="glyphicon glyphicon-flash" style="color:red"></span>' if (challenge.mature) else ''
     # FIXME: fix URL
-    return mark_safe(u'<a href="/challenges/' + unicode(challenge.id) + u'">' + t1 + escape(challenge.title) + t2 + u'</a>')
+    return mark_safe(u'<a href="/challenges/' + unicode(challenge.id) + u'">' + t1 + escape(challenge.title) + mark_safe(m) + t2 + u'</a>')
 
 #-----------------------------------------------------------------------------
 @register.filter

@@ -27,7 +27,25 @@ Copyright (C) 2015 Paul Robertson
             <div class="story_list_div">
               <ul class="story_list">
                 {% for p in prompts %}
-                <li class="story_list_item"><h3 class="entry_title"><a class="prompt_link" href="/prompts/{{ p.id }}">{{p.title}}</a></h3><blockquote class="entry_content">{{p.body|encode_story}}                </blockquote><ul class="story_foot"><li class="author">{{p.user|author_span}}</li><li class="posted">Posted <abbr class="published" title="{{p.ctime|date:'Y-m-d'}}">{{p.ctime|age}}</abbr></li><li class="count">{{p|num_stories_txt}}</li></ul></li>
+                <li class="story_list_item">
+					<h3 class="entry_title"><a class="prompt_link" href="/prompts/{{ p.id }}">{{p.title}}</a> {% if p.mature %}<span class="glyphicon glyphicon-flash" style="color:red"></span>{% endif %}</h3>
+					<blockquote class="entry_content">
+						{% if p.mature %}
+							{% if not profile.mature and p.user != profile %}
+								<p>Prompt is marked as mature</p>
+							{% else %}
+								{{p.body|small_snippet}}
+							{% endif %}
+						{% else %}
+							{{p.body|small_snippet}}
+						{% endif %}
+					</blockquote>
+					<ul class="story_foot">
+						<li class="author">{{p.user|author_span}}</li>
+						<li class="posted">Posted <abbr class="published" title="{{p.ctime|date:'Y-m-d'}}">{{p.ctime|age}}</abbr></li>
+						<li class="count">{{p|num_stories_txt}}</li>
+					</ul>
+				</li>
                 {% endfor %}
               </ul>
             </div> <!-- id="" class="story_list_div" -->
