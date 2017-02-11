@@ -45,3 +45,22 @@ and start the test server running
 $ python manage.py runserver
 
 You should now be able to connect to the test server (http://127.0.0.1:8000) using your superuser account, or create yourself an author using the 'register' link in the top right hand corner: just like if you were using the real site.
+
+The challenges module requires a datepicker package be installed:
+
+$ pip install django-datetime-widget
+
+Update settings.py:
+
+INSTALLED_APPS (  
+   ...  
+   'datetimewidget',  
+)  
+
+MIDDLEWARE_CLASSES (
+	'django.contrib.sessions.middleware.SessionMiddleware',  
+    'django.middleware.locale.LocaleMiddleware',  
+    'django.middleware.common.CommonMiddleware',  
+    ...  
+)
+

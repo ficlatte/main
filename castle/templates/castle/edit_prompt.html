@@ -30,9 +30,7 @@ Copyright (C) 2015 Paul Robertson
             <form accept-charset="utf-8" action="/prompts/submit/" class="form-horizontal" id="prompt-form" method="post" role="form">
               {% csrf_token %}
               <input name="prid" type="hidden" value="{{prompt.id}}" />
-              <input name="prequel_to" type="hidden" value="{{prompt.prequel_to.id}}" />
-              <input name="sequel_to" type="hidden" value="{{prompt.sequel_to.id}}" />
-              <input name="prid" type="hidden" value="{{prompt.prompt.id}}" />
+              <input name="pen_name" type="hidden" value="{{profile.pen_name}}" />
               <p id="play-nice"><a href="/rules.html">Please play by the Ficlatt&eacute; rules</a></p>
               <div class="form-group">
                 <label class="col-sm-2 control-label" for="prompt_title">Title</label>
@@ -52,6 +50,13 @@ Copyright (C) 2015 Paul Robertson
                     <p class="help-block"><span class="glyphicon glyphicon-hand-up"></span> HTML is not supported but you can <strong>bold</strong> ( *bold* ) and <em>italicise</em> ( _italic_ ).</p>
                   </div> <!-- id="" class="field" -->
                 </div> <!-- id="" class="col-sm-10" -->
+              </div> <!-- id="" class="form-group" -->
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <div class="checkbox">
+                    <label><input id="prompt-is-mature" name="is_mature" tabindex="4" type="checkbox" {% if prompt.mature %}checked {% endif %}/> Mark this prompt as mature</label>
+                  </div> <!-- id="" class="checkbox" -->
+                </div> <!-- id="" class="col-sm-offset-2 col-sm-10" -->
               </div> <!-- id="" class="form-group" -->
               <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">

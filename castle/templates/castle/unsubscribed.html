@@ -22,9 +22,9 @@ Copyright (C) 2015 Paul Robertson
 {% block primary_panel %}
 
             
-          <div class="panel panel-success">
-          </div> <!-- id="" class="well well-sm" -->
-          <p>Unsubscribed from {{ thing_type }} <a href="{{ thing_url }}">{{ thing.title }}</a></p>
+		<div class="panel panel-success unsubscribe-success">
+			<p>Unsubscribed from {{ thing_type }} <a href="{{ thing_url }}">{{ thing.title }}</a></p>
+		</div> <!-- id="" class="panel panel-success" -->
 
 
 {% endblock primary_panel %}

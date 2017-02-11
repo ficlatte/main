@@ -21,36 +21,40 @@ Copyright (C) 2015 Paul Robertson
 
 {% block primary_panel %}
 
-          <div id="prompt-summary">
-            <h3>Recent prompts</h3>
+          <div id="challenge-summary">
+            <h3>Recent Challenges</h3>
 {% block paged_content %}
             <div class="story_list_div">
               <ul class="story_list">
-                {% for p in prompts %}
+                {% for c in challenges %}
                 <li class="story_list_item">
-					<h3 class="entry_title"><a class="prompt_link" href="/prompts/{{ p.id }}">{{p.title}}</a> {% if p.mature %}<span class="glyphicon glyphicon-flash" style="color:red"></span>{% endif %}</h3>
-					<blockquote class="entry_content">
-						{% if p.mature %}
-							{% if not profile.mature and p.user != profile %}
-								<p>Prompt is marked as mature</p>
+					<h3 class="entry_title"><a class="challenge_link" href="/challenges/{{ c.id }}">{{c.title}}{% if c.mature %} <small><span class="glyphicon glyphicon-flash" style="color:red"></span></small>{% endif %}</a></h3>
+					<ul class="story_meta">
+						<li id="startdate">Challenge start date: {{c.stime|date:"jS F Y"}}</li>
+						<li id="enddate">Challenge end date: {{c.etime|date:"jS F Y"}}</li>
+						<blockquote class="entry_content">
+							{% if c.mature %}
+								{% if not profile.mature and c.user != profile %}
+									<p>Challenge is marked as mature</p>
+								{% else %}
+									{{c.body|small_snippet}}
+								{% endif %}
 							{% else %}
-								{{p.body|small_snippet}}
+								{{c.body|small_snippet}}
 							{% endif %}
-						{% else %}
-							{{p.body|small_snippet}}
-						{% endif %}
-					</blockquote>
-					<ul class="story_foot">
-						<li class="author">{{p.user|author_span}}</li>
-						<li class="posted">Posted <abbr class="published" title="{{p.ctime|date:'Y-m-d'}}">{{p.ctime|age}}</abbr></li>
-						<li class="count">{{p|num_stories_txt}}</li>
-					</ul>
+						</blockquote>
+						<ul class="story_foot">
+							<li class="author">{{c.user|author_span}}</li>
+							<li class="posted">Posted <abbr class="published" title="{{c.ctime|date:'Y-m-d'}}">{{c.ctime|age}}</abbr></li>
+							<li class="count">{{c|num_stories_txt}}</li>
+						</ul><!-- id="" class="story_foot" -->
+					</ul><!-- id="" class="story_meta" -->
 				</li>
                 {% endfor %}
               </ul>
             </div> <!-- id="" class="story_list_div" -->
 {% endblock paged_content %}
 {% block pager %}{{block.super}}{%endblock%}
-          </div> <!-- id="prompt-summary" class="" -->
+          </div> <!-- id="challenge-summary" class="" -->
 
 {% endblock primary_panel %}
