@@ -89,7 +89,7 @@ class Prompt(models.Model):
 class Story(models.Model):
     user        = models.ForeignKey(Profile)
     title       = models.CharField(max_length=256)
-    body        = models.CharField(max_length=1536)
+    body        = models.CharField(max_length=2048)
     prequel_to  = models.ForeignKey('self', blank=True, null=True, related_name='prequels')
     sequel_to   = models.ForeignKey('self', blank=True, null=True, related_name='sequels')
     prompt      = models.ForeignKey(Prompt, blank=True, null=True)
