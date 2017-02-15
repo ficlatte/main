@@ -38,6 +38,7 @@ import re
 import hashlib
 from .forms import AvatarUploadForm, ChallengeDateForm
 from .images import convert_avatars
+from django_messages.views import *
 
 #-----------------------------------------------------------------------------
 # Global symbols
@@ -758,7 +759,7 @@ def submit_story(request):
     story      = get_foo(request.POST, Story,  'sid')
     prequel_to = get_foo(request.POST, Story,  'prequel_to')
     sequel_to  = get_foo(request.POST, Story,  'sequel_to')
-    challenge  = request.POST.get('chid')
+    challenge  = get_foo(request.POST, Challenge, 'chid')
     prompt     = get_foo(request.POST, Prompt, 'prid')
     tags       = request.POST.get('tag_list', '')
     ptext      = request.POST.get('prompt_text', None)
@@ -783,7 +784,8 @@ def submit_story(request):
     story.mature = request.POST.get('is_mature', False)
     story.draft  = request.POST.get('is_draft', False)
     story.prompt_text = ptext
-    story.challenge_id = challenge
+    if challenge:
+		story.challenge_id = challenge.id
 
     # Condense all end-of-line markers into \n
     story.body = re_crlf.sub(u"\n", story.body)
@@ -2254,6 +2256,7 @@ def avatar_upload(request):
         form = AvatarUploadForm()
 
     context = {
+		'profile'		: profile,
         'page_title'    : u'Upload avatar',
         'form'          : form,
         }
