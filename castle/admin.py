@@ -54,6 +54,14 @@ class StoryAdmin(admin.ModelAdmin):
         ('Dates', {'fields': ['ctime', 'mtime', 'ptime', 'ftime'], 'classes': ['collapse']}),
     ]
     inlines = [CommentInLine, RatingInLine]
+    
+class ChallengeAdmin(admin.ModelAdmin):
+    fieldsets = [
+        (None, {'fields' : ['user', 'title', 'body']}),
+        ('Bits', {'fields': ['mature', 'activity'], 'classes': ['collapse']}),
+        ('Dates', {'fields': ['ctime', 'mtime', 'stime', 'etime'], 'classes': ['collapse']}),
+    ]
+    inlines = [CommentInLine]
 
 class BlogAdmin(admin.ModelAdmin):
     fieldsets = [
@@ -64,4 +72,5 @@ class BlogAdmin(admin.ModelAdmin):
     inlines = [CommentInLine]
 
 admin.site.register(Story, StoryAdmin)
+admin.site.register(Challenge, ChallengeAdmin)	
 admin.site.register(Blog,  BlogAdmin)
