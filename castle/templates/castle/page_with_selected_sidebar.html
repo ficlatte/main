@@ -263,7 +263,7 @@ Copyright (C) 2015 Paul Robertson
           {% if challenge.ended and challenge.winner %}
           <h2>Winning Story</h2>
 
-          <h4 class="entry_title">{{win_story|story_link}}</h4>
+          <h4 class="entry_title">{{challenge.winner|story_link}}</h4>
 
 		  <ul class="challenge-story-winner">
 			<li>{{ challenge.winner.user|author_span }}</li>
