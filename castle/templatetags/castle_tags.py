@@ -246,7 +246,8 @@ def story_link(story, tag=None):
     
     d = '[DRAFT] ' if (story.draft) else ''
     m = u'<span class="glyphicon glyphicon-flash" style="color:red"></span>' if (story.mature) else ''
-    w = u'<span class="glyphicon glyphicon-flag" style="color:red"></span>' if (story.ch_winner) else ''
+    
+    w = u'<span class="glyphicon glyphicon-flag" style="color:red"></span>' if (story.winner.count()>0) else ''
     # FIXME: fix URL
     return mark_safe(u'<a href="/stories/' + unicode(story.id) + u'">' + t1 + escape(d + story.title) + u' ' + mark_safe(m) + mark_safe(w) + t2 + u'</a>') 
 
