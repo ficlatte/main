@@ -138,7 +138,7 @@ Copyright (C) 2015 Paul Robertson
   {%comment%}------------------------------------------------------------------{%endcomment%}
   {% if story_sidepanel %}
 	
-	{% if story.challenge and ch_owner and ch_after and not ch_winner and not owner %}
+	{% if story.challenge and ch_owner and story.challenge.ended and not story.challenge.winner and not owner %}
 			<form accept-charset="utf-8" action="/challenges/{{story.challenge.id}}/winner/{{story.id}}/" class="form-horizontal" id="winner-select-form" method="POST" role="form">
               {% csrf_token %}
               <input name="sid" type="hidden" value="{{story.id}}" />
@@ -214,7 +214,7 @@ Copyright (C) 2015 Paul Robertson
           <p><a href="{% url 'story-sub' story.id %}">Send me e-mail notifications of comments</a></p>
       {% endif %}
     {% endif %}
-    {% if st_winner %}
+    {% if story.challenge and story == story.challenge.winner %}
 		  <hr />
 		  <h4>Challenge winner! <span class="glyphicon glyphicon-flag" style="color:red"></span></h4>
 		  <ul class="challenge-story-winner">
@@ -242,9 +242,9 @@ Copyright (C) 2015 Paul Robertson
   {%comment%} Challenge side panel {%endcomment%}
   {%comment%}------------------------------------------------------------------{%endcomment%}
   {% if challenge_sidepanel and challenge %}
-	  {% if ch_before %}
+	  {% if not challenge.started %}
 		  <span class="btn btn-success btn-block ch_before" id="challenge-link" type="button"><span class="glyphicon glyphicon-time"></span> Challenge hasn't begun</span>
-	  {% elif ch_after %}
+	  {% elif challenge.ended %}
 		  <span class="btn btn-success btn-block ch_after" id="challenge-link" type="button"><span class="glyphicon glyphicon-hourglass"></span> Challenge complete</span>
 	  {% else %}		  
           <a class="btn btn-success btn-block" href="/stories/new?chid={{challenge.id}}" id="challenge-link" type="button"><span class="glyphicon glyphicon-pencil"></span> Accept Challenge!</a>
@@ -255,17 +255,19 @@ Copyright (C) 2015 Paul Robertson
           {% endif %}
           <ul class="list-unstyled" id="story-stats">
             <li id="pubdate">Challenge created: {{challenge.ctime|date:"jS F Y"}}</li>
-            <li id="startdate">{% if ch_before %}Challenge starts: {% else %}Challenge started:{% endif %} {{challenge.stime|date:"jS F Y"}}</li>
-            <li id="enddate">{% if ch_after %}Challenge ended: {% else %}Challenge ends:{% endif %} {{challenge.etime|date:"jS F Y"}}</li>
+            <li id="startdate">{% if not challenge.started %}Challenge starts: {% else %}Challenge started:{% endif %} {{challenge.stime|date:"jS F Y"}}</li>
+            <li id="enddate">{% if challenge.ended %}Challenge ended: {% else %}Challenge ends:{% endif %} {{challenge.etime|date:"jS F Y"}}</li>
           </ul>
           <hr />
           
-          {% if ch_after and ch_winner %}
+          {% if challenge.ended and challenge.winner %}
           <h2>Winning Story</h2>
+
           <h4 class="entry_title">{{win_story|story_link}}</h4>
+
 		  <ul class="challenge-story-winner">
-			<li>{{ win_story.user|author_span }}</li>
-			<li>Posted <abbr class="published" title="{{s.ptime|date:'Y-m-d'}}">{{win_story.ptime|age}}</abbr></li>
+			<li>{{ challenge.winner.user|author_span }}</li>
+			<li>Posted <abbr class="published" title="{{s.ptime|date:'Y-m-d'}}">{{challenge.winner.ptime|age}}</abbr></li>
 		  </ul>          
           <hr />
           {% endif %}

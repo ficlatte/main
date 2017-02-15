@@ -19,7 +19,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
-from datetime import datetime
+from datetime import datetime, date
 
 # Create your models here.
 
@@ -94,12 +94,29 @@ class Challenge(models.Model):
     activity    = models.FloatField(default=0.0)
     ctime       = models.DateTimeField(default=timezone.now)    # Creation time
     mtime       = models.DateTimeField(default=timezone.now)    # Modification time
-    stime		= models.DateField(default=timezone.now)	# Challenge start date
-    etime		= models.DateField(default=timezone.now)	# Challenge end date
-    winner		= models.ForeignKey('Story', related_name='winner', null=True)
+    stime       = models.DateField(default=timezone.now)        # Challenge start date
+    etime       = models.DateField(default=timezone.now)        # Challenge end date
+    winner      = models.ForeignKey('Story', related_name='winner', null=True)
 
     def __unicode__(self):
         return unicode(self.title)
+    
+    def active(self):
+        # Note: this is determined by UTC, ie. server time, not by user's local time
+        today = date.today()
+        return ((self.stime <= today) and (self.etime > today))
+    
+    def started(self):
+        # Has the challenge started?  It may or may not have ended
+        # Note: this is determined by UTC, ie. server time, not by user's local time
+        today = date.today()
+        return (today >= self.stime)
+    
+    def ended(self):
+        # Note: this is determined by UTC, ie. server time, not by user's local time
+        today = date.today()
+        return (today > self.etime)
+    
 
 # Stories
 class Story(models.Model):
@@ -109,8 +126,7 @@ class Story(models.Model):
     prequel_to  = models.ForeignKey('self', blank=True, null=True, related_name='prequels')
     sequel_to   = models.ForeignKey('self', blank=True, null=True, related_name='sequels')
     prompt      = models.ForeignKey(Prompt, blank=True, null=True)
-    challenge	= models.ForeignKey(Challenge, blank=True, null=True)
-    ch_winner	= models.FloatField(default=0.0, null=True)
+    challenge   = models.ForeignKey(Challenge, blank=True, null=True)
     mature      = models.BooleanField(default=False)
     draft       = models.BooleanField(default=False)
     ficly       = models.BooleanField(default=False)
