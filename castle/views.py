@@ -38,7 +38,6 @@ import re
 import hashlib
 from .forms import AvatarUploadForm, ChallengeDateForm
 from .images import convert_avatars
-from django_messages.views import *
 
 #-----------------------------------------------------------------------------
 # Global symbols
