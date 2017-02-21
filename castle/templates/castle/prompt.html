@@ -33,11 +33,10 @@ Copyright (C) 2015 Paul Robertson
           </div> <!-- id="" class="row" -->
           <hr />
           <div class="content-body">
-          {% if suppressed %}
-          <p>Prompt is marked as mature</p>
-          {% else %}
-          {{prompt.body|encode_story}}
-          {% endif %}
+			<span class="mature-warning">Prompt is marked as mature.</span> <button>Show me anyway</button><br /><br />
+			<div class="mature-content">
+				{{prompt.body|encode_story}}
+			</div>
           </div>
           <hr />
           <div id="story-summary">

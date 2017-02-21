@@ -105,6 +105,19 @@ p#average-rating span#enabled {
       padding: 0px;
 }
 
+/* Story display */
+
+span.mature-warning {
+	padding: 6px;
+	background-color: #ff5959;
+	margin-bottom: 30px;
+	border-radius: 4px;
+}
+
+div.mature-content {
+	display: none;
+}
+
 /* Story list display */
 
 ul.story_list {

@@ -33,11 +33,10 @@ Copyright (C) 2015 Paul Robertson
           </div> <!-- id="" class="row" -->
           <hr />
           <div class="content-body">
-		  {% if suppressed %}
-          <p>Challenge is marked as mature</p>
-          {% else %}
-          {{challenge.body|encode_story}}
-          {% endif %}
+			<span class="mature-warning">Challenge is marked as mature.</span> <button>Show me anyway</button><br /><br />
+			<div class="mature-content">
+				{{challenge.body|encode_story}}
+			</div>
           </div>
           <hr />
           <div id="story-summary">

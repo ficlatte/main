@@ -32,11 +32,10 @@ Copyright (C) 2015 Paul Robertson
           </div> <!-- id="" class="row" -->
           <hr />
           <div class="content-body">
-          {% if suppressed %}
-          <p>Story is marked as mature</p>
-          {% else %}
-          {{story.body|encode_story}}
-          {% endif %}
+			<span class="mature-warning">Story is marked as mature.</span> <button>Show me anyway</button><br /><br />
+			<div class="mature-content">
+			{{story.body|encode_story}}
+			</div>
           </div>
           <div class="row" id="prequel-and-sequel">
             <div class="col-md-6" id="prequel-group">
