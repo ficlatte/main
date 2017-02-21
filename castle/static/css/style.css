@@ -227,3 +227,33 @@ li.challenge-comment ul li.posted {
 	padding: 10px 10px 0 10px;
 	background: #d6e9c6;
 }
+
+/* Notes */
+
+#compose-note-link {
+	width: 25%;
+	max-width: 25%;
+	float: left;
+}
+
+ul.notes-navigation {
+	list-style-type: none;
+}
+
+ul.notes-navigation li {
+	display: block;
+	margin: 8px 0px 0px 30px;
+	float: left;
+}
+
+.notes-actions {
+	margin-top: 20px;
+}
+
+.notes-reply, .notes-delete, .notes-forward {
+	margin-right: 35px;
+}
+
+.author-msg-btn {
+	margin-bottom: 10px;
+}

@@ -1,0 +1,46 @@
+{% extends "notes/notes_primary.html" %}
+{% load i18n %}
+
+{% load castle_tags %}
+{% load note_tags %}
+
+{% block notes %}
+
+		<div class="well" id="new-note">
+            <h2>Write Note</h2>
+            <form accept-charset="utf-8" action="/notes/compose/submit/" class="form-horizontal" id="note-form" method="post" role="form">
+              {% csrf_token %}
+              <input name="nid" type="hidden" value="{{note.id}}" />
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="note_recipient">Recipient</label>
+                <div class="col-sm-10">
+                  <input class="form-control" id="note_recipient" maxlength="64" name="recipient" tabindex="2" type="text" value="{{note.recipient}}" />
+                </div> <!-- id="" class="col-sm-10" -->
+              </div> <!-- id="" class="form-group" -->
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="note_subject">Subject</label>
+                <div class="col-sm-10">
+                  <input class="form-control" id="note_subject" maxlength="64" name="subject" tabindex="2" type="text" value="{{note.subject}}" />
+                </div> <!-- id="" class="col-sm-10" -->
+              </div> <!-- id="" class="form-group" -->
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="body">Note</label>
+                <div class="col-sm-10">
+                  <div class="field">
+                    <textarea class="form-control" cols="60" data-maxlength="{{length_limit}}" id="text_body" name="body" onkeyup="story_len()" rows="8" tabindex="4" type="text">{{note.body}}</textarea>
+                    <div class="pull-right">
+                      <span class="counter" id="counter">{{length_limit}}</span>
+                    </div> <!-- id="" class="pull-right" -->
+                    <p class="help-block"><span class="glyphicon glyphicon-hand-up"></span> HTML is not supported but you can <strong>bold</strong> ( *bold* ) and <em>italicise</em> ( _italic_ ).</p>
+                  </div> <!-- id="" class="field" -->
+                </div> <!-- id="" class="col-sm-10" -->
+              </div> <!-- id="" class="form-group" -->
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <button class="btn btn-success" id="text-submit" tabindex="6" type="submit">Send!</button>
+                </div> <!-- id="" class="col-sm-offset-2 col-sm-10" -->
+              </div> <!-- id="" class="form-group" -->
+            </form>
+          </div> <!-- id="new-note" class="well" -->
+
+{% endblock notes %}

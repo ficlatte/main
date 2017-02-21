@@ -17,6 +17,7 @@ Copyright (C) 2015 Paul Robertson
 {% endcomment %}
 {% load staticfiles %}
 {% load castle_tags %}
+{% load note_tags %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -79,7 +80,7 @@ Copyright (C) 2015 Paul Robertson
               <li><p class="navbar-text">Signed in as:</p></li>
               <li class="active">{{profile|author_link}}</li>
               <li><a href="/">Your desk</a></li>
-              <!--<li><a href="/notes">Notes</a></li>-->
+              <li><a href="/notes">Notes: {{ profile|inbox_count }}</a></li>
               <li><a href="{% url 'signout' %}">Log out</a></li>
               {% else %}
               <li><a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}">Log in</a></li>
