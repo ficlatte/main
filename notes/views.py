@@ -166,12 +166,16 @@ def new_note(request):
 	
 	# Is logged-in user the author?
 	owner = ((profile is not None) and (profile == author))
-	
-	recipient_obj = request.GET.get('recipient', '')
-	recipient = get_object_or_404(Profile, pen_name_uc = recipient_obj.upper())
+		
+	if request.GET.get('recipient', ''):
+		recipient_obj = request.GET.get('recipient', '')
+		recipient = get_object_or_404(Profile, pen_name_uc = recipient_obj.upper())
 
-	# Create a blank note
-	note = Note(recipient = recipient)
+		# Create a blank note from an author page
+		note = Note(recipient = recipient)
+	else:
+		# Create a blank note
+		note = Note()
 	
 	context = {	'profile'		: profile,
 				'author'		: author,
