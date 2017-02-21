@@ -1106,7 +1106,7 @@ def challenges(request):
     return render(request, 'castle/challenges.html', context)
 
 #-----------------------------------------------------------------------------
-def challenge(request, challenge_id, comment_text=None, error_title='', error_messages=None):
+def challenge_view(request, challenge_id, comment_text=None, error_title='', error_messages=None):
     # Get challenge
     challenge = get_object_or_404(Challenge, pk=challenge_id)
 
