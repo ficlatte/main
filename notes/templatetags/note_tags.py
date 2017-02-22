@@ -20,7 +20,8 @@ def note_link(note):
 #-----------------------------------------------------------------------------
 @register.filter
 def inbox_count(profile):
-	return Note.objects.filter(recipient=profile, read_date__isnull=True, recipient_deleted_date__isnull=True).count()
+	count = Note.objects.filter(recipient=profile, read_date__isnull=True, recipient_deleted_date__isnull=True).count()
+	return mark_safe(u'<span class="inbox-count">' + escape(count) + u'</span>')
 
 #-----------------------------------------------------------------------------
 @register.filter
