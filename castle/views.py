@@ -120,7 +120,7 @@ def get_tagged_stories(tag_name, page_num=1, page_size=10):
 def get_all_tags(page_num=1, page_size=10):
     first = (page_num-1) * page_size
     last  = first + page_size
-    return Tag.objects.values('tag').annotate(n=Count('tag')).order_by('-n','tag')[first:last]
+    return Tag.objects.values('tag').annotate(n=Count('tag')).order_by('tag')[first:last]
 
 #-----------------------------------------------------------------------------
 def get_num_tags():
