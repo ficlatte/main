@@ -124,6 +124,10 @@ div.mature-content {
 	display: none;
 }
 
+.comment-row {
+	margin-bottom: 10px;
+}
+
 /* Story list display */
 
 ul.story_list {

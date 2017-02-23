@@ -95,9 +95,8 @@ Copyright (C) 2015 Paul Robertson
             {{rating_num|rating_pencils}}
           </p>
           {% endif %}
-          {% if not suppressed %}
           {% for comment in comments %}
-          <div class="row">
+          <div class="row comment-row">
             <div class="col-md-2">
               {{comment.user|avatar}}
             </div> <!-- id="" class="col-md-2" -->
@@ -145,7 +144,6 @@ Copyright (C) 2015 Paul Robertson
               </div> <!-- id="" class="form-group" -->
             </form>
           </div> <!-- id="comment-box" class="" -->
-        {% endif %}
         {% endif %}
 
 {% endblock paged_content %}
