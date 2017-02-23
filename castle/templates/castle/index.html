@@ -76,7 +76,7 @@ Copyright (C) 2015 Paul Robertson
                   </div> <!-- id="" class="panel-body" -->
                 </div> <!-- id="" class="panel panel-success" -->
               </div> <!-- id="featured-story" class="col-md-8" -->
-              <div class="col-md-4" id="popular-stories">
+              <div class="col-md-4" id="popular-stories" style="float: right;">
                 {% if popular %}
                 <div class="panel panel-success">
                   <div class="panel-heading">
@@ -98,6 +98,36 @@ Copyright (C) 2015 Paul Robertson
                 </div> <!-- id="" class="panel panel-success" -->
                 {% endif %}
               </div> <!-- id="popular-stories" class="col-md-4" -->
+              <div class="col-md-4" id="latest-challenge">
+                <div class="panel panel-success">
+                  <div class="panel-heading">
+                    <h3 class="panel-title">Latest Challenge</h3>
+                  </div> <!-- id="" class="panel-heading" -->
+                  <div class="panel-body">
+                    <h3>{{challenge|challenge_link:'h5 class="list-group-item-heading"'}}</h3>
+                    <div class="row">
+                      <div class="col-md-8">
+                        <p>{{challenge.user|author_span}}</p>
+                      </div> <!-- id="" class="col-md-8" -->
+                    </div> <!-- id="" class="row" -->
+                  </div> <!-- id="" class="panel-body" -->
+                </div> <!-- id="" class="panel panel-success" -->
+              </div> <!-- id="latest-challenge" class="col-md-4" -->
+              <div class="col-md-4" id="latest-prompt">
+                <div class="panel panel-success">
+                  <div class="panel-heading">
+                    <h3 class="panel-title">Latest Prompt</h3>
+                  </div> <!-- id="" class="panel-heading" -->
+                  <div class="panel-body">
+                    <h3>{{prompt|prompt_link:'h5 class="list-group-item-heading"'}}</h3>
+                    <div class="row">
+                      <div class="col-md-8">
+                        <p>{{prompt.user|author_span}}</p>
+                      </div> <!-- id="" class="col-md-8" -->
+                    </div> <!-- id="" class="row" -->
+                  </div> <!-- id="" class="panel-body" -->
+                </div> <!-- id="" class="panel panel-success" -->
+              </div> <!-- id="latest-prompt" class="col-md-4" -->
             </div> <!-- id="featured-popular" class="row" -->
           </div> <!-- id="whats-new" class="well well-sm" -->
           <div class="row" id="site-summary">

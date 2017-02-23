@@ -105,6 +105,12 @@ p#average-rating span#enabled {
       padding: 0px;
 }
 
+/* Home */
+
+#latest-challenge .panel-body h3, #latest-prompt .panel-body h3 {
+	margin-top: 15px;
+}
+
 /* Story display */
 
 span.mature-warning {
@@ -285,6 +291,7 @@ li.notes-nav {
 	width: 30px;
 	height: 20px;
 	text-align: center;
+	font-weight: bold;
 	background-color: #d30000;
 	border-radius: 3px;
 }

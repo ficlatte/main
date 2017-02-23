@@ -281,6 +281,12 @@ def home(request):
         featured_query = Story.objects.filter(id=featured_id[0].i_val)
         if (featured_query):
             featured = featured_query[0]
+    
+    # Get latest challenge
+    challenge = Challenge.objects.all().order_by('-id')[0]
+    
+    # Get latest prompt
+    prompt = Prompt.objects.all().order_by('-id')[0]
 
     # Suppress story if marked as mature and either the user is not logged in
     # or the user has not enabled viewing of mature stories
@@ -299,7 +305,9 @@ def home(request):
     context = { 'profile'       : profile,
                 'blog_latest'   : blog,
                 'featured'      : featured,
-                'popular'       : get_popular_stories(1,4),
+                'challenge'		: challenge,
+                'prompt'		: prompt,
+                'popular'       : get_popular_stories(1,5),
                 'active'        : get_active_stories(1,10),
                 'recent'        : get_recent_stories(1,10),
                 'old'           : get_old_stories(10),
