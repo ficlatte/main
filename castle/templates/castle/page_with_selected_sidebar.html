@@ -254,9 +254,9 @@ Copyright (C) 2015 Paul Robertson
           <!-- <a class="btn btn-info btn-block" href="/challenges/edit/{{challenge.id}}/" id="challenge-link" type="button"><span class="glyphicon glyphicon-pencil"></span> Edit challenge</a> -->
           {% endif %}
           <ul class="list-unstyled" id="story-stats">
-            <li id="pubdate">Challenge created: {{challenge.ctime|date:"jS F Y"}}</li>
-            <li id="startdate">{% if not challenge.started %}Challenge starts: {% else %}Challenge started:{% endif %} {{challenge.stime|date:"jS F Y"}}</li>
-            <li id="enddate">{% if challenge.ended %}Challenge ended: {% else %}Challenge ends:{% endif %} {{challenge.etime|date:"jS F Y"}}</li>
+            <li id="pubdate">Challenge created: {{challenge.ctime|date:"j M Y"}}</li>
+            <li id="startdate">{% if not challenge.started %}Challenge starts: {% else %}Challenge started:{% endif %} {{challenge.stime|date:"j M Y"}}</li>
+            <li id="enddate">{% if challenge.ended %}Challenge ended: {% else %}Challenge ends:{% endif %} {{challenge.etime|date:"j M Y"}}</li>
           </ul>
           <hr />
           
@@ -273,7 +273,8 @@ Copyright (C) 2015 Paul Robertson
           {% endif %}
           <p class="small" id="licence">All challenges on Ficlatt&eacute; are licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license">Creative Commons Attribution-Share Alike 3.0 License</a>. <a href="http://wiki.creativecommons.org/Sharing_Creative_Works">What does this mean?</a></p>
           <hr />
-          <h2>Comments <small>({{challenge|num_comments}} so far!)</small></h2>
+          <h2>Comments</h2>
+          ({{challenge|num_comments}} so far!)
           <ul class="challenge-comments">
 			{% for comment in comments %}
 			<li class="challenge-comment">

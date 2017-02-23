@@ -47,6 +47,9 @@ Copyright (C) 2015 Paul Robertson
 {% block paged_content %}
             <h3>Inspired stories</h3>
             <div class="story_list_div">
+			{% if not stories %}
+				<p>No one has used this prompt yet. Be the first!</p>
+			{% else %}
               <ul class="story_list">
                 {% for s in stories %}
                 <li class="story_list_item">
@@ -69,6 +72,7 @@ Copyright (C) 2015 Paul Robertson
 				</li>
                 {% endfor %}
               </ul>
+            {% endif %}
             </div> <!-- id="" class="story_list_div" -->
 {% endblock paged_content %}
           </div> <!-- id="story-summary" class="" -->
