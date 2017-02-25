@@ -54,7 +54,7 @@ def num_comments(obj):
 #-----------------------------------------------------------------------------
 @register.filter
 def num_stories_txt(obj):
-    c = obj.story_set.count()
+    c = obj.story_set.filter(draft = False).count()
     if (c == 1):
         return u'1 story';
     else:

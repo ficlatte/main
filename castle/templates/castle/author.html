@@ -29,7 +29,7 @@ Copyright (C) 2015 Paul Robertson
                 <div class="col-sm-2 col-md-2">
                   {{author|avatar}}<br />
                 </div> <!-- id="" class="col-sm-2 col-md-2" -->
-                {% if not email_conf and user.is_authenticated %}<div  class="email-resend-link"><a href="{% url 'resend_email_conf' %}">Resend</a> my email confirmation.</div>{% endif %}
+                {% if not email_conf %}<div  class="email-resend-link"><a href="{% url 'resend_email_conf' %}">Resend</a> my email confirmation.</div>{% endif %}
                 <div class="col-sm-8 col-md-8">
                   {{author|author_link:"h1"}}
                   {{author|author_msg}}
