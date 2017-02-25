@@ -383,6 +383,9 @@ def drafts(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+    
+    # Has the author's email been confirmed?
+    email_conf = (profile.email_auth == 0)
 
     # Build story list (owner sees their drafts)
     page_num = safe_int(request.GET.get('page_num', 1))
@@ -394,6 +397,7 @@ def drafts(request):
                 'author'        : profile,
                 'story_list'    : story_list,
                 'page_title'    : profile.pen_name,
+                'email_conf'	: email_conf,
                 'page_url'      : u'/authors/'+urlquote(profile.pen_name)+u'/',
                 'pages'         : bs_pager(page_num, PAGE_STORIES, num_stories),
                 'drafts_page'   : True,
@@ -410,6 +414,9 @@ def author_prompts(request):
     if (request.user.is_authenticated()):
         profile = request.user.profile
 
+    # Has the author's email been confirmed?
+    email_conf = (profile.email_auth == 0)
+
     # Build story list (owner sees their drafts)
     page_num = safe_int(request.GET.get('page_num', 1))
     num_prompts = Prompt.objects.count()
@@ -418,8 +425,9 @@ def author_prompts(request):
     # Build context and render page
     context = { 'profile'       : profile,
                 'author'        : profile,
-                'prompt_list'    : prompt_list,
+                'prompt_list'   : prompt_list,
                 'page_title'    : profile.pen_name,
+                'email_conf'	: email_conf,
                 'page_url'      : u'/authors/'+urlquote(profile.pen_name)+u'/',
                 'pages'         : bs_pager(page_num, PAGE_STORIES, num_prompts),
                 'prompts_page'  : True,
@@ -435,6 +443,9 @@ def author_challenges(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        
+    # Has the author's email been confirmed?
+    email_conf = (profile.email_auth == 0)
 
     # Build story list (owner sees their drafts)
     page_num = safe_int(request.GET.get('page_num', 1))
@@ -444,8 +455,9 @@ def author_challenges(request):
     # Build context and render page
     context = { 'profile'       : profile,
                 'author'        : profile,
-                'challenge_list'    : challenge_list,
+                'challenge_list': challenge_list,
                 'page_title'    : profile.pen_name,
+                'email_conf'	: email_conf,
                 'page_url'      : u'/authors/'+urlquote(profile.pen_name)+u'/',
                 'pages'         : bs_pager(page_num, PAGE_STORIES, num_challenges),
                 'challenges_page' : True,
