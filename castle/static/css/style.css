@@ -135,19 +135,19 @@ ul.story_list {
 }
 
 li.story_list_item:nth-child(even) {
-	padding: 0 10px 10px 10px;
-	margin: 10px;
-	border: 1px solid #bbb;
+	padding: 10px;
+	margin: 10px 10px 15px 10px;
 	border-radius: 4px;
-	background: #d8d8d8;
+	background: #d4b78d;
+	box-shadow: 5px 5px 4px #888;
 }
 
 li.story_list_item:nth-child(odd) {
-	padding: 0 10px 10px 10px;
-	margin: 10px;
-	border: 1px solid #bbb;
+	padding: 10px;
+	margin: 10px 10px 15px 10px;
 	border-radius: 4px;
-	background: #f0f0f0;
+	background: #e2d6c6;
+	box-shadow: 5px 5px 4px #888;
 }
 
 /* Author stuff */
@@ -203,6 +203,27 @@ div.col-sm-10 p, div.col-md-10 p {
 
 /* Challenge Stuff */
 
+.challenge-content {	
+	margin: 0 5px;
+	padding: 20px 0;
+	background-color: #e2d6c6;
+	border-radius: 4px;
+	box-shadow: 5px 5px 4px #888888;
+}
+
+.deadline-header {
+	margin-top: 0;
+	font-style: italic;
+}
+
+.deadline-date {
+	color: #5aaa38;
+}
+
+.challenge-story-content {
+	border-right: 1px dotted #000;
+}
+
 #challenge-link {
 	margin-bottom: 10px;
 }
@@ -239,17 +260,19 @@ li.challenge-comment {
 }
 
 li.challenge-comment:nth-child(even) {
-	padding: 0 10px 10px 10px;
-	border: 1px solid #bbb;
+	margin-bottom: 15px;
+	padding: 5px 10px 10px 10px;
 	border-radius: 4px;
-	background: #d8d8d8;
+	background: #d4b78d;
+	box-shadow: 5px 5px 4px #888888;
 }
 
 li.challenge-comment:nth-child(odd) {
-	padding: 0 10px 10px 10px;
-	border: 1px solid #bbb;
+	margin-bottom: 15px;
+	padding: 5px 10px 10px 10px;
 	border-radius: 4px;
-	background: #f0f0f0;
+	background: #e2d6c6;
+	box-shadow: 5px 5px 4px #888888;
 }
 
 li.challenge-comment ul li.posted {

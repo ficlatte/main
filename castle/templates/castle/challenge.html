@@ -22,30 +22,30 @@ Copyright (C) 2015 Paul Robertson
 {% block primary_panel %}
 
           {{challenge|challenge_link:'h1'}}
-          <div class="row">
-            <div class="col-sm-2 col-md-2">
-              {{challenge.user|avatar}}
-            </div> <!-- id="" class="col-sm-2 col-md-2" -->
-            <div class="col-sm-10 col-md-10">
-              {{challenge.user|author_span}}
-              {{challenge.user.biography|encode_story}}
-            </div> <!-- id="" class="col-sm-10 col-md-10" -->
-          </div> <!-- id="" class="row" -->
-          <hr />
-          <div class="content-body">
-			{% if suppressed %}
-			<span class="mature-warning">Challenge is marked as mature.</span> <button>Show me anyway</button><br /><br />
-			<div class="mature-content">
-				{{challenge.body|encode_story}}
+          <div class="row challenge-content">
+			<div class="content-body">
+				<div class="col-sm-7 col-md-7 challenge-story-content">
+					<h3 class="deadline-header">Challenge Deadline: <span class="deadline-date">{{challenge.etime|date:"j M Y"}}</span></h3>
+					{% if suppressed %}
+					<span class="mature-warning">Challenge is marked as mature.</span> <button>Show me anyway</button><br /><br />
+					<div class="mature-content">
+						{{challenge.body|encode_story}}
+					</div>
+					{% else %}
+						{{challenge.body|encode_story}}
+					{% endif %}
+				</div>
+				<div class="col-sm-5 col-md-5">
+					{% if not challenge.started %}Challenge starts: {% else %}Challenge started:{% endif %} {{challenge.stime|date:"j M Y"}}<br />
+					Created by: {{challenge.user|author_link}}
+				</div>
 			</div>
-			{% else %}
-				{{challenge.body|encode_story}}
-			{% endif %}
-          </div>
+		  </div>
           <hr />
           <div id="story-summary">
+			<div class="col-sm-6 col-md-6">
 {% block paged_content %}
-            <h3>Inspired stories</h3>
+            <h3>Challengers</h3>
             <div class="story_list_div">
 			{% if not stories %}
 				<p>Looks like no one's entered the challenge yet! Accept the challenge and be the first!</p>
@@ -54,29 +54,43 @@ Copyright (C) 2015 Paul Robertson
                 {% for s in stories %}
                 <li class="story_list_item">
 					<h4 class="entry_title">{{s|story_link}}</h4>
-					<blockquote class="entry_content small">
-						{% if s.mature %}
-							{% if not profile.mature and s.user != profile %}
-								<p>Story is marked as mature</p>
-							{% else %}
-									{s.body|small_snippet}}
-							{% endif %}
-							{% else %}
-								{{s.body|small_snippet}}
-						{% endif %}
-					</blockquote>
-					<ul class="story_foot">
-						<li class="author">{{s.user|author_span}}</li>
-						<li class="posted">
-							Posted <abbr class="published" title="{{s.ptime|date:'Y-m-d'}}">{{s.ptime|age}}</abbr>
-						</li>
-					</ul>
+					<div class="author">{{s.user|author_span}}</div>
 				</li>
                 {% endfor %}
               </ul>
               {% endif %}
             </div> <!-- id="" class="story_list_div" -->
 {% endblock paged_content %}
+			</div>
+			<div class="col-sm-6 col-md-6">
+				<h3>Discussion</h3>
+				<ul class="challenge-comments">
+					{% for comment in comments %}
+					<li class="challenge-comment">
+						{{comment.user|author_link:'h4'}}
+						{{comment.body|encode_story}}
+						<ul class="list-inline">
+							<li class="posted">Posted <abbr class="dtposted" title="{{comment.ctime|date:'Y-m-d'}}">{{comment.ctime|age}}</abbr></li>
+						</ul>
+					</li>
+					{% endfor %}
+				</ul>
+				{% if profile %}
+				<div id="comment-box">
+					<form action="/comment/submit/" id="comment-form" method="post" role="form">
+					{% csrf_token %}
+						<input id="comment_sid" name="chid" type="hidden" value="{{challenge.id}}" />
+						<div class="form-group">
+							<label class="control-label" for="comment_body">Leave a comment</label>
+							<textarea class="form-control" id="comment_body" maxlength="1024" name="body" rows="7"></textarea>
+						</div> <!-- id="" class="form-group" -->
+						<div class="form-group">
+							<input alt="Submit comment" type="submit" value="Submit" />
+						</div> <!-- id="" class="form-group" -->
+					</form>
+				</div> <!-- id="comment-box" class="" -->
+				{% endif %}
+			</div>
           </div> <!-- id="story-summary" class="" -->
 {% block pager %}{{block.super}}{%endblock%}
 {% endblock primary_panel %}

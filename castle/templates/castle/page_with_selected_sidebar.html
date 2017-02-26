@@ -255,8 +255,6 @@ Copyright (C) 2015 Paul Robertson
           {% endif %}
           <ul class="list-unstyled" id="story-stats">
             <li id="pubdate">Challenge created: {{challenge.ctime|date:"j M Y"}}</li>
-            <li id="startdate">{% if not challenge.started %}Challenge starts: {% else %}Challenge started:{% endif %} {{challenge.stime|date:"j M Y"}}</li>
-            <li id="enddate">{% if challenge.ended %}Challenge ended: {% else %}Challenge ends:{% endif %} {{challenge.etime|date:"j M Y"}}</li>
           </ul>
           <hr />
           
@@ -273,35 +271,10 @@ Copyright (C) 2015 Paul Robertson
           {% endif %}
           <p class="small" id="licence">All challenges on Ficlatt&eacute; are licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license">Creative Commons Attribution-Share Alike 3.0 License</a>. <a href="http://wiki.creativecommons.org/Sharing_Creative_Works">What does this mean?</a></p>
           <hr />
-          <h2>Comments</h2>
-          ({{challenge|num_comments}} so far!)
-          <ul class="challenge-comments">
-			{% for comment in comments %}
-			<li class="challenge-comment">
-				{{comment.user|author_link:'h4'}}
-				{{comment.body|encode_story}}
-				<ul class="list-inline">
-					<li class="posted">Posted <abbr class="dtposted" title="{{comment.ctime|date:'Y-m-d'}}">{{comment.ctime|age}}</abbr></li>
-				</ul>
-			</li>
-			{% endfor %}
-          </ul>
-          <hr />
-          {% if profile %}
-          <div id="comment-box">
-            <form action="/comment/submit/" id="comment-form" method="post" role="form">
-              {% csrf_token %}
-              <input id="comment_sid" name="chid" type="hidden" value="{{challenge.id}}" />
-              <div class="form-group">
-                  <label class="control-label" for="comment_body">Leave a comment</label>
-                  <textarea class="form-control" id="comment_body" maxlength="1024" name="body" rows="7"></textarea>
-              </div> <!-- id="" class="form-group" -->
-              <div class="form-group">
-                <input alt="Submit comment" type="submit" value="Submit" />
-              </div> <!-- id="" class="form-group" -->
-            </form>
-          </div> <!-- id="comment-box" class="" -->
-          {% endif %}
+          <h3>Participants</h3>
+          {% for p in participants %}
+			{{ p|user_icon }}
+		  {% endfor %}
   {% endif %}
           
 {% endblock secondary_panel %}

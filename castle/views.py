@@ -1141,6 +1141,10 @@ def challenge_view(request, challenge_id, comment_text=None, error_title='', err
     page_num = safe_int(request.GET.get('page_num', 1))
     stories = challenge.story_set.exclude(draft=True).order_by('ctime')[(page_num-1)*PAGE_STORIES:page_num*PAGE_STORIES]
     num_stories = challenge.story_set.exclude(draft=True).count()
+    
+    # Get list of participants
+    participants_list = challenge.story_set.exclude(draft=True).values('user__pen_name').distinct()
+    participants = Profile.objects.filter(pen_name__in=participants_list)
 
     # Get comments
     page_num = safe_int(request.GET.get('page_num', 1))
@@ -1161,6 +1165,7 @@ def challenge_view(request, challenge_id, comment_text=None, error_title='', err
                 'challenge'           : challenge,
                 'stories'             : stories,
                 'owner'               : owner,
+                'participants'		  : participants,
                 'comments'            : comments,
                 'page_title'          : u'Challenge '+challenge.title,
                 'challenge_sidepanel' : 1,
