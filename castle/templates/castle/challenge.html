@@ -38,6 +38,32 @@ Copyright (C) 2015 Paul Robertson
 				<div class="col-sm-5 col-md-5">
 					{% if not challenge.started %}Challenge starts: {% else %}Challenge started:{% endif %} {{challenge.stime|date:"j M Y"}}<br />
 					Created by: {{challenge.user|author_link}}
+					
+					<div class="challenge-buttons">
+					{% if not challenge.started %}
+						<span class="btn btn-success btn-block ch_before" id="challenge-link" type="button"><span class="glyphicon glyphicon-time"></span> Challenge hasn't begun</span>
+					{% elif challenge.ended %}
+						<span class="btn btn-success btn-block ch_after" id="challenge-link" type="button"><span class="glyphicon glyphicon-hourglass"></span> Challenge complete</span>
+					{% else %}	
+						<p>Ready for a challenge? Then pick up the gauntlet, and test your words in the fires of a little friendly competition!</p>
+						
+						<a class="btn btn-success btn-block" href="/stories/new?chid={{challenge.id}}" id="challenge-link" type="button"><span class="glyphicon glyphicon-pencil"></span> Accept Challenge!</a>
+					{% endif %}          
+          
+					{% if owner %}
+						<!-- <a class="btn btn-info btn-block" href="/challenges/edit/{{challenge.id}}/" id="challenge-link" type="button"><span class="glyphicon glyphicon-pencil"></span> Edit challenge</a> -->
+					{% endif %}
+					</div>
+					
+					{% if challenge.ended and challenge.winner %}
+					<div class="challenge-winner">
+						<h2>Winning Story</h2>
+
+						<h4 class="entry_title">{{challenge.winner|story_link}}</h4>
+
+						{{ challenge.winner.user|author_span }}
+					</div>
+					{% endif %}
 				</div>
 			</div>
 		  </div>

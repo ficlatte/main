@@ -1,3 +1,7 @@
+body {
+	background: transparent url("../img/001-Basik-Paper.png") repeat;
+}
+
 ul {
     list-style-type: none;
 }
@@ -107,8 +111,50 @@ p#average-rating span#enabled {
 
 /* Home */
 
+.navbar-default {
+	background-color: #553832;
+	border: none;
+	box-shadow: 5px 5px 4px #888;
+}
+
+.navbar-default .navbar-nav > li > a {
+	color: #fff;
+}
+
+.navbar-default .navbar-nav > li > a:hover {
+	color: #ccc;
+}
+
+#news {
+	padding: 5px 20px 35px 20px;
+}
+
+#whats-new {
+	padding: 10px 25px;
+}
+
+.well {
+	background-color: #f2e2c4;
+	border: none;
+	box-shadow: 5px 5px 4px #888;
+}
+
+.panel-success {
+	border-color: #faebcc;
+	box-shadow: 5px 5px 4px #888;
+}
+
+.panel-success > .panel-heading {
+	background-color: #fcf8e3;
+	border-color: #faebcc;
+}
+
 #latest-challenge .panel-body h3, #latest-prompt .panel-body h3 {
 	margin-top: 15px;
+}
+
+.panel-warning, .panel-info {
+	box-shadow: 5px 5px 4px #888;
 }
 
 /* Story display */
@@ -220,6 +266,11 @@ div.col-sm-10 p, div.col-md-10 p {
 	color: #5aaa38;
 }
 
+.challenge-buttons {
+	margin-top: 15px;
+	font-size: 12px;
+}
+
 .challenge-story-content {
 	border-right: 1px dotted #000;
 }
@@ -277,6 +328,10 @@ li.challenge-comment:nth-child(odd) {
 
 li.challenge-comment ul li.posted {
 	font-size: 12px;
+}
+
+.challenge-sidebar {
+	margin-top: 70px;
 }
 
 /* Subscriptions */
