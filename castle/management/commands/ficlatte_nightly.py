@@ -64,11 +64,11 @@ class Command(BaseCommand):
         mas = Story.objects.filter(activity__isnull = False).order_by('-activity')[0:1]
         if (mas and (mas[0])):
             # Find 'featured' object in Misc table and update with new most-active story
-            ff = Misc.objects.filter(act_type=1)
+            ff = Misc.objects.filter(key='featured')
             if (ff):
                 f = ff[0]
             else:
-                f = Misc(key='featured', act_type=1)
+                f = Misc(key='featured')
             
             f.i_val = mas[0].id
             f.act_type = 1
@@ -105,11 +105,11 @@ class Command(BaseCommand):
         mapr = Prompt.objects.filter(activity__isnull = False).order_by('-activity')[0:1]
         if (mapr and (mapr[0])):
             # Find 'featured' object in Misc table and update with new most-active challenge
-            ff = Misc.objects.filter(act_type=2)
+            ff = Misc.objects.filter(key='featured_prompt')
             if (ff):
                 f = ff[0]
             else:
-                f = Misc(key='featured_prompt', act_type=2)
+                f = Misc(key='featured_prompt')
             
             f.i_val = mapr[0].id
             f.act_type = 2
@@ -146,11 +146,11 @@ class Command(BaseCommand):
         mac = Challenge.objects.filter(activity__isnull = False).order_by('-activity')[0:1]
         if (mac and (mac[0])):
             # Find 'featured' object in Misc table and update with new most-active challenge
-            ff = Misc.objects.filter(act_type=3)
+            ff = Misc.objects.filter(key='featured_challenge')
             if (ff):
                 f = ff[0]
             else:
-                f = Misc(key='featured_challenge', act_type=3)
+                f = Misc(key='featured_challenge')
             
             f.i_val = mac[0].id
             f.act_type = 3

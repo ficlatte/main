@@ -21,36 +21,119 @@ Copyright (C) 2015 Paul Robertson
 
 {% block primary_panel %}
 
-          <div id="prompt-summary">
-            <h3>Recent prompts</h3>
-{% block paged_content %}
-            <div class="story_list_div">
-              <ul class="story_list">
-                {% for p in prompts %}
-                <li class="story_list_item">
-					<h3 class="entry_title">{{p|prompt_link}}</h3>
-					<blockquote class="entry_content">
-						{% if p.mature %}
-							{% if not profile.mature and p.user != profile %}
-								<p>Prompt is marked as mature</p>
-							{% else %}
-								{{p.body|small_snippet}}
-							{% endif %}
+		<div class="well well-sm" id="whats-new">
+            <h3>What&#39;s new</h3>
+            <div class="row" id="featured-popular">
+              <div class="col-md-8" id="featured-story">
+                <div class="panel panel-success">
+                  <div class="panel-heading">
+                    <h3 class="panel-title">Featured challenge</h3>
+                  </div> <!-- id="" class="panel-heading" -->
+                  <div class="panel-body">
+                    {% if featured %}
+                    <h3>{{featured|prompt_link}}</h3>
+                        {% if suppressed %}
+							<p>Story is marked as mature</p>
 						{% else %}
-							{{p.body|small_snippet}}
+							{{featured.body|big_snippet}}
 						{% endif %}
-					</blockquote>
-					<ul class="story_foot">
-						<li class="author">{{p.user|author_span}}</li>
-						<li class="posted">Posted <abbr class="published" title="{{p.ctime|date:'Y-m-d'}}">{{p.ctime|age}}</abbr></li>
-						<li class="count">{{p|num_stories_txt}}</li>
-					</ul>
-				</li>
-                {% endfor %}
-              </ul>
-            </div> <!-- id="" class="story_list_div" -->
-{% endblock paged_content %}
-{% block pager %}{{block.super}}{%endblock%}
-          </div> <!-- id="prompt-summary" class="" -->
+                    <div class="row">
+                      <div class="col-md-4">
+                        {{featured.user|avatar}}
+                      </div> <!-- id="" class="col-md-4" -->
+                      <div class="col-md-8">
+                        <p>{{featured.user|author_span}}</p>
+                      </div> <!-- id="" class="col-md-8" -->
+                    </div> <!-- id="" class="row" -->
+                    {% endif %}
+                  </div> <!-- id="" class="panel-body" -->
+                </div> <!-- id="" class="panel panel-success" -->
+              </div> <!-- id="featured-story" class="col-md-8" -->
+              <div class="col-md-4" id="popular-stories" style="float: right;">
+                {% if popular %}
+                <div class="panel panel-success">
+                  <div class="panel-heading">
+                    <h3 class="panel-title">Popular prompts</h3>
+                  </div> <!-- id="" class="panel-heading" -->
+                  <div class="panel-body">
+                    {% if popular %}
+                    <div class="list-group">
+                      {% for prompt in popular %}
+                      <div class="list-group-item">
+                        {{prompt|prompt_link:'h5 class="list-group-item-heading"'}}
+                        {{prompt.user|author_span}}
+                      </div> <!-- id="" class="list-group-item" -->
+                      {% endfor %}
+                    </div> <!-- id="" class="list-group" -->
+                    {% endif %}
+                    <p><a class="btn btn-success" href="/prompts/popular/" role="button">More popular prompts &raquo;</a></p>
+                  </div> <!-- id="" class="panel-body" -->
+                </div> <!-- id="" class="panel panel-success" -->
+                {% endif %}
+              </div> <!-- id="popular-stories" class="col-md-4" -->
+            </div> <!-- id="featured-popular" class="row" -->
+          </div> <!-- id="whats-new" class="well well-sm" -->
+
+		  <div id="prompt-summary">	
+			<div class="col-md-4" id="active-prompts">
+              <div class="panel panel-success">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Active prompts</h3>
+                </div> <!-- id="" class="panel-heading" -->
+                <div class="panel-body">
+                  {% if active %}
+                  <div class="list-group">
+                      {% for prompt in active %}
+                      <div class="list-group-item">
+                        {{prompt|prompt_link:'h5 class="list-group-item-heading"'}}
+                        {{prompt.user|author_span}}
+                      </div> <!-- id="" class="list-group-item" -->
+                      {% endfor %}
+                  </div> <!-- id="" class="list-group" -->
+                  {% endif %}
+                  <p><a class="btn btn-success" href="/prompts/active/" role="button">More active prompts &raquo;</a></p>
+                </div> <!-- id="" class="panel-body" -->
+              </div> <!-- id="" class="panel panel-success" -->
+            </div> <!-- id="active-stories" class="col-md-4" -->
+            <div class="col-md-4" id="recent-prompts">
+              <div class="panel panel-success">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Recent prompts</h3>
+                </div> <!-- id="" class="panel-heading" -->
+                <div class="panel-body">
+                  {% if recent %}
+                  <div class="list-group">
+                      {% for prompt in recent %}
+                      <div class="list-group-item">
+                        {{prompt|prompt_link:'h5 class="list-group-item-heading"'}}
+                        {{prompt.user|author_span}}
+                      </div> <!-- id="" class="list-group-item" -->
+                      {% endfor %}
+                  </div> <!-- id="" class="list-group" -->
+                  {% endif %}
+                  <p><a class="btn btn-success" href="/prompts/recent/" role="button">More recent prompts &raquo;</a></p>
+                </div> <!-- id="" class="panel-body" -->
+              </div> <!-- id="" class="panel panel-success" -->
+            </div> <!-- id="recent-stories" class="col-md-4" -->
+            <div class="col-md-4" id="recent-winners">
+              <div class="panel panel-success">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Golden oldies</h3>
+                </div> <!-- id="" class="panel-heading" -->
+                <div class="panel-body">
+                  {% if old %}
+                  <div class="list-group">
+                      {% for prompt in old %}
+                      <div class="list-group-item">
+                        {{prompt|prompt_link:'h5 class="list-group-item-heading"'}}
+                        {{prompt.user|author_span}}
+                      </div> <!-- id="" class="list-group-item" -->
+                      {% endfor %}
+                  </div> <!-- id="" class="list-group" -->
+                  {% endif %}
+                </div> <!-- id="" class="panel-body" -->
+              </div> <!-- id="" class="panel panel-success" -->
+            </div> <!-- id="old-stories" class="col-md-4" -->
+          </div> <!-- id="prompt-summary" -->
 
 {% endblock primary_panel %}

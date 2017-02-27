@@ -1,15 +1,26 @@
 body {
 	background: transparent url("../img/001-Basik-Paper.png") repeat;
+	font-family: 'Ubuntu', sans-serif;
+	font-size: 16px;
 }
 
 ul {
     list-style-type: none;
 }
 
+hr {
+	border-top: 1px solid #ccc;
+}
+
 /* jumbotron */
-.jumbotron {
-    padding-top: 24px;
-    padding-bottom: 24px;
+.container .jumbotron, .jumbotron {
+    padding: 0;
+    background-color: transparent;
+}
+
+.img-banner {
+	background-color: transparent;
+	border: none;
 }
 
 /* Side panel 

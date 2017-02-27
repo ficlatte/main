@@ -135,6 +135,55 @@ def get_activity_log(profile, entries):
     return log_entries
 
 #-----------------------------------------------------------------------------
+def get_popular_prompts(page_num=1, page_size=10):
+    db = getattr(settings, 'DB', 'mysql')
+    if (db == 'mysql'):
+        return Prompt.objects.raw(
+        "SELECT p.id as id, " +
+        "SUM(1/(TIMESTAMPDIFF(day, l.ctime, NOW())+1)) AS score " +
+        "FROM castle_storylog AS l " +
+        "LEFT JOIN castle_prompt AS p ON p.id=l.prompt_id " +
+        "WHERE l.user_id != p.user_id " +
+        "AND l.log_type = " + str(StoryLog.VIEW) + " "+
+        "GROUP BY l.prompt_id ORDER BY score DESC LIMIT " +
+        str((page_num-1) * page_size) + "," + str(page_size))
+    elif (db == 'postgres'):
+        return Prompt.objects.raw(
+        "SELECT p.id as id, " +
+        "SUM(1/(date_part('day', NOW() - l.ctime)+1)) AS score " +
+        "FROM castle_storylog AS l " +
+        "LEFT JOIN castle_prompt AS c ON p.id=l.prompt_id " +
+        "WHERE l.user_id != p.user_id " +
+        "AND l.log_type = " + str(StoryLog.VIEW) +" "+
+        "GROUP BY p.id ORDER BY score DESC LIMIT " + str(page_size) +" "+
+        "OFFSET " + str((page_num-1) * page_size))
+    return Prompt.objects.all()
+    
+#-----------------------------------------------------------------------------
+def get_active_prompts(page_num=1, page_size=10):
+    first = (page_num-1) * page_size
+    last  = first + page_size
+    return Prompt.objects.filter(activity__isnull=False, activity__gt = 0).order_by('-activity')[first:last]
+    
+#-----------------------------------------------------------------------------
+def get_num_active_prompts():
+    return Prompt.objects.filter(activity__gt = 0).count()
+    
+#-----------------------------------------------------------------------------
+def get_recent_prompts(page_num=1, page_size=10):
+    first = (page_num-1) * page_size
+    last  = first + page_size
+    return Prompt.objects.all().order_by('-ctime')[first:last]
+    
+#-----------------------------------------------------------------------------
+def get_old_prompts(page_size=10):
+    total = Prompt.objects.all().count()
+    end = 0 if (total < page_size) else (total - page_size)
+    first = randint(0, end)
+    last  = first + page_size
+    return Prompt.objects.all().order_by('ctime')[first:last]
+
+#-----------------------------------------------------------------------------
 def get_popular_challenges(page_num=1, page_size=10):
     db = getattr(settings, 'DB', 'mysql')
     if (db == 'mysql'):
@@ -148,7 +197,7 @@ def get_popular_challenges(page_num=1, page_size=10):
         "GROUP BY l.challenge_id ORDER BY score DESC LIMIT " +
         str((page_num-1) * page_size) + "," + str(page_size))
     elif (db == 'postgres'):
-        return Story.objects.raw(
+        return Challenge.objects.raw(
         "SELECT c.id as id, " +
         "SUM(1/(date_part('day', NOW() - l.ctime)+1)) AS score " +
         "FROM castle_storylog AS l " +
@@ -322,7 +371,7 @@ def home(request):
         profile = request.user.profile
 
     # Get featured story
-    featured_id = Misc.objects.filter(key='featured', act_type=1)
+    featured_id = Misc.objects.filter(key='featured')
     featured = None
     if (featured_id):
         featured_query = Story.objects.filter(id=featured_id[0].i_val)
@@ -956,6 +1005,50 @@ def popular_stories(request):
 #-----------------------------------------------------------------------------
 # Prompt views
 #-----------------------------------------------------------------------------
+def browse_prompts(request, dataset=0):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    page_num = safe_int(request.GET.get('page_num', 1))
+
+    if (dataset == 1):
+        prompts = get_active_prompts(page_num, PAGE_BROWSE)
+        num_prompts = get_num_active_prompts()
+        label = u'Active prompts'
+        url = u'/prompts/active/'
+    elif (dataset == 2):
+        prompts = get_popular_prompts(page_num, PAGE_BROWSE)
+        num_prompts = Prompt.objects.all().count()
+        label = u'Popular prompts'
+        url = u'/prompts/popular/'
+    else:
+        prompts = get_recent_prompts(page_num, PAGE_BROWSE)
+        num_prompts = Prompt.objects.all().count()
+        label = u'Recent prompts'
+        url = u'/prompts/recent/'
+
+    # Build context and render page
+    context = { 'profile'       : profile,
+                'prompts'    	: prompts,
+                'page_title'    : u'Prompts, page {}'.format(page_num),
+                'page_url'      : url,
+                'pages'         : bs_pager(page_num, PAGE_BROWSE, num_prompts),
+                'user_dashboard': 1,
+                'label'         : label,
+              }
+    return render(request, 'castle/prompts_recent.html', context)
+    
+#-----------------------------------------------------------------------------
+def active_prompts(request):
+    return browse_prompts(request, 1)
+
+#-----------------------------------------------------------------------------
+def popular_prompts(request):
+    return browse_prompts(request, 2)
+
+#-----------------------------------------------------------------------------
 def prompts(request):
     # Get user profile
     profile = None
@@ -967,9 +1060,22 @@ def prompts(request):
     prompts = Prompt.objects.all().order_by('-ctime')[(page_num-1)*PAGE_PROMPTS:page_num*PAGE_PROMPTS]
     num_prompts = Prompt.objects.all().count()
 
+    # Get featured prompt
+    featured_id = Misc.objects.filter(key='featured_prompt')
+    featured = None
+    if (featured_id):
+        featured_query = Prompt.objects.filter(id=featured_id[0].i_val)
+        if (featured_query):
+            featured = featured_query[0]
+
     # Build context and render page
     context = { 'profile'       : profile,
                 'prompts'       : prompts,
+                'featured'		: featured,
+                'popular'		: get_popular_prompts(1,4),
+                'active'		: get_active_prompts(1,10),
+                'recent'		: get_recent_prompts(1,10),
+                'old'			: get_old_prompts(10),
                 'page_title'    : u'Prompts page {}'.format(page_num),
                 'prompt_button' : (profile is not None),
                 'user_dashboard': (profile is not None),
@@ -1214,8 +1320,8 @@ def challenges(request):
     challenges = Challenge.objects.all().order_by('-ctime')[(page_num-1)*PAGE_CHALLENGES:page_num*PAGE_CHALLENGES]
     num_challenges = Challenge.objects.all().count()
     
-    # Get featured story
-    featured_id = Misc.objects.filter(key='featured_challenge', act_type=3)
+    # Get featured challenge
+    featured_id = Misc.objects.filter(key='featured_challenge')
     featured = None
     if (featured_id):
         featured_query = Challenge.objects.filter(id=featured_id[0].i_val)

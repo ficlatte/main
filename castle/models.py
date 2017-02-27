@@ -279,7 +279,6 @@ class Misc(models.Model):
     key         = models.CharField(primary_key=True, max_length=32)
     s_val       = models.CharField(max_length=128, blank=True, null=True)
     i_val       = models.BigIntegerField(blank=True, null=True)
-    act_type	= models.IntegerField(blank=True, null=True)		# 1 = story, 2 = prompt, 3 = challenge	
 
     def __unicode__(self):
         r = u'key:"'+unicode(self.key)+u'" : '
