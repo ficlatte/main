@@ -78,9 +78,10 @@ class Prompt(models.Model):
     title       = models.CharField(max_length=128)
     body        = models.CharField(max_length=256)
     mature      = models.BooleanField(default=False)
-    activity    = models.FloatField(default=0.0)
+    activity    = models.FloatField(default=0.0, null=True)
     ctime       = models.DateTimeField(default=timezone.now)    # Creation time
     mtime       = models.DateTimeField(default=timezone.now)    # Modification time
+    ftime       = models.DateTimeField(blank=True, null=True)   # Featured time (first only)
 
     def __unicode__(self):
         return unicode(self.title)
@@ -91,11 +92,12 @@ class Challenge(models.Model):
     title       = models.CharField(max_length=128)
     body        = models.CharField(max_length=1024)
     mature      = models.BooleanField(default=False)
-    activity    = models.FloatField(default=0.0)
+    activity    = models.FloatField(default=0.0, null=True)
     ctime       = models.DateTimeField(default=timezone.now)    # Creation time
     mtime       = models.DateTimeField(default=timezone.now)    # Modification time
     stime       = models.DateField(default=timezone.now)        # Challenge start date
     etime       = models.DateField(default=timezone.now)        # Challenge end date
+    ftime       = models.DateTimeField(blank=True, null=True)   # Featured time (first only)
     winner      = models.ForeignKey('Story', related_name='winner', null=True)
 
     def __unicode__(self):
@@ -277,6 +279,7 @@ class Misc(models.Model):
     key         = models.CharField(primary_key=True, max_length=32)
     s_val       = models.CharField(max_length=128, blank=True, null=True)
     i_val       = models.BigIntegerField(blank=True, null=True)
+    act_type	= models.IntegerField(blank=True, null=True)		# 1 = story, 2 = prompt, 3 = challenge	
 
     def __unicode__(self):
         r = u'key:"'+unicode(self.key)+u'" : '

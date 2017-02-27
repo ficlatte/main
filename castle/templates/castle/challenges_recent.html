@@ -1,0 +1,59 @@
+{% extends "castle/page_without_sidebar.html" %}
+{%comment%}
+This file is part of Ficlatté.
+Copyright (C) 2015 Paul Robertson
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of version 3 of the GNU Affero General Public
+    License as published by the Free Software Foundation
+    
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+{%endcomment%}
+{% load staticfiles %}
+{% load castle_tags %}
+
+{% block primary_panel %}
+          <div id="challenge-summary">
+            <h3>{{label}}</h3>
+{% block paged_content %}
+            <div class="story_list_div">
+              <ul class="story_list">
+                {% for c in challenges %}
+                <li class="story_list_item">
+					<h3 class="entry_title">{{c|challenge_link}}</h3>
+					<ul class="story_meta">
+						<li id="startdate">Challenge start date: {{c.stime|date:"jS F Y"}}</li>
+						<li id="enddate">Challenge end date: {{c.etime|date:"jS F Y"}}</li>
+						<blockquote class="entry_content">
+							{% if c.mature %}
+								{% if not profile.mature and c.user != profile %}
+									<p>Challenge is marked as mature</p>
+								{% else %}
+									{{c.body|small_snippet}}
+								{% endif %}
+							{% else %}
+								{{c.body|small_snippet}}
+							{% endif %}
+						</blockquote>
+						<ul class="story_foot">
+							<li class="author">{{c.user|author_span}}</li>
+							<li class="posted">Posted <abbr class="published" title="{{c.ctime|date:'Y-m-d'}}">{{c.ctime|age}}</abbr></li>
+							<li class="count">{{c|num_stories_txt}}</li>
+						</ul><!-- id="" class="story_foot" -->
+					</ul><!-- id="" class="story_meta" -->
+				</li>
+                {% endfor %}
+              </ul>
+            </div> <!-- id="" class="story_list_div" -->
+{% endblock paged_content %}
+{% block pager %}{{block.super}}{%endblock%}
+          </div> <!-- id="story-summary" class="" -->
+{% endblock primary_panel %}
+

@@ -23,7 +23,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
-from django.db.models import Sum, Avg, Q, Count
+from django.db.models import Sum, Avg, Q, Count, F
 from django.utils.http import urlquote_plus, urlquote
 from django.conf import settings
 from django.utils import timezone
@@ -133,6 +133,53 @@ def get_activity_log(profile, entries):
     log_entries = StoryLog.objects.exclude(log_type = StoryLog.VIEW).exclude(log_type = StoryLog.RATE).filter(Q(user = profile) | Q(story__user = profile)).order_by('-ctime')[:entries]
 
     return log_entries
+
+#-----------------------------------------------------------------------------
+def get_popular_challenges(page_num=1, page_size=10):
+    db = getattr(settings, 'DB', 'mysql')
+    if (db == 'mysql'):
+        return Challenge.objects.raw(
+        "SELECT c.id as id, " +
+        "SUM(1/(TIMESTAMPDIFF(day, l.ctime, NOW())+1)) AS score " +
+        "FROM castle_storylog AS l " +
+        "LEFT JOIN castle_challenge AS c ON c.id=l.challenge_id " +
+        "WHERE l.user_id != c.user_id " +
+        "AND l.log_type = " + str(StoryLog.VIEW) + " "+
+        "GROUP BY l.challenge_id ORDER BY score DESC LIMIT " +
+        str((page_num-1) * page_size) + "," + str(page_size))
+    elif (db == 'postgres'):
+        return Story.objects.raw(
+        "SELECT c.id as id, " +
+        "SUM(1/(date_part('day', NOW() - l.ctime)+1)) AS score " +
+        "FROM castle_storylog AS l " +
+        "LEFT JOIN castle_challenge AS c ON c.id=l.challenge_id " +
+        "WHERE l.user_id != c.user_id " +
+        "AND l.log_type = " + str(StoryLog.VIEW) +" "+
+        "GROUP BY c.id ORDER BY score DESC LIMIT " + str(page_size) +" "+
+        "OFFSET " + str((page_num-1) * page_size))
+    return Challenge.objects.all()
+    
+#-----------------------------------------------------------------------------
+def get_active_challenges(page_num=1, page_size=10):
+    first = (page_num-1) * page_size
+    last  = first + page_size
+    return Challenge.objects.filter(activity__isnull=False, activity__gt = 0).order_by('-activity')[first:last]
+    
+#-----------------------------------------------------------------------------
+def get_num_active_challenges():
+    return Challenge.objects.filter(activity__gt = 0).count()
+    
+#-----------------------------------------------------------------------------
+def get_recent_challenges(page_num=1, page_size=10):
+    first = (page_num-1) * page_size
+    last  = first + page_size
+    return Challenge.objects.all().order_by('-ctime')[first:last]
+
+#-----------------------------------------------------------------------------
+def get_recent_winners(page_num=1, page_size=10):
+    first = (page_num-1) * page_size
+    last  = first + page_size
+    return Story.objects.filter(challenge__winner_id=F('id'), challenge__winner_id__isnull=False).order_by('-ctime')[first:last]
 
 #-----------------------------------------------------------------------------
 # Pager
@@ -275,7 +322,7 @@ def home(request):
         profile = request.user.profile
 
     # Get featured story
-    featured_id = Misc.objects.filter(key='featured')
+    featured_id = Misc.objects.filter(key='featured', act_type=1)
     featured = None
     if (featured_id):
         featured_query = Story.objects.filter(id=featured_id[0].i_val)
@@ -936,41 +983,50 @@ def prompts(request):
 #-----------------------------------------------------------------------------
 def prompt(request, prompt_id):
     # Get prompt
-    prompt = get_object_or_404(Prompt, pk=prompt_id)
+	prompt = get_object_or_404(Prompt, pk=prompt_id)
 
     # Get user profile
-    profile = None
-    if (request.user.is_authenticated()):
-        profile = request.user.profile
+	profile = None
+	if (request.user.is_authenticated()):
+		profile = request.user.profile
 
     # Get stories inspired by prompt
-    page_num = safe_int(request.GET.get('page_num', 1))
-    stories = prompt.story_set.exclude(draft=True).order_by('ctime')[(page_num-1)*PAGE_STORIES:page_num*PAGE_STORIES]
-    num_stories = prompt.story_set.exclude(draft=True).count()
+	page_num = safe_int(request.GET.get('page_num', 1))
+	stories = prompt.story_set.exclude(draft=True).order_by('ctime')[(page_num-1)*PAGE_STORIES:page_num*PAGE_STORIES]
+	num_stories = prompt.story_set.exclude(draft=True).count()
 
     # Prompt's owner gets an edit link
-    owner = ((profile is not None) and (profile == prompt.user))
+	owner = ((profile is not None) and (profile == prompt.user))
+    
+	# Log view
+	if (profile):
+		log = StoryLog(
+			user = profile,
+			prompt = prompt,
+			log_type = StoryLog.VIEW
+			)
+		log.save()
 
     # Suppress challenge if marked as mature and either the user is not logged in
     # or the user has not enabled viewing of mature challenges
-    suppressed = False
-    if (prompt.mature):
-        if ( (not profile) or ((prompt.user != profile) and (not profile.mature))):
-            suppressed = True
+	suppressed = False
+	if (prompt.mature):
+		if ( (not profile) or ((prompt.user != profile) and (not profile.mature))):
+			suppressed = True
 
     # Build context and render page
-    context = { 'profile'       : profile,
-                'prompt'        : prompt,
-                'stories'       : stories,
-                'owner'         : owner,
-                'page_title'    : u'Prompt '+prompt.title,
-                'prompt_sidepanel' : 1,
-                'page_url'      : u'/prompts/'+unicode(prompt.id)+u'/',
-                'pages'         : bs_pager(page_num, PAGE_STORIES, num_stories),
-                'suppressed'    : suppressed,
-            }
+	context = { 'profile'       : profile,
+				'prompt'        : prompt,
+				'stories'       : stories,
+				'owner'         : owner,
+				'page_title'    : u'Prompt '+prompt.title,
+				'prompt_sidepanel' : 1,
+				'page_url'      : u'/prompts/'+unicode(prompt.id)+u'/',
+				'pages'         : bs_pager(page_num, PAGE_STORIES, num_stories),
+				'suppressed'    : suppressed,
+			   }
 
-    return render(request, 'castle/prompt.html', context)
+	return render(request, 'castle/prompt.html', context)
 
 #-----------------------------------------------------------------------------
 @login_required
@@ -1103,6 +1159,50 @@ def submit_prompt(request):
 #-----------------------------------------------------------------------------
 # Challenge views
 #-----------------------------------------------------------------------------
+def browse_challenges(request, dataset=0):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    page_num = safe_int(request.GET.get('page_num', 1))
+
+    if (dataset == 1):
+        challenges = get_active_challenges(page_num, PAGE_BROWSE)
+        num_challenges = get_num_active_challenges()
+        label = u'Active challenges'
+        url = u'/challenges/active/'
+    elif (dataset == 2):
+        challenges = get_popular_challenges(page_num, PAGE_BROWSE)
+        num_challenges = Challenge.objects.all().count()
+        label = u'Popular challenges'
+        url = u'/challenges/popular/'
+    else:
+        challenges = get_recent_challenges(page_num, PAGE_BROWSE)
+        num_challenges = Challenge.objects.all().count()
+        label = u'Recent challenges'
+        url = u'/challenges/recent/'
+
+    # Build context and render page
+    context = { 'profile'       : profile,
+                'challenges'    : challenges,
+                'page_title'    : u'Challenges, page {}'.format(page_num),
+                'page_url'      : url,
+                'pages'         : bs_pager(page_num, PAGE_BROWSE, num_challenges),
+                'user_dashboard': 1,
+                'label'         : label,
+              }
+    return render(request, 'castle/challenges_recent.html', context)
+    
+#-----------------------------------------------------------------------------
+def active_challenges(request):
+    return browse_challenges(request, 1)
+
+#-----------------------------------------------------------------------------
+def popular_challenges(request):
+    return browse_challenges(request, 2)
+
+#-----------------------------------------------------------------------------
 def challenges(request):
     # Get user profile
     profile = None
@@ -1113,10 +1213,23 @@ def challenges(request):
     page_num = safe_int(request.GET.get('page_num', 1))
     challenges = Challenge.objects.all().order_by('-ctime')[(page_num-1)*PAGE_CHALLENGES:page_num*PAGE_CHALLENGES]
     num_challenges = Challenge.objects.all().count()
+    
+    # Get featured story
+    featured_id = Misc.objects.filter(key='featured_challenge', act_type=3)
+    featured = None
+    if (featured_id):
+        featured_query = Challenge.objects.filter(id=featured_id[0].i_val)
+        if (featured_query):
+            featured = featured_query[0]
 
     # Build context and render page
     context = { 'profile'           : profile,
                 'challenges'        : challenges,
+                'featured'			: featured,
+                'popular'			: get_popular_challenges(1,4),
+                'active'			: get_active_challenges(1,10),
+                'recent'			: get_recent_challenges(1,10),
+                'recent_winners'	: get_recent_winners(1,10),
                 'page_title'        : u'Challenges page {}'.format(page_num),
                 'challenge_button'  : (profile is not None),
                 'user_dashboard'    : (profile is not None),
@@ -1130,54 +1243,63 @@ def challenges(request):
 #-----------------------------------------------------------------------------
 def challenge_view(request, challenge_id, comment_text=None, error_title='', error_messages=None):
     # Get challenge
-    challenge = get_object_or_404(Challenge, pk=challenge_id)
+	challenge = get_object_or_404(Challenge, pk=challenge_id)
 
     # Get user profile
-    profile = None
-    if (request.user.is_authenticated()):
-        profile = request.user.profile
+	profile = None
+	if (request.user.is_authenticated()):
+		profile = request.user.profile
 
     # Get stories inspired by challenge
-    page_num = safe_int(request.GET.get('page_num', 1))
-    stories = challenge.story_set.exclude(draft=True).order_by('ctime')[(page_num-1)*PAGE_STORIES:page_num*PAGE_STORIES]
-    num_stories = challenge.story_set.exclude(draft=True).count()
+	page_num = safe_int(request.GET.get('page_num', 1))
+	stories = challenge.story_set.exclude(draft=True).order_by('ctime')[(page_num-1)*PAGE_STORIES:page_num*PAGE_STORIES]
+	num_stories = challenge.story_set.exclude(draft=True).count()
     
     # Get list of participants
-    participants_list = challenge.story_set.exclude(draft=True).values('user__pen_name').distinct()
-    participants = Profile.objects.filter(pen_name__in=participants_list)
+	participants_list = challenge.story_set.exclude(draft=True).values('user__pen_name').distinct()
+	participants = Profile.objects.filter(pen_name__in=participants_list)
 
     # Get comments
-    page_num = safe_int(request.GET.get('page_num', 1))
-    comments = challenge.comment_set.all().order_by('ctime')[(page_num-1)*PAGE_COMMENTS:page_num*PAGE_COMMENTS]
+	page_num = safe_int(request.GET.get('page_num', 1))
+	comments = challenge.comment_set.all().order_by('ctime')[(page_num-1)*PAGE_COMMENTS:page_num*PAGE_COMMENTS]
 
     # Challenge's owner gets an edit link
-    owner = ((profile is not None) and (profile == challenge.user))
+	owner = ((profile is not None) and (profile == challenge.user))
+    
+	# Log view
+	if (profile):
+		log = StoryLog(
+			user = profile,
+			challenge = challenge,
+			log_type = StoryLog.VIEW
+			)
+		log.save()
 
     # Suppress challenge if marked as mature and either the user is not logged in
     # or the user has not enabled viewing of mature challenges
-    suppressed = False
-    if (challenge.mature):
-        if ( (not profile) or ((challenge.user != profile) and (not profile.mature))):
-            suppressed = True
+	suppressed = False
+	if (challenge.mature):
+		if ( (not profile) or ((challenge.user != profile) and (not profile.mature))):
+			suppressed = True
 
     # Build context and render page
-    context = { 'profile'             : profile,
-                'challenge'           : challenge,
-                'stories'             : stories,
-                'owner'               : owner,
-                'participants'		  : participants,
-                'comments'            : comments,
-                'page_title'          : u'Challenge '+challenge.title,
-                'challenge_sidepanel' : 1,
-                'page_url'            : u'/challenges/'+unicode(challenge.id)+u'/',
-                'pages'               : bs_pager(page_num, PAGE_STORIES, num_stories),
-                'comment_text'        : comment_text,
-                'suppressed'          : suppressed,
-                'error_title'         : error_title,
-                'error_messages'      : error_messages,
-            }
+	context = { 'profile'             : profile,
+				'challenge'           : challenge,
+				'stories'             : stories,
+				'owner'               : owner,
+				'participants'		  : participants,
+				'comments'            : comments,
+				'page_title'          : u'Challenge '+challenge.title,
+				'challenge_sidepanel' : 1,
+				'page_url'            : u'/challenges/'+unicode(challenge.id)+u'/',
+				'pages'               : bs_pager(page_num, PAGE_STORIES, num_stories),
+				'comment_text'        : comment_text,
+				'suppressed'          : suppressed,
+				'error_title'         : error_title,
+				'error_messages'      : error_messages,
+			 }
 
-    return render(request, 'castle/challenge.html', context)
+	return render(request, 'castle/challenge.html', context)
 
 #-----------------------------------------------------------------------------
 @login_required
@@ -1347,6 +1469,9 @@ def challenge_winner(request, challenge_id, story_id):
     else:
         challenge.winner_id = story_id
         
+        # Get winning author
+        user = get_object_or_404(Profile, pk=story.user_id)
+        
         # Set story winner flag
         story.ch_winner = 1
         story.save()
@@ -1357,7 +1482,7 @@ def challenge_winner(request, challenge_id, story_id):
         # Log view
         log_type = StoryLog.CHALLENGE_WON
         log = StoryLog(
-            user = profile,
+            user = user,
             story = story,
             log_type = log_type,
             challenge = challenge,
