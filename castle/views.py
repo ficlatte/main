@@ -393,7 +393,7 @@ def home(request):
 
     # Get latest blog
     try:
-        blog = Blog.objects.all().order_by('-id')[0]
+        blog = Blog.objects.all().order_by('-id')[:3]
     except IndexError:
         blog = None
 
@@ -1055,11 +1055,6 @@ def prompts(request):
     if (request.user.is_authenticated()):
         profile = request.user.profile
 
-    # Get prompts
-    page_num = safe_int(request.GET.get('page_num', 1))
-    prompts = Prompt.objects.all().order_by('-ctime')[(page_num-1)*PAGE_PROMPTS:page_num*PAGE_PROMPTS]
-    num_prompts = Prompt.objects.all().count()
-
     # Get featured prompt
     featured_id = Misc.objects.filter(key='featured_prompt')
     featured = None
@@ -1076,11 +1071,10 @@ def prompts(request):
                 'active'		: get_active_prompts(1,10),
                 'recent'		: get_recent_prompts(1,10),
                 'old'			: get_old_prompts(10),
-                'page_title'    : u'Prompts page {}'.format(page_num),
+                'page_title'    : u'Prompts',
                 'prompt_button' : (profile is not None),
                 'user_dashboard': (profile is not None),
                 'page_url'      : u'/prompts/',
-                'pages'         : bs_pager(page_num, PAGE_PROMPTS, num_prompts),
             }
 
 
@@ -1314,11 +1308,6 @@ def challenges(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
-
-    # Get challenges
-    page_num = safe_int(request.GET.get('page_num', 1))
-    challenges = Challenge.objects.all().order_by('-ctime')[(page_num-1)*PAGE_CHALLENGES:page_num*PAGE_CHALLENGES]
-    num_challenges = Challenge.objects.all().count()
     
     # Get featured challenge
     featured_id = Misc.objects.filter(key='featured_challenge')
@@ -1336,11 +1325,10 @@ def challenges(request):
                 'active'			: get_active_challenges(1,10),
                 'recent'			: get_recent_challenges(1,10),
                 'recent_winners'	: get_recent_winners(1,10),
-                'page_title'        : u'Challenges page {}'.format(page_num),
+                'page_title'        : u'Challenges',
                 'challenge_button'  : (profile is not None),
                 'user_dashboard'    : (profile is not None),
                 'page_url'          : u'/challenges/',
-                'pages'             : bs_pager(page_num, PAGE_CHALLENGES, num_challenges),
               }
 
 

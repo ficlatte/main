@@ -24,14 +24,16 @@ Copyright (C) 2015 Paul Robertson
     <div class="container" id="news-content">
       <div class="well" id="news">
         <h2>Ficlatt&eacute; news <a href="/blog">(from the blog)</a></h2>
-        <div>
-          <h3 class="entry-title"><a href="/blog/{{blog_latest.id}}" rel="bookmark">{{blog_latest.title}}</a></h3>
-          <ul class="meta clear">
-            <li>{{blog_latest|num_comments_txt}}</li>
-            <li class="posted">{{blog_latest.mtime|age}}</li>
-            <li class="vcard author">{{blog_latest.user|author_span}}</li>
-          </ul>
-        </div> <!-- id="" class="" -->
+        <div class="row">
+        {% for blog in blog_latest %}
+			<div class="col-sm-3 col-md-3 blog-entry">
+				<h3 class="entry-title"><a href="/blog/{{blog.id}}" rel="bookmark">{{blog.title}}</a></h3>
+					<span class="blog-comments blog-meta">{{blog|num_comments_txt}}</span>
+					<span class="posted blog-meta">{{blog.mtime|age}}</span>
+					<span class="vcard author blog-meta">{{blog.user|author_span}}</span>
+			</div> <!-- id="" class="col-sm-4 col-md-4 blog-entry" -->
+        {% endfor %}
+        </div><!-- id="" class="row" -->
       </div> <!-- id="news" class="well" -->
     </div>
     {% endif %}
