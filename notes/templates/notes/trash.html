@@ -6,10 +6,12 @@
 
 {% block notes %}
 		
-		<div class="well well-sm">
-			<h1>Trash</h1>
-			
-			<div class="list-group">
+          <div class="panel panel-success browse">
+			<div class="panel-heading">
+				<h1 class="panel-title">Trash</h1>
+			</div>
+			<div class="panel-body">
+				<div class="list-group">
 		
 				{% if note_list %}
 					{% for note in note_list %}
@@ -21,7 +23,8 @@
 
 				<p>No notes.</p>
 				{% endif %}
-			</div> <!-- class="list-group" -->
+				</div> <!-- class="list-group" -->
+			</div>
 		</div><!-- class="well well-sm" -->
 
 {% endblock %}

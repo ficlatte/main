@@ -6,8 +6,11 @@
 
 {% block notes %}
 
-		<div class="well" id="new-note">
-            <h2>Write Note</h2>
+          <div class="panel panel-success browse">
+			<div class="panel-heading">
+				<h2 class="panel-title">Write Note</h2>
+			</div>
+			<div class="panel-body">
             <form accept-charset="utf-8" action="/notes/compose/submit/" class="form-horizontal" id="note-form" method="post" role="form">
               {% csrf_token %}
               <input name="nid" type="hidden" value="{{note.id}}" />
@@ -41,6 +44,7 @@
                 </div> <!-- id="" class="col-sm-offset-2 col-sm-10" -->
               </div> <!-- id="" class="form-group" -->
             </form>
+            </div>
           </div> <!-- id="new-note" class="well" -->
 
 {% endblock notes %}

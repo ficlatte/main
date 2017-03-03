@@ -55,10 +55,14 @@ class Profile(models.Model):
     # Email flags
     NUM_EMAIL_FLAGS = 4
     
-    AUTOSUBSCRIBE_ON_STORY         = 1  # Subscribe to story's comments when user publishes a story
-    AUTOSUBSCRIBE_ON_STORY_COMMENT = 2  # Subscribe to story's comments when user publishes comment
-    AUTOSUBSCRIBE_ON_BLOG          = 4  # Subscribe to blog's comments when user publishes a blog
-    AUTOSUBSCRIBE_ON_BLOG_COMMENT  = 8  # Subscribe to blog's comments when user publishes comment
+    AUTOSUBSCRIBE_ON_STORY         		= 1  # Subscribe to story's comments when user publishes a story
+    AUTOSUBSCRIBE_ON_STORY_COMMENT 		= 2  # Subscribe to story's comments when user publishes comment
+    AUTOSUBSCRIBE_ON_BLOG          		= 4  # Subscribe to blog's comments when user publishes a blog
+    AUTOSUBSCRIBE_ON_BLOG_COMMENT  		= 8  # Subscribe to blog's comments when user publishes comment
+    AUTOSUBSCRIBE_ON_PROMPT        		= 10  # Subscribe to prompt's comments when user publishes a blog
+    AUTOSUBSCRIBE_ON_PROMPT_COMMENT  	= 12  # Subscribe to prompt's comments when user publishes comment
+    AUTOSUBSCRIBE_ON_CHALLENGE          = 14  # Subscribe to challenge's comments when user publishes a blog
+    AUTOSUBSCRIBE_ON_CHALLENGE_COMMENT  = 16  # Subscribe to challenges's comments when user publishes comment
 
     def __unicode__(self):
         return unicode(self.pen_name)
@@ -202,6 +206,10 @@ class Comment(models.Model):
             return self.user.__unicode__() + u' comment on story "' + self.story.__unicode__() + u'" by ' + self.story.user.__unicode__() + u' with text "' + unicode(self.body)[:30] + u'"'
         if (self.blog is not None):
             return self.user.__unicode__() + u' comment on blog post "' + self.blog.__unicode__() + u'" by ' + self.blog.user.__unicode__() + u' with text "' + unicode(self.body)[:30] + u'"'
+        if (self.prompt is not None):
+            return self.user.__unicode__() + u' comment on prompt "' + self.prompt.__unicode__() + u'" by ' + self.prompt.user.__unicode__() + u' with text "' + unicode(self.body)[:30] + u'"'
+        if (self.challenge is not None):
+            return self.user.__unicode__() + u' comment on challenge "' + self.challenge.__unicode__() + u'" by ' + self.challenge.user.__unicode__() + u' with text "' + unicode(self.body)[:30] + u'"'
         return self.user.__unicode__() + u' comment on nothing at all with text "' + unicode(self.body)[:30] + u'"'
 
     def get_rating(self):
@@ -296,6 +304,8 @@ class Subscription(models.Model):
     user        = models.ForeignKey(Profile)
     story       = models.ForeignKey(Story, blank=True, null=True, related_name='subscriptions')
     blog        = models.ForeignKey(Blog,  blank=True, null=True, related_name='subscriptions')
+    prompt      = models.ForeignKey(Prompt,  blank=True, null=True, related_name='subscriptions')
+    challenge   = models.ForeignKey(Challenge,  blank=True, null=True, related_name='subscriptions')
     
     def __unicode__(self):
         r = unicode(self.user)
@@ -303,4 +313,8 @@ class Subscription(models.Model):
             r += u' subscribed to story '+unicode(self.story)
         if (self.blog is not None):
             r += u' subscribed to blog post '+unicode(self.blog)
+        if (self.prompt is not None):
+            r += u' subscribed to prompt '+unicode(self.prompt)
+        if (self.challenge is not None):
+            r += u' subscribed to challenge '+unicode(self.challenge)
         return r

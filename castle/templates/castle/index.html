@@ -48,11 +48,16 @@ Copyright (C) 2015 Paul Robertson
         {% if activity_log %}
           <div class="well well-sm">
             <h3>User&#39;s recent activity</h3>
-            <ul id="user-activity-list">
-              {% for log in activity_log %}
-              <li>{{log|activity_entry}}</li>
-              {% endfor %}
-            </ul>
+            <div class="panel panel-success">
+				<div class="panel-heading">
+					<h3 class="panel-title">Activity log</h3>
+				</div>
+				<ul id="user-activity-list">
+				{% for log in activity_log %}
+					<li>{{log|activity_entry}}</li>
+				{% endfor %}
+				</ul>
+            </div>
           </div> <!-- id="" class="well well-sm" -->
         {% endif %}
           <div class="well well-sm" id="whats-new">
@@ -111,12 +116,10 @@ Copyright (C) 2015 Paul Robertson
                     <h3 class="panel-title">Latest Challenge</h3>
                   </div> <!-- id="" class="panel-heading" -->
                   <div class="panel-body">
-                    <h3>{{challenge|challenge_link:'h5 class="list-group-item-heading"'}}</h3>
-                    <div class="row">
-                      <div class="col-md-8">
-                        <p>{{challenge.user|author_span}}</p>
-                      </div> <!-- id="" class="col-md-8" -->
-                    </div> <!-- id="" class="row" -->
+					  <div class="list-group-item"
+						<h3>{{challenge|challenge_link:'h5 class="list-group-item-heading"'}}</h3>
+                        {{challenge.user|author_span}}
+                      </div>
                   </div> <!-- id="" class="panel-body" -->
                 </div> <!-- id="" class="panel panel-success" -->
               </div> <!-- id="latest-challenge" class="col-md-4" -->
@@ -126,12 +129,10 @@ Copyright (C) 2015 Paul Robertson
                     <h3 class="panel-title">Latest Prompt</h3>
                   </div> <!-- id="" class="panel-heading" -->
                   <div class="panel-body">
-                    <h3>{{prompt|prompt_link:'h5 class="list-group-item-heading"'}}</h3>
-                    <div class="row">
-                      <div class="col-md-8">
-                        <p>{{prompt.user|author_span}}</p>
-                      </div> <!-- id="" class="col-md-8" -->
-                    </div> <!-- id="" class="row" -->
+					  <div class="list-group-item"
+						<h3>{{prompt|prompt_link:'h5 class="list-group-item-heading"'}}</h3>
+                        {{prompt.user|author_span}}
+					  </div>
                   </div> <!-- id="" class="panel-body" -->
                 </div> <!-- id="" class="panel panel-success" -->
               </div> <!-- id="latest-prompt" class="col-md-4" -->
@@ -194,6 +195,7 @@ Copyright (C) 2015 Paul Robertson
                       {% endfor %}
                   </div> <!-- id="" class="list-group" -->
                   {% endif %}
+                  <p><a class="btn btn-success" href="/stories/{{random}}" role="button">Read a random story &raquo;</a></p>
                 </div> <!-- id="" class="panel-body" -->
               </div> <!-- id="" class="panel panel-success" -->
             </div> <!-- id="old-stories" class="col-md-4" -->

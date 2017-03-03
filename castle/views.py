@@ -103,7 +103,15 @@ def get_old_stories(page_size=10):
     first = randint(0, end)
     last  = first + page_size
     return Story.objects.filter(draft = False).order_by('ptime')[first:last]
-
+    
+#-----------------------------------------------------------------------------
+def get_random_story(page_size=10):
+    total = Story.objects.filter(draft = False).count()
+    end = 0 if (total < page_size) else (total - page_size)
+    first = randint(0, end)
+    story = Story.objects.filter(draft = False).order_by('ptime')[first]
+    return story.id
+    
 #-----------------------------------------------------------------------------
 def get_tagged_stories(tag_name, page_num=1, page_size=10):
     num = Tag.objects.filter(tag=tag_name.upper()).count()
@@ -407,6 +415,7 @@ def home(request):
                 'active'        : get_active_stories(1,10),
                 'recent'        : get_recent_stories(1,10),
                 'old'           : get_old_stories(10),
+                'random'		: get_random_story(),
                 'activity_log'  : get_activity_log(profile, 10),
                 'user_dashboard': 1,
                 'suppressed'    : suppressed,
@@ -1081,7 +1090,7 @@ def prompts(request):
     return render(request, 'castle/prompts.html', context)
 
 #-----------------------------------------------------------------------------
-def prompt(request, prompt_id):
+def prompt_view(request, prompt_id):
     # Get prompt
 	prompt = get_object_or_404(Prompt, pk=prompt_id)
 
@@ -1094,6 +1103,10 @@ def prompt(request, prompt_id):
 	page_num = safe_int(request.GET.get('page_num', 1))
 	stories = prompt.story_set.exclude(draft=True).order_by('ctime')[(page_num-1)*PAGE_STORIES:page_num*PAGE_STORIES]
 	num_stories = prompt.story_set.exclude(draft=True).count()
+
+    # Get comments
+	page_num = safe_int(request.GET.get('page_num', 1))
+	comments = prompt.comment_set.all().order_by('ctime')[(page_num-1)*PAGE_COMMENTS:page_num*PAGE_COMMENTS]
 
     # Prompt's owner gets an edit link
 	owner = ((profile is not None) and (profile == prompt.user))
@@ -1113,12 +1126,19 @@ def prompt(request, prompt_id):
 	if (prompt.mature):
 		if ( (not profile) or ((prompt.user != profile) and (not profile.mature))):
 			suppressed = True
+			
+    # Is user subscribed?
+	subscribed = False
+	if ((profile) and (Subscription.objects.filter(prompt=prompt, user=profile).count()>0)):
+		subscribed = True
 
     # Build context and render page
 	context = { 'profile'       : profile,
 				'prompt'        : prompt,
 				'stories'       : stories,
+				'comments'		: comments,
 				'owner'         : owner,
+				'subscribed'	: subscribed,
 				'page_title'    : u'Prompt '+prompt.title,
 				'prompt_sidepanel' : 1,
 				'page_url'      : u'/prompts/'+unicode(prompt.id)+u'/',
@@ -1242,6 +1262,11 @@ def submit_prompt(request):
 
     # No problems, update the database and redirect
     prompt.save()
+    
+        # Auto-subscribe to e-mail notifications according to user's preferences
+    if (new_prompt):
+        if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_PROMPT):
+            Subscription.objects.get_or_create(user=profile, prompt=prompt)
 
     # Log entry
     log_type = StoryLog.PROMPT
@@ -1375,12 +1400,18 @@ def challenge_view(request, challenge_id, comment_text=None, error_title='', err
 	if (challenge.mature):
 		if ( (not profile) or ((challenge.user != profile) and (not profile.mature))):
 			suppressed = True
+			
+    # Is user subscribed?
+	subscribed = False
+	if ((profile) and (Subscription.objects.filter(challenge=challenge, user=profile).count()>0)):
+		subscribed = True
 
     # Build context and render page
 	context = { 'profile'             : profile,
 				'challenge'           : challenge,
 				'stories'             : stories,
 				'owner'               : owner,
+				'subscribed'		  : subscribed,
 				'participants'		  : participants,
 				'comments'            : comments,
 				'page_title'          : u'Challenge '+challenge.title,
@@ -1531,6 +1562,11 @@ def submit_challenge(request):
 
     # No problems, update the database and redirect
     challenge.save()
+    
+    # Auto-subscribe to e-mail notifications according to user's preferences
+    if (new_challenge):
+        if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_CHALLENGE):
+            Subscription.objects.get_or_create(user=profile, challenge=challenge)
 
     # Log entry
     log_type = StoryLog.CHALLENGE
@@ -1721,6 +1757,106 @@ def story_subscribe(request, story_id, comment_text=None, error_title='', error_
         }
 
     return render(request, 'castle/subscribed.html', context)
+    
+#-----------------------------------------------------------------------------
+@login_required
+def prompt_unsubscribe(request, prompt_id, comment_text=None, error_title='', error_messages=None):
+    prompt = get_object_or_404(Prompt, pk=prompt_id)
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    if (profile is None):
+        raise Http404
+
+    Subscription.objects.filter(user=profile, prompt=prompt).delete()
+
+    context = { 'thing'         : prompt,
+                'thing_type'    : u'prompt',
+                'thing_url'     : reverse('prompt', args=[prompt.id]),
+                'page_title'    : u'Unsubscribe prompt '+prompt.title,
+                'error_title'   : error_title,
+                'error_messages': error_messages,
+                'user_dashboard': True,
+                'profile'       : profile,
+        }
+
+    return render(request, 'castle/unsubscribed.html', context)
+
+#-----------------------------------------------------------------------------
+@login_required
+def prompt_subscribe(request, prompt_id, comment_text=None, error_title='', error_messages=None):
+    prompt = get_object_or_404(Prompt, pk=prompt_id)
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    if (profile is None):
+        raise Http404
+
+    Subscription.objects.get_or_create(user=profile, prompt=prompt)
+
+    context = { 'thing'         : prompt,
+                'thing_type'    : u'prompt',
+                'thing_url'     : reverse('prompt', args=[prompt.id]),
+                'page_title'    : u'Unsubscribe prompt '+prompt.title,
+                'error_title'   : error_title,
+                'error_messages': error_messages,
+                'user_dashboard': True,
+                'profile'       : profile,
+        }
+
+    return render(request, 'castle/subscribed.html', context)
+    
+#-----------------------------------------------------------------------------
+@login_required
+def challenge_unsubscribe(request, challenge_id, comment_text=None, error_title='', error_messages=None):
+    challenge = get_object_or_404(Challenge, pk=challenge_id)
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    if (profile is None):
+        raise Http404
+
+    Subscription.objects.filter(user=profile, challenge=challenge).delete()
+
+    context = { 'thing'         : challenge,
+                'thing_type'    : u'challenge',
+                'thing_url'     : reverse('challenge', args=[challenge.id]),
+                'page_title'    : u'Unsubscribe challenge '+challenge.title,
+                'error_title'   : error_title,
+                'error_messages': error_messages,
+                'user_dashboard': True,
+                'profile'       : profile,
+        }
+
+    return render(request, 'castle/unsubscribed.html', context)
+
+#-----------------------------------------------------------------------------
+@login_required
+def challenge_subscribe(request, challenge_id, comment_text=None, error_title='', error_messages=None):
+    challenge = get_object_or_404(Challenge, pk=challenge_id)
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    if (profile is None):
+        raise Http404
+
+    Subscription.objects.get_or_create(user=profile, challenge=challenge)
+
+    context = { 'thing'         : challenge,
+                'thing_type'    : u'challenge',
+                'thing_url'     : reverse('challenge', args=[challenge.id]),
+                'page_title'    : u'Unsubscribe challenge '+challenge.title,
+                'error_title'   : error_title,
+                'error_messages': error_messages,
+                'user_dashboard': True,
+                'profile'       : profile,
+        }
+
+    return render(request, 'castle/subscribed.html', context)
 
 #-----------------------------------------------------------------------------
 @login_required
@@ -1866,6 +2002,7 @@ def submit_comment(request):
     old_rating = None
     blog       = get_foo(request.POST, Blog,  'bid')
     story      = get_foo(request.POST, Story, 'sid')
+    prompt	   = get_foo(request.POST, Prompt, 'pid')
     challenge  = get_foo(request.POST, Challenge, 'chid')
 
     if (story):
@@ -1886,6 +2023,7 @@ def submit_comment(request):
     comment = Comment(user = profile,
                         blog = blog,
                         story = story,
+                        prompt = prompt,
                         challenge = challenge)
 
     # Populate comment object with data from submitted form
@@ -1910,6 +2048,8 @@ def submit_comment(request):
             return blog_view(request, blog.id, comment.body, 'Comment submission unsuccessful', errors)
         elif (story):
             return story_view(request, story.id, comment.body, rating, u'Comment submission failed', errors)
+        elif (prompt):
+            return prompt_view(request, prompt.id, comment.body, u'Comment submission failed', errors)
         else:
             return challenge_view(request, challenge.id, comment.body, u'Comment submission failed', errors)
 
@@ -1952,6 +2092,16 @@ def submit_comment(request):
                 log_type = StoryLog.RATE
                 )
             log.save()
+    elif (prompt):
+        # If comment body is longer than 0, log that comment has been made
+        if (l > 0):
+            log = StoryLog(
+                user = profile,
+                prompt = prompt,
+                comment = comment,
+                log_type = StoryLog.COMMENT
+                )
+            log.save()
     elif (challenge):
         # If comment body is longer than 0, log that comment has been made
         if (l > 0):
@@ -1974,12 +2124,20 @@ def submit_comment(request):
         elif (story):
             if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_STORY_COMMENT):
                 Subscription.objects.get_or_create(user=profile, story=story)
+        elif (prompt):
+            if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_PROMPT_COMMENT):
+                Subscription.objects.get_or_create(user=profile, prompt=prompt)
+        elif (challenge):
+            if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_CHALLENGE_COMMENT):
+                Subscription.objects.get_or_create(user=profile, challenge=challenge)
 
     if (blog):
         return HttpResponseRedirect(reverse('blog', args=(blog.id,)))
     elif (story):
         return HttpResponseRedirect(reverse('story', args=(story.id,)))
-    else:
+    elif (prompt):
+        return HttpResponseRedirect(reverse('prompt', args=(prompt.id,)))
+    elif (challenge):
         return HttpResponseRedirect(reverse('challenge', args=(challenge.id,)))
 
 #-----------------------------------------------------------------------------

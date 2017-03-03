@@ -171,6 +171,10 @@ p#average-rating span#enabled {
 	box-shadow: 5px 5px 4px #888;
 }
 
+.well-sm {
+	padding: 5px 20px 20px 20px;
+}
+
 .panel-success {
 	border-color: #faebcc;
 	box-shadow: 5px 5px 4px #888;
@@ -179,6 +183,10 @@ p#average-rating span#enabled {
 .panel-success > .panel-heading {
 	background-color: #fcf8e3;
 	border-color: #faebcc;
+}
+
+ul#user-activity-list {
+	margin-top: 10px;
 }
 
 #latest-challenge .panel-body h3, #latest-prompt .panel-body h3 {
@@ -242,6 +250,10 @@ div.mature-content {
 	font-size: 12px;
 }
 
+.tag-cloud {
+	padding: 0 15px 15px 15px;
+}
+
 /* Story list display */
 
 .browse a {
@@ -286,7 +298,23 @@ div.mature-content {
 	color: #5aaa38;
 }
 
+.btn-danger {
+	margin-bottom: 10px;
+}
+
+li#ptime, li#mtime {
+	font-style: italic;
+}
+
+.dtposted {
+	color: #5aaa38;
+}
+
 /* Author display */
+
+h1.author {
+	margin-top: 0;
+}
 
 .social-media-icon {
 	margin: 5px 0 0 5px;
@@ -310,14 +338,56 @@ span.byline {
 	padding-right: 5px;
 }
 
+/* Prompt display */
+
+.prompt-story-list {
+	margin-bottom: 20px;
+}
+
+.prompt-story-list h4 {
+	margin-bottom: 0;
+}
+
+.prompt-story-list .author .byline, .prompt-winner .byline {
+	font-size: 12px;
+	font-style: italic;
+}
+
+ul.prompt-comments {
+	margin: 0 15px 5px 0;
+	padding-bottom: 0;
+	padding-left: 0;
+}
+
+li.prompt-comment {
+	margin-bottom: 5px;
+}
+
+li.prompt-comment:nth-child(even) {
+	margin-bottom: 15px;
+	padding: 5px 10px 10px 10px;
+	border-radius: 4px;
+	background: #d4b78d;
+	box-shadow: 5px 5px 4px #888888;
+}
+
+li.prompt-comment:nth-child(odd) {
+	margin-bottom: 15px;
+	padding: 5px 10px 10px 10px;
+	border-radius: 4px;
+	background: #e2d6c6;
+	box-shadow: 5px 5px 4px #888888;
+}
+
+li.prompt-comment ul li.posted {
+	font-size: 12px;
+}
+
 /* Challenge display */
 
 .challenge-content {	
 	margin: 0 5px;
 	padding: 20px 0;
-	background-color: #e2d6c6;
-	border-radius: 4px;
-	box-shadow: 5px 5px 4px #888888;
 }
 
 .deadline-header {
@@ -353,6 +423,19 @@ li#startdate, li#enddate {
 span.ch_after, span.ch_after:hover {
 	background-color: #ccc;
 	border-color: #aaa;
+}
+
+.challenge-story-list {
+	margin-bottom: 20px;
+}
+
+.challenge-story-list h4 {
+	margin-bottom: 0;
+}
+
+.challenge-story-list .author .byline, .challenge-winner .byline {
+	font-size: 12px;
+	font-style: italic;
 }
 
 button#winner-select {
@@ -468,12 +551,7 @@ li.notes-nav {
 /* Blog */
 
 .blog-post {
-	margin-bottom: 25px;
 	padding: 10px;
-	background-color: #fcf8e3;
-	border: none;
-	border-radius: 4px;
-	box-shadow: 5px 5px 4px #888;
 }
 
 .blog-post-meta {

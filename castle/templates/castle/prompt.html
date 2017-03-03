@@ -44,37 +44,54 @@ Copyright (C) 2015 Paul Robertson
           </div>
           <hr />
           <div id="story-summary">
+			  <div class="col-sm-6 col-md-6">
 {% block paged_content %}
             <h3>Inspired stories</h3>
             <div class="story_list_div">
 			{% if not stories %}
 				<p>No one has used this prompt yet. Be the first!</p>
 			{% else %}
-              <ul class="story_list">
+              <div class="story_list">
                 {% for s in stories %}
-                <li class="story_list_item">
+                <div class="story_list_item prompt-story-list">
 					<h4 class="entry_title">{{s|story_link}}</h4>
-					<blockquote class="entry_content small">
-						{% if s.mature %}
-							{% if not profile.mature and s.user != profile %}
-								<p>Story is marked as mature</p>
-							{% else %}
-								{{s.body|small_snippet}}
-							{% endif %}
-						{% else %}
-							{{s.body|small_snippet}}
-						{% endif %}
-					</blockquote>
-					<ul class="story_foot">
-						<li class="author">{{s.user|author_span}}</li>
-						<li class="posted">Posted <abbr class="published" title="{{s.ptime|date:'Y-m-d'}}">{{s.ptime|age}}</abbr></li>
-					</ul>
-				</li>
+					<div class="author">{{s.user|author_span}}</div>
+				</div>
                 {% endfor %}
-              </ul>
+              </div>
             {% endif %}
-            </div> <!-- id="" class="story_list_div" -->
+            </div> 
+           </div> <!-- id="" class="story_list_div" -->
 {% endblock paged_content %}
+		<div class="col-sm-6 col-md-6">
+				<h3>Discussion</h3>
+				<ul class="prompt-comments">
+					{% for comment in comments %}
+					<li class="prompt-comment">
+						{{comment.user|author_link:'h4'}}
+						{{comment.body|encode_story}}
+						<ul class="list-inline">
+							<li class="posted">Posted <abbr class="dtposted" title="{{comment.ctime|date:'Y-m-d'}}">{{comment.ctime|age}}</abbr></li>
+						</ul>
+					</li>
+					{% endfor %}
+				</ul>
+				{% if profile %}
+				<div id="comment-box">
+					<form action="/comment/submit/" id="comment-form" method="post" role="form">
+					{% csrf_token %}
+						<input id="comment_sid" name="pid" type="hidden" value="{{prompt.id}}" />
+						<div class="form-group">
+							<label class="control-label" for="comment_body">Leave a comment</label>
+							<textarea class="form-control" id="comment_body" maxlength="1024" name="body" rows="7"></textarea>
+						</div> <!-- id="" class="form-group" -->
+						<div class="form-group">
+							<input alt="Submit comment" type="submit" value="Submit" />
+						</div> <!-- id="" class="form-group" -->
+					</form>
+				</div> <!-- id="comment-box" class="" -->
+				{% endif %}
+			</div>
           </div> <!-- id="story-summary" class="" -->
 {% block pager %}{{block.super}}{%endblock%}
 {% endblock primary_panel %}

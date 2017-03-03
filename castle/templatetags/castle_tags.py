@@ -323,6 +323,8 @@ def activity_entry(log):
     elif (log.log_type == StoryLog.COMMENT):
 		if (log.story):
 			return mark_safe(author_link(log.user)+u' wrote a comment on '+story_link(log.story))
+		if (log.prompt):
+			return mark_safe(author_link(log.user)+u' wrote a comment on '+prompt_link(log.prompt))
 		else:
 			return mark_safe(author_link(log.user)+u' wrote a comment on '+challenge_link(log.challenge))
         
@@ -385,6 +387,8 @@ def dashboard_entry(log):
     elif (log.log_type == StoryLog.COMMENT):
 		if (log.story):
 			return mark_safe(author_link(log.user)+u' wrote a comment on '+story_link(log.story)+u' by '+author_link(log.story.user))
+		if (log.prompt):
+			return mark_safe(author_link(log.user)+u' wrote a comment on '+prompt_link(log.prompt))
 		else:
 			return mark_safe(author_link(log.user)+u' wrote a comment on '+challenge_link(log.challenge)+u' by '+author_link(log.challenge.user))
         

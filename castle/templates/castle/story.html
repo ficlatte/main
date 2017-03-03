@@ -20,7 +20,7 @@ Copyright (C) 2015 Paul Robertson
 {% load castle_tags %}
 
 {% block primary_panel %}
-          {% if story.draft %}[DRAFT] {% endif %}{{story|story_link:'h1'}}
+          {{story|story_link:'h1'}}
           <div class="row">
             <div class="col-sm-2 col-md-2">
               {{author|avatar}}
@@ -41,6 +41,7 @@ Copyright (C) 2015 Paul Robertson
 				{{story.body|encode_story}}
 			{% endif %}
           </div>
+          <hr />
           <div class="row" id="prequel-and-sequel">
             <div class="col-md-6" id="prequel-group">
               <div class="panel panel-success">

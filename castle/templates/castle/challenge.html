@@ -22,8 +22,11 @@ Copyright (C) 2015 Paul Robertson
 {% block primary_panel %}
 
           {{challenge|challenge_link:'h1'}}
-          <div class="row challenge-content">
-			<div class="content-body">
+          <div class="panel panel-success">
+			<div class="panel-heading">
+				<h4 class="panel-title">Challenge</h4>
+			</div>
+			<div class="panel-body">
 				<div class="col-sm-7 col-md-7 challenge-story-content">
 					<h3 class="deadline-header">Challenge Deadline: <span class="deadline-date">{{challenge.etime|date:"j M Y"}}</span></h3>
 					{% if suppressed %}
@@ -76,14 +79,14 @@ Copyright (C) 2015 Paul Robertson
 			{% if not stories %}
 				<p>Looks like no one's entered the challenge yet! Accept the challenge and be the first!</p>
 			{% else %}
-              <ul class="story_list">
+              <div class="story_list">
                 {% for s in stories %}
-                <li class="story_list_item">
+                <div class="story_list_item challenge-story-list">
 					<h4 class="entry_title">{{s|story_link}}</h4>
 					<div class="author">{{s.user|author_span}}</div>
-				</li>
+				</div>
                 {% endfor %}
-              </ul>
+              </div>
               {% endif %}
             </div> <!-- id="" class="story_list_div" -->
 {% endblock paged_content %}

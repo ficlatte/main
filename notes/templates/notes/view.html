@@ -5,40 +5,51 @@
 {% load note_tags %}
 
 {% block notes %}
-	<h3>View Note</h3>
+	      <div class="panel panel-success browse">
+			<div class="panel-heading">
+				<h1 class="panel-title">View Note</h1>
+			</div>
+			<div class="panel-body">
+				<div class="list-group">
 	
-	<div class="row">
-		<div class="col-sm-10 col-md-10">
-			To: {{ note.recipient|author_link }}
-		</div> <!-- id="" class="col-sm-2 col-md-2" -->
-		<div class="col-sm-10 col-md-10">
-			From: {{ note.sender|author_link }}
-		</div> <!-- id="" class="col-sm-2 col-md-2" -->
-		<div class="col-sm-10 col-md-10">
-			Subject: {{ note.subject }}
-		</div> <!-- id="" class="col-sm-2 col-md-2" -->
-		<div class="col-sm-10 col-md-10">
-			Sent: {{ note.sent_date|age}}
-		</div> <!-- id="" class="col-sm-10 col-md-10" -->
-	</div> <!-- id="" class="row" -->
+					<div class="row">
+						<div class="col-sm-3 col-md-3">
+							To: {{ note.recipient|author_link }}
+						</div> <!-- id="" class="col-sm-2 col-md-2" -->
+						<div class="col-sm-3 col-md-3">
+							From: {{ note.sender|author_link }}
+						</div> <!-- id="" class="col-sm-2 col-md-2" -->
+						<div class="col-sm-3 col-md-3">
+							Sent: {{ note.sent_date|age}}
+						</div> <!-- id="" class="col-sm-10 col-md-10" -->
+						<div class="col-sm-10 col-md-10">
+							Subject: {{ note.subject }}
+						</div> <!-- id="" class="col-sm-2 col-md-2" -->
+					</div> <!-- id="" class="row" -->
 	
-	<div class="notes-actions">
-	{% ifequal note.recipient profile %}
-		<span class="notes-reply"><span class=" glyphicon glyphicon-edit"></span> <a href="{% url 'notes_reply' note.id %}">Reply</a></span>
-		<span class="notes-forward"><span class=" glyphicon glyphicon-share"></span> <a href="{% url 'notes_forward' note.id %}">Forward</a></span>
-	{% endifequal %}
-	{% if profile and note.recipient_deleted_date %}
-		<span class="notes-delete"><span class=" glyphicon glyphicon-share"></span> <a href="{% url 'notes_undelete' note.id %}">Undelete</a></span>
-	{% elif profile and note.sender_deleted_date %}
-		<span class="notes-delete"><span class=" glyphicon glyphicon-share"></span> <a href="{% url 'notes_undelete' note.id %}">Undelete</a></span>
-	{% else %}
-		<span class="notes-delete"><span class=" glyphicon glyphicon-erase"></span> <a href="{% url 'notes_delete' note.id %}">Delete</a></span>
-	{% endif %}
-	</div> <!-- class="notes-actions" -->
+			<hr />
 	
-	<hr />
-	<div class="content-body">
-		{{note.body|encode_story}}
-	</div>
+					<div class="notes-actions">
+					{% ifequal note.recipient profile %}
+						<span class="notes-reply"><span class=" glyphicon glyphicon-edit"></span> <a href="{% url 'notes_reply' note.id %}">Reply</a></span>
+						<span class="notes-forward"><span class=" glyphicon glyphicon-share"></span> <a href="{% url 'notes_forward' note.id %}">Forward</a></span>
+					{% endifequal %}
+					{% if profile and note.recipient_deleted_date %}
+						<span class="notes-delete"><span class=" glyphicon glyphicon-share"></span> <a href="{% url 'notes_undelete' note.id %}">Undelete</a></span>
+					{% elif profile and note.sender_deleted_date %}
+						<span class="notes-delete"><span class=" glyphicon glyphicon-share"></span> <a href="{% url 'notes_undelete' note.id %}">Undelete</a></span>
+					{% else %}
+						<span class="notes-delete"><span class=" glyphicon glyphicon-erase"></span> <a href="{% url 'notes_delete' note.id %}">Delete</a></span>
+					{% endif %}
+					</div> <!-- class="notes-actions" -->
+		
+			<hr />
+	
+					<div class="col-sm-10 col-md-10 content-body">
+						{{note.body|encode_story}}
+					</div> <!-- class="content-body -->
+				</div> <!-- class="list-group" -->
+			</div> <!-- class="panel-body" -->
+		</div> <!-- class="panel panel-success browse" -->
 
 {% endblock notes %}
