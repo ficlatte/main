@@ -2047,16 +2047,19 @@ def submit_profile(request):
         new_registration = True
 
     # Get data from form
-    pen_name        = request.POST.get('pen_name', '')
-    password        = request.POST.get('password', '')
-    new_password    = request.POST.get('new_password', '')
-    password_again  = request.POST.get('password', '')
-    site_url        = request.POST.get('site_url', '')
-    site_name       = request.POST.get('site_name', '')
-    biography       = request.POST.get('biography', '')
-    mature          = request.POST.get('mature', '')
-    email_addr      = request.POST.get('email_addr', '')
-    rules           = request.POST.get('rules', False)
+    pen_name        	= request.POST.get('pen_name', '')
+    password        	= request.POST.get('password', '')
+    new_password    	= request.POST.get('new_password', '')
+    password_again  	= request.POST.get('password', '')
+    site_url        	= request.POST.get('site_url', '')
+    site_name       	= request.POST.get('site_name', '')
+    facebook_username	= request.POST.get('facebook_username', '')
+    twitter_username	= request.POST.get('twitter_username', '')
+    wattpad_username	= request.POST.get('wattpad_username', '')
+    biography       	= request.POST.get('biography', '')
+    mature          	= request.POST.get('mature', '')
+    email_addr      	= request.POST.get('email_addr', '')
+    rules           	= request.POST.get('rules', False)
 
     # Update and verify profile object
     errors     = []
@@ -2084,10 +2087,31 @@ def submit_profile(request):
         if (not request.user.check_password(password)):
             errors.append(u'Old password incorrect')
 
-    if (site_url):
+    if (site_url == ''):
+        profile.site_url = None
+    else:
         profile.site_url = site_url
-    if (site_name):
+    
+    if (site_name == ''):
+        profile.site_name = None
+    else:    
         profile.site_name = site_name
+        
+    if (facebook_username == ''):
+        profile.facebook_username = None
+    else:
+        profile.facebook_username = facebook_username
+        
+    if (twitter_username == ''):
+        profile.twitter_username = None
+    else:
+        profile.twitter_username = twitter_username
+        
+    if (wattpad_username == ''):
+        profile.wattpad_username = None
+    else:
+        profile.wattpad_username = wattpad_username
+    
     if (new_registration or biography):
         # Condense all end-of-line markers into \n
         profile.biography = re_crlf.sub(u"\n", biography)

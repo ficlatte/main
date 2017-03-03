@@ -25,26 +25,29 @@ from datetime import datetime, date
 
 # Extra user data
 class Profile(models.Model):
-    user        = models.OneToOneField(User)
-    friends     = models.ManyToManyField('self', symmetrical=False, related_name='followers', blank=True)
-    pen_name    = models.CharField(max_length=64)
-    pen_name_uc = models.CharField(max_length=64, unique=True)
-    site_url    = models.URLField(max_length=254, blank=True, null=True)
-    site_name   = models.CharField(max_length=1024, blank=True, null=True)
-    biography   = models.CharField(max_length=1024)
-    mature      = models.BooleanField(default=False)
-    email_addr  = models.EmailField(max_length=254)
-    email_flags = models.IntegerField(default=0)
-    email_auth  = models.BigIntegerField(default=0)
-    email_time  = models.DateTimeField(blank=True, null=True)
-    old_auth    = models.CharField(max_length=64, blank=True, null=True)     # DEPRECATED pass sha256 val
-    old_salt    = models.CharField(max_length=16, blank=True, null=True)     # DEPRECATED pass salt
-    prefs       = models.IntegerField(default=0)
-    flags       = models.IntegerField(default=0)
-    stored      = models.ForeignKey('Story', blank=True, null=True)            # User can make a note of a story for later use
-    ctime       = models.DateTimeField(default=timezone.now)    # Creation time
-    mtime       = models.DateTimeField(default=timezone.now)    # Modification time
-    atime       = models.DateTimeField(default=timezone.now)    # Can't remember what this was supposed to be for
+    user       			= models.OneToOneField(User)
+    friends     		= models.ManyToManyField('self', symmetrical=False, related_name='followers', blank=True)
+    pen_name    		= models.CharField(max_length=64)
+    pen_name_uc 		= models.CharField(max_length=64, unique=True)
+    site_url    		= models.URLField(max_length=254, blank=True, null=True)
+    site_name   		= models.CharField(max_length=1024, blank=True, null=True)
+    facebook_username	= models.CharField(max_length=64, blank=True, null=True)
+    twitter_username	= models.CharField(max_length=64, blank=True, null=True)
+    wattpad_username	= models.CharField(max_length=64, blank=True, null=True)
+    biography   		= models.CharField(max_length=1024)
+    mature      		= models.BooleanField(default=False)
+    email_addr  		= models.EmailField(max_length=254)
+    email_flags 		= models.IntegerField(default=0)
+    email_auth  		= models.BigIntegerField(default=0)
+    email_time  		= models.DateTimeField(blank=True, null=True)
+    old_auth    		= models.CharField(max_length=64, blank=True, null=True)     # DEPRECATED pass sha256 val
+    old_salt    		= models.CharField(max_length=16, blank=True, null=True)     # DEPRECATED pass salt
+    prefs       		= models.IntegerField(default=0)
+    flags       		= models.IntegerField(default=0)
+    stored      		= models.ForeignKey('Story', blank=True, null=True)            # User can make a note of a story for later use
+    ctime       		= models.DateTimeField(default=timezone.now)    # Creation time
+    mtime       		= models.DateTimeField(default=timezone.now)    # Modification time
+    atime       		= models.DateTimeField(default=timezone.now)    # Can't remember what this was supposed to be for
 
     # Flags
     HAS_AVATAR = 1

@@ -20,40 +20,40 @@ Copyright (C) 2015 Paul Robertson
 {% load castle_tags %}
 
 {% block primary_panel %}
-          <div id="challenge-summary">
-            <h3>{{label}}</h3>
+		<div class="panel panel-success browse">
+          <div class="panel-heading challenge-summary">
+            <h3 class="panel-title">{{label}}</h3>
+          </div>
 {% block paged_content %}
-            <div class="story_list_div">
-              <ul class="story_list">
+            <div class="panel-body">
+              <ul class="list-group">
                 {% for c in challenges %}
-                <li class="story_list_item">
+                <li class="list-group-item">
 					<h3 class="entry_title">{{c|challenge_link}}</h3>
-					<ul class="story_meta">
-						<li id="startdate">Challenge start date: {{c.stime|date:"jS F Y"}}</li>
-						<li id="enddate">Challenge end date: {{c.etime|date:"jS F Y"}}</li>
-						<blockquote class="entry_content">
+						<span class="startdate">Challenge start date: <span class="cdate">{{c.stime|date:"jS F Y"}}</span></span>
+						<span class="enddate">Challenge end date: <span class="cdate">{{c.etime|date:"jS F Y"}}</span></span>
+						<div class="entry_content browse-content">
 							{% if c.mature %}
 								{% if not profile.mature and c.user != profile %}
 									<p>Challenge is marked as mature</p>
 								{% else %}
-									{{c.body|small_snippet}}
+									{{c.body|big_snippet}}
 								{% endif %}
 							{% else %}
-								{{c.body|small_snippet}}
+								{{c.body|big_snippet}}
 							{% endif %}
-						</blockquote>
-						<ul class="story_foot">
-							<li class="author">{{c.user|author_span}}</li>
-							<li class="posted">Posted <abbr class="published" title="{{c.ctime|date:'Y-m-d'}}">{{c.ctime|age}}</abbr></li>
-							<li class="count">{{c|num_stories_txt}}</li>
-						</ul><!-- id="" class="story_foot" -->
-					</ul><!-- id="" class="story_meta" -->
+						</div>
+						<div class="story-foot">
+							<span class="author">{{c.user|author_span}}</span>
+							<span class="posted">Posted <abbr class="dtposted" title="{{c.ctime|date:'Y-m-d'}}">{{c.ctime|age}}</abbr></span>
+							<span class="count">{{c|num_stories_txt}}</span>
+						</div><!-- id="" class="story_foot" -->
 				</li>
                 {% endfor %}
               </ul>
-            </div> <!-- id="" class="story_list_div" -->
+            </div> <!-- id="" class="panel-body" -->
 {% endblock paged_content %}
 {% block pager %}{{block.super}}{%endblock%}
-          </div> <!-- id="story-summary" class="" -->
+          </div> <!-- id="" class="panel panel-success browse" -->
 {% endblock primary_panel %}
 

@@ -20,35 +20,38 @@ Copyright (C) 2015 Paul Robertson
 {% load castle_tags %}
 
 {% block primary_panel %}
-          <div id="story-summary">
-            <h3>{{label}}</h3>
+          <div class="panel panel-success browse">
+			<div class="panel-heading story-summary">
+				<h3 class="panel-title">{{label}}</h3>
+			</div>
 {% block paged_content %}
-            <div class="story_list_div">
-              <ul class="story_list">
+            <div class="panel-body">
+              <ul class="list-group">
               {% for story in stories %}
-                <li class="story_list_item">
+                <li class="list-group-item">
 					<h3 class="entry_title">{{story|story_link}}</h3>
-					<blockquote class="entry_content">
+					<div class="entry_content browse-content">
 						{% if story.mature %}
 							{% if not profile.mature and story.user != profile %}
 								<p>Story is marked as mature</p>
 							{% else %}
-								{{story.body|small_snippet}}
+								{{story.body|big_snippet}}
 							{% endif %}
 						{% else %}
-								{{story.body|small_snippet}}
+								{{story.body|big_snippet}}
 						{% endif %}
-					</blockquote>
-					<ul class="story_foot">
-						<li class="author">{{story.user|author_span}}</li>
-						<li class="posted">Posted <abbr class="dtposted" title="{{story.ptime|date:'Y-m-d'}}">{{story.ptime|age}}</abbr></li>
-					</ul>
+					</div>
+					<div class="story-foot">
+						<span class="author">{{story.user|author_span}}</span>
+						<span class="posted">Posted <abbr class="dtposted" title="{{story.ptime|date:'Y-m-d'}}">{{story.ptime|age}}</abbr></span>
+
+					</div>
 				</li>
               {% endfor %}
-              </ul>
-            </div> <!-- id="" class="story_list_div" -->
+              </ul> <!-- class="list-group" -->
+            </div> <!-- id="" class="panel-body" -->
 {% endblock paged_content %}
 {% block pager %}{{block.super}}{%endblock%}
-          </div> <!-- id="story-summary" class="" -->
+		</div> <!-- id="" class="panel panel-success story-summary" -->
 {% endblock primary_panel %}
 

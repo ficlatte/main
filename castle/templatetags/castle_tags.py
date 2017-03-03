@@ -183,6 +183,27 @@ def author_link(profile, tag=None):
     
     # FIXME: Need proper URL magic here
     return mark_safe(t1+u'<a href="/authors/'+urlquote(profile.pen_name)+u'">'+ escape(profile.pen_name)+u'</a>'+t2)
+    
+#-----------------------------------------------------------------------------
+@register.filter
+def author_social_media(profile):
+	if (profile is None):
+		return u''
+	s = ''
+	f = ''
+	t = ''
+	w = ''
+	
+	if (profile.site_url is not None):
+		s = u'<a href="'+profile.site_url+u'" alt="'+profile.site_name+u'" target="_blank"><img src="/static/img/social-media/earth.png" class="social-media-icon"></a>'
+	if (profile.facebook_username is not None):
+		f = u'<a href="http://facebook.com/'+profile.facebook_username+u'" target="_blank"><img src="/static/img/social-media/facebook.png" class="social-media-icon"></a>'
+	if (profile.twitter_username is not None):
+		t = u'<a href="http://twitter.com/'+profile.twitter_username+u'" target="_blank"><img src="/static/img/social-media/twitter.png" class="social-media-icon"></a>'
+	if (profile.wattpad_username is not None):
+		w = u'<a href="http://wattpad.com/user/'+profile.wattpad_username+u'" target="_blank"><img src="/static/img/social-media/wattpad.png" class="social-media-icon"></a>'
+		
+	return mark_safe(f + t + w + s)
 
 #-----------------------------------------------------------------------------
 @register.filter

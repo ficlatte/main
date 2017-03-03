@@ -137,25 +137,28 @@ p#average-rating span#enabled {
 }
 
 .blog-entry {
-	margin: 0 45px;
+	margin: 0 43px;
 	padding-bottom: 10px;
 	float: left;
-	background: #fcf8e3;
+	border: 1px solid #ddd;
 	border-radius: 4px;
-	box-shadow: 5px 5px 4px #888;
 }
 
 .blog-entry h3 {
 	margin-top: 10px;
 }
 
+.blog-link .glyphicon {
+	font-size: 14px; 
+	margin-left: 5px;
+}
+
 .blog-meta {
 	font-size: 11px;
-	margin-right: 10px;
 }
 
 #news {
-	padding: 5px 20px 35px 20px;
+	padding: 5px 20px 20px 20px;
 }
 
 #whats-new {
@@ -241,27 +244,54 @@ div.mature-content {
 
 /* Story list display */
 
-ul.story_list {
-	padding-left: 0;
+.browse a {
+	color: #75b2f1;
 }
 
-li.story_list_item:nth-child(even) {
-	padding: 10px;
-	margin: 10px 10px 15px 10px;
-	border-radius: 4px;
-	background: #d4b78d;
-	box-shadow: 5px 5px 4px #888;
+.browse .startdate, .browse .enddate {
+	margin-right: 40px;
+	font-size: 14px;
+	font-style: italic;
 }
 
-li.story_list_item:nth-child(odd) {
-	padding: 10px;
-	margin: 10px 10px 15px 10px;
-	border-radius: 4px;
-	background: #e2d6c6;
-	box-shadow: 5px 5px 4px #888;
+.browse .startdate .cdate, .browse .enddate .cdate {
+	color: #5aaa38;
+}
+
+.browse-content {
+	color: #888;
+}
+
+.story-foot {
+	font-size: 12px;
+}
+
+.story-foot .author, .story-foot .posted {
+	margin-right: 20px;
+}
+
+.story-foot .author .byline {
+	color: #5aaa38;
+}
+
+.story-foot .author .byline > a {
+	color: #000;
+}
+
+.story-foot .posted {
+	font-style: italic;
+}
+
+.story-foot .dtposted {
+	color: #5aaa38;
 }
 
 /* Author display */
+
+.social-media-icon {
+	margin: 5px 0 0 5px;
+	height: 20px;
+}
 
 div.col-md-4 span.byline {
 	font-size: 12px;

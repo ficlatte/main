@@ -44,11 +44,23 @@ Copyright (C) 2015 Paul Robertson
             </div> <!-- id="" class="form-group" -->
             <div class="form-group">
               <label for="site_url">Site URL</label>
-              <input class="form-control" id="site_url" name="site_url" placeholder="Site URL" type="text" value="{{ profile.site_url }}" />
+              <input class="form-control" id="site_url" name="site_url" placeholder="Site URL" type="text" {% if profile.site_url %}value="{{ profile.site_url }}"{% endif %}/>
             </div> <!-- id="" class="form-group" -->
             <div class="form-group">
               <label for="site_name">Site name</label>
-              <input class="form-control" id="site_name" name="site_name" placeholder="Site name" type="text" value="{{ profile.site_name }}" />
+              <input class="form-control" id="site_name" name="site_name" placeholder="Site name" type="text" {% if profile.site_name %}value="{{ profile.site_name }}"{% endif %} />
+            </div> <!-- id="" class="form-group" -->
+            <div class="form-group">
+              <label for="facebook_username">Facebook username</label>
+              <input class="form-control" id="facebook_username" name="facebook_username" placeholder="Facebook username" type="text" {% if profile.faceboook_username %}value="{{ profile.facebook_username }}"{% endif %} />
+            </div> <!-- id="" class="form-group" -->
+            <div class="form-group">
+              <label for="twitter_username">Twitter username</label>
+              <input class="form-control" id="twitter_username" name="twitter_username" placeholder="Twitter username" type="text" {% if profile.twitter_username %}value="{{ profile.twitter_username }}"{% endif %} />
+            </div> <!-- id="" class="form-group" -->
+            <div class="form-group">
+              <label for="wattpad_username">Wattpad username</label>
+              <input class="form-control" id="wattpad_username" name="wattpad_username" placeholder="Wattpad username" type="text" {% if profile.wattpad_username %}value="{{ profile.wattpad_username }}"{% endif %} />
             </div> <!-- id="" class="form-group" -->
             <div class="form-group">
               <label for="biography">Bio</label>
