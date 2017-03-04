@@ -236,10 +236,12 @@ Copyright (C) 2015 Paul Robertson
     {% endif %}
     {% if story.challenge and story == story.challenge.winner %}
 		  <hr />
-		  <h4>Challenge winner! <span class="glyphicon glyphicon-flag" style="color:red"></span></h4>
+		  <div class="challenge-winner">
+		  <h4>Challenge winner!</h4>
 		  <ul class="challenge-story-winner">
 				<li>Challenge: {{story.challenge|challenge_link}}
 		  </ul>
+		  </div>
     {% endif %}
           <hr />
           <p class="small" id="licence">All stories on Ficlatt&eacute; are licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license">Creative Commons Attribution-Share Alike 3.0 License</a>. <a href="http://wiki.creativecommons.org/Sharing_Creative_Works">What does this mean?</a></p>

@@ -25,8 +25,11 @@ Copyright (C) 2015 Paul Robertson
 
     
 {% block primary_panel %}
-          <div class="well" id="new-prompt">
-            <h2>Let&#39;s prompt</h2>
+          <div class="panel panel-success" id="new-prompt">
+			<div class="panel-heading"
+            <h2 class="panel-title">Let&#39;s prompt</h2>
+            </div>
+            <div class="panel-body">
             <form accept-charset="utf-8" action="/prompts/submit/" class="form-horizontal" id="prompt-form" method="post" role="form">
               {% csrf_token %}
               <input name="prid" type="hidden" value="{{prompt.id}}" />
@@ -64,5 +67,6 @@ Copyright (C) 2015 Paul Robertson
                 </div> <!-- id="" class="col-sm-offset-2 col-sm-10" -->
               </div> <!-- id="" class="form-group" -->
             </form>
+            </div>
           </div> <!-- id="new-prompt" class="well" -->
 {% endblock primary_panel %}

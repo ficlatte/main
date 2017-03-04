@@ -254,6 +254,40 @@ div.mature-content {
 	padding: 0 15px 15px 15px;
 }
 
+.challenge-winner {
+	background: transparent url("../img/badge-50.png") no-repeat;
+	min-height: 50px;
+}
+
+.challenge-winner h2, .challenge-winner h4, .challenge-winner .challenge-story-winner, .challenge-winner .byline {
+	margin-bottom: 0;
+	margin-left: 55px;
+}
+
+h1 img {
+	height: 35px;
+	vertical-align: top;
+}
+
+h3 img {
+	height: 25px;
+	vertical-align: top;
+}
+
+h4 img {
+	height: 20px;
+	vertical-align: top;
+}
+
+.challenge-winner h4 img {
+	display: none;
+}
+
+h5 img {
+	height: 15px;
+	vertical-align: top;
+}
+
 /* Story list display */
 
 .browse a {
@@ -325,8 +359,12 @@ div.col-md-4 span.byline {
 	font-size: 12px;
 }
 
-span.byline {
-	font-style: normal;
+.byline {
+	font-style: italic;
+}
+
+.byline a {
+	color: #5aaa38;
 }
 
 /* Resend Confirmation Email */
