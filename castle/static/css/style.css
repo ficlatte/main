@@ -4,6 +4,10 @@ body {
 	font-size: 16px;
 }
 
+h4 {
+	font-size: 16px;
+}
+
 ul {
     list-style-type: none;
 }
@@ -274,8 +278,13 @@ h3 img {
 	vertical-align: top;
 }
 
-h4 img {
+#user-activity-list a.story-link img, #user-wins img {
 	height: 20px;
+	vertical-align: top;
+}
+
+h4 img {
+	height: 15px;
 	vertical-align: top;
 }
 
@@ -355,8 +364,12 @@ h1.author {
 	height: 20px;
 }
 
+p#user-desc, p#user-stats, p#user-wins {
+	margin-bottom: 3px;
+}
+
 div.col-md-4 span.byline {
-	font-size: 12px;
+	font-size: 14px;
 }
 
 .byline {
@@ -472,7 +485,7 @@ span.ch_after, span.ch_after:hover {
 }
 
 .challenge-story-list .author .byline, .challenge-winner .byline {
-	font-size: 12px;
+	font-size: 14px;
 	font-style: italic;
 }
 

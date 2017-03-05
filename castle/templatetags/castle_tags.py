@@ -24,7 +24,7 @@ from django.utils.html import escape
 from django.utils.http import urlquote
 from django.template.defaultfilters import stringfilter
 from django.conf import settings
-from castle.models import StoryLog, Profile
+from castle.models import StoryLog, Profile, Challenge
 from bbcode import util as bbcode
 import math
 import re
@@ -97,6 +97,11 @@ def num_challenges_txt(obj):
         return u'1 challenge';
     else:
         return unicode(c) + u' challenges'
+
+#-----------------------------------------------------------------------------
+@register.filter
+def num_challenge_wins(obj):
+	return obj.challenge_set.filter(winner_id__isnull=False).count()
    
 #-----------------------------------------------------------------------------
 @register.filter
@@ -271,7 +276,7 @@ def story_link(story, tag=None):
     w = u'<img src="/static/img/badge-40.png">' if (story.winner.count()>0) else ''
     # FIXME: fix URL
     if tag == 'h1':
-        return mark_safe(t1+ escape(d + story.title) + u' ' + mark_safe(m) + mark_safe(w) + t2)
+        return mark_safe(t1+ escape(d + story.title) + u' ' + mark_safe(w) + mark_safe(m) + t2)
     else:
         return mark_safe(u'<a href="/stories/' + unicode(story.id) + u'" class="story-link">' + t1 + escape(d + story.title) + u' ' + mark_safe(w) + mark_safe(m) + t2 + u'</a>') 
 

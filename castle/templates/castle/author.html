@@ -30,12 +30,12 @@ Copyright (C) 2015 Paul Robertson
                   {{author|avatar}}
                   {{author|author_social_media}}
                 </div> <!-- id="" class="col-sm-2 col-md-2" -->
-                {% if not email_conf %}<div  class="email-resend-link"><a href="{% url 'resend_email_conf' %}">Resend</a> my email confirmation.</div>{% endif %}
                 <div class="col-sm-8 col-md-8">
 				  {{author|author_link:'h1 class="author"'}} 
                   {{author|author_msg}}
                   <p id="user-desc">Joined Ficlatt&eacute; in <span>{{author.ctime|date:"F Y"}}</span></p>
                   <p id="user-stats">{{author|num_stories_txt}}, {{author|num_challenges_txt}}, {{author|num_prompts_txt}}, {{author|profile_comments_txt}}, and {{author|num_friends_txt}}</p>
+                  <p id="user-wins">Coffee beans earned: {{author|num_challenge_wins}} <img src="{% static 'img/badge-40.png' %}"></p>
                 </div> <!-- id="" class="col-sm-8 col-md-8" -->
               </div> <!-- id="" class="row" -->
             </div> <!-- id="" class="panel-heading" -->

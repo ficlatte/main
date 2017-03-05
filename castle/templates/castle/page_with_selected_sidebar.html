@@ -53,6 +53,10 @@ Copyright (C) 2015 Paul Robertson
               <h3 class="panel-title">User dashboard</h3>
             </div> <!-- id="" class="panel-heading" -->
             <div class="panel-body">
+			  {% if not email_conf %}
+			  <p><span class="glyphicon glyphicon-envelope"></span>
+			  <a href="{% url 'resend_email_conf' %}">Resend</a> my email confirmation.</p>
+			  {% endif %}	
               <p><span class="glyphicon glyphicon-user"></span>
               <a href="/authors/u/profile/">Edit profile</a></p>
               <p><span class="glyphicon glyphicon-camera"></span>
@@ -221,8 +225,7 @@ Copyright (C) 2015 Paul Robertson
     {% if story.draft %}
             <li id="mtime">Edited <abbr class="dtposted" title="{{story.mtime|date:'Y-m-d'}}">{{story.mtime|age}}</abbr>. </li>
     {% else %}
-            <li id="ptime">Published <abbr class="dtposted" title="{{story.ptime|date:'Y-m-d'}}">{{story.ptime|age}}</abbr>. </li>
-	   {% if story.ftime %}<li id="ftime">Featured <abbr title="{{story.ftime|date:'Y-m-d'}}">{{story.ftime|age}}. </li>{% endif %}
+            <li id="ptime">Published <abbr class="dtposted" title="{{story.ptime|date:'Y-m-d'}}">{{story.ptime|age}}</abbr>{% if story.ftime %} and <span id="ftime">featured <abbr class="dtposted" title="{{story.ftime|date:'Y-m-d'}}">{{story.ftime|age}}</abbr>{% endif %}.</li>
     {% endif %}
             <li id="num-ratings">Story viewed {{viewed}} times and rated {{rated}} times.</li>
           </ul>
