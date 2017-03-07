@@ -199,17 +199,17 @@ def submit_note(request):
 	if (not author):
 		raise Http404()
 	author = author[0]          # Get single object from collection
+
+    # Get bits and bobs
+	errors     	= []
+	note      	= get_foo(request.POST, Note,  'nid')
+	new_note	= (note is None)
 	
 	# Is logged-in user the author?
 	owner = ((profile is not None) and (profile == author))
 
 	if (not profile.email_authenticated()):
 		errors.append(u'You must have authenticated your e-mail address before writing a note.')
-	
-    # Get bits and bobs
-	errors     	= []
-	note      	= get_foo(request.POST, Note,  'nid')
-	new_note	= (note is None)
 
     # Get story object, either existing or new
 	if (note is None):
@@ -245,6 +245,7 @@ def submit_note(request):
 					'author'		: author,
 					'note'			: note,
 					'length_limit'	: 2048,
+					'error_messages': errors,
 				  }
 
 		return render(request, 'notes/compose.html', context)

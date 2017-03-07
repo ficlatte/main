@@ -19,6 +19,7 @@
 from django import template
 from django.utils.safestring import mark_safe
 from datetime import timedelta, datetime
+from django.db.models import F
 from django.utils.timezone import utc
 from django.utils.html import escape
 from django.utils.http import urlquote
@@ -101,7 +102,7 @@ def num_challenges_txt(obj):
 #-----------------------------------------------------------------------------
 @register.filter
 def num_challenge_wins(obj):
-	return obj.challenge_set.filter(winner_id__isnull=False).count()
+	return obj.story_set.filter(challenge__winner=F('id')).count()
    
 #-----------------------------------------------------------------------------
 @register.filter

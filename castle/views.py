@@ -377,9 +377,6 @@ def home(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
-        
-    # Has the author's email been confirmed?
-    email_conf = (profile.email_auth == 0)
 
     # Get featured story
     featured_id = Misc.objects.filter(key='featured')
@@ -414,7 +411,6 @@ def home(request):
                 'featured'      : featured,
                 'challenge'		: challenge,
                 'prompt'		: prompt,
-                'email_conf'	: email_conf,
                 'popular'       : get_popular_stories(1,4),
                 'active'        : get_active_stories(1,10),
                 'recent'        : get_recent_stories(1,10),
@@ -443,7 +439,9 @@ def author(request, pen_name):
     owner = ((profile is not None) and (profile == author))
 
     # Has the author's email been confirmed?
-    email_conf = (profile.email_auth == 0)
+    email_conf = True
+    if (profile):
+        email_conf = (profile.email_auth == 0)
 
     # Build story list (owner sees their drafts)
     page_num = safe_int(request.GET.get('page_num', 1))
@@ -470,6 +468,7 @@ def author(request, pen_name):
     # Build context and render page
     context = { 'profile'       : profile,
                 'author'        : author,
+                'owner'			: owner,
                 'story_list'    : story_list,
                 'num_prompts'   : num_prompts,
                 'prompt_list'   : prompt_list,
@@ -843,6 +842,9 @@ def submit_story(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        
+    # Has the author's email been confirmed?
+    email_conf = (profile.email_auth == 0)
 
     # Get bits and bobs
     errors     = []
@@ -905,6 +907,7 @@ def submit_story(request):
                     'tags'          : tags,
                     'length_limit'  : 1024,
                     'length_min'    : 60,
+                    'email_conf'	: email_conf,
                     'user_dashboard': 1,
                     'error_title'   : 'Story submission unsuccessful',
                     'error_messages': errors,
@@ -1067,9 +1070,6 @@ def prompts(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
-        
-    # Has the author's email been confirmed?
-    email_conf = (profile.email_auth == 0)
 
     # Get featured prompt
     featured_id = Misc.objects.filter(key='featured_prompt')
@@ -1089,7 +1089,6 @@ def prompts(request):
                 'old'			: get_old_prompts(10),
                 'page_title'    : u'Prompts',
                 'prompt_button' : (profile is not None),
-                'email_conf'	: email_conf,
                 'user_dashboard': (profile is not None),
                 'page_url'      : u'/prompts/',
             }
@@ -1106,9 +1105,6 @@ def prompt_view(request, prompt_id):
 	profile = None
 	if (request.user.is_authenticated()):
 		profile = request.user.profile
-		
-    # Has the author's email been confirmed
-	email_conf = (profile.email_auth == 0)
 
     # Get stories inspired by prompt
 	page_num = safe_int(request.GET.get('page_num', 1))
@@ -1151,7 +1147,6 @@ def prompt_view(request, prompt_id):
 				'owner'         : owner,
 				'subscribed'	: subscribed,
 				'page_title'    : u'Prompt '+prompt.title,
-				'email_conf'	: email_conf,
 				'prompt_sidepanel' : 1,
 				'page_url'      : u'/prompts/'+unicode(prompt.id)+u'/',
 				'pages'         : bs_pager(page_num, PAGE_STORIES, num_stories),
@@ -1345,9 +1340,6 @@ def challenges(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
-        
-    # Has the author's email been confirmed?
-    email_conf = (profile.email_auth == 0)
     
     # Get featured challenge
     featured_id = Misc.objects.filter(key='featured_challenge')
@@ -1367,7 +1359,6 @@ def challenges(request):
                 'recent_winners'	: get_recent_winners(1,10),
                 'page_title'        : u'Challenges',
                 'challenge_button'  : (profile is not None),
-                'email_conf'		: email_conf,
                 'user_dashboard'    : (profile is not None),
                 'page_url'          : u'/challenges/',
               }
@@ -1384,9 +1375,6 @@ def challenge_view(request, challenge_id, comment_text=None, error_title='', err
 	profile = None
 	if (request.user.is_authenticated()):
 		profile = request.user.profile
-		
-    # Has the author's email been confirmed?
-	email_conf = (profile.email_auth == 0)
 
     # Get stories inspired by challenge
 	page_num = safe_int(request.GET.get('page_num', 1))
@@ -1438,7 +1426,6 @@ def challenge_view(request, challenge_id, comment_text=None, error_title='', err
 				'page_url'            : u'/challenges/'+unicode(challenge.id)+u'/',
 				'pages'               : bs_pager(page_num, PAGE_STORIES, num_stories),
 				'comment_text'        : comment_text,
-				'email_conf'		  : email_conf,
 				'suppressed'          : suppressed,
 				'error_title'         : error_title,
 				'error_messages'      : error_messages,
@@ -1713,9 +1700,6 @@ def blog_unsubscribe(request, blog_id, comment_text=None, error_title='', error_
         profile = request.user.profile
     if (profile is None):
         raise Http404
-        
-    # Has the author's email been confirmed?
-    email_conf = (profile.email_auth == 0)
 
     Subscription.objects.filter(user=profile, blog=blog).delete()
 
@@ -1725,7 +1709,6 @@ def blog_unsubscribe(request, blog_id, comment_text=None, error_title='', error_
                 'page_title'    : u'Unsubscribe blog '+blog.title,
                 'error_title'   : error_title,
                 'error_messages': error_messages,
-                'email_conf'	: email_conf,
                 'user_dashboard': True,
                 'profile'       : profile,
         }
@@ -1742,9 +1725,6 @@ def story_unsubscribe(request, story_id, comment_text=None, error_title='', erro
         profile = request.user.profile
     if (profile is None):
         raise Http404
-        
-    # Has the author's email been confirmed?
-    email_conf = (profile.email_auth == 0)
 
     Subscription.objects.filter(user=profile, story=story).delete()
 
@@ -1754,7 +1734,6 @@ def story_unsubscribe(request, story_id, comment_text=None, error_title='', erro
                 'page_title'    : u'Unsubscribe story '+story.title,
                 'error_title'   : error_title,
                 'error_messages': error_messages,
-                'email_conf'	: email_conf,
                 'user_dashboard': True,
                 'profile'       : profile,
         }
@@ -1771,9 +1750,6 @@ def story_subscribe(request, story_id, comment_text=None, error_title='', error_
         profile = request.user.profile
     if (profile is None):
         raise Http404
-        
-    # Has the author's email been confirmed?
-    email_conf = (profile.email_auth == 0)
 
     Subscription.objects.get_or_create(user=profile, story=story)
 
@@ -1783,7 +1759,6 @@ def story_subscribe(request, story_id, comment_text=None, error_title='', error_
                 'page_title'    : u'Unsubscribe story '+story.title,
                 'error_title'   : error_title,
                 'error_messages': error_messages,
-                'email_conf'	: email_conf,
                 'user_dashboard': True,
                 'profile'       : profile,
         }
@@ -1800,9 +1775,6 @@ def prompt_unsubscribe(request, prompt_id, comment_text=None, error_title='', er
         profile = request.user.profile
     if (profile is None):
         raise Http404
-        
-    # Has the author's email been confirmed?
-    email_conf = (profile.email_auth == 0)
 
     Subscription.objects.filter(user=profile, prompt=prompt).delete()
 
@@ -1812,7 +1784,6 @@ def prompt_unsubscribe(request, prompt_id, comment_text=None, error_title='', er
                 'page_title'    : u'Unsubscribe prompt '+prompt.title,
                 'error_title'   : error_title,
                 'error_messages': error_messages,
-                'email_conf'	: email_conf,
                 'user_dashboard': True,
                 'profile'       : profile,
         }
@@ -1829,9 +1800,6 @@ def prompt_subscribe(request, prompt_id, comment_text=None, error_title='', erro
         profile = request.user.profile
     if (profile is None):
         raise Http404
-        
-    # Has the author's email been confirmed?
-    email_conf = (profile.email_auth == 0)
 
     Subscription.objects.get_or_create(user=profile, prompt=prompt)
 
@@ -1841,7 +1809,6 @@ def prompt_subscribe(request, prompt_id, comment_text=None, error_title='', erro
                 'page_title'    : u'Unsubscribe prompt '+prompt.title,
                 'error_title'   : error_title,
                 'error_messages': error_messages,
-                'email_conf'	: email_conf,
                 'user_dashboard': True,
                 'profile'       : profile,
         }
@@ -1858,9 +1825,6 @@ def challenge_unsubscribe(request, challenge_id, comment_text=None, error_title=
         profile = request.user.profile
     if (profile is None):
         raise Http404
-        
-    # Has the author's email been confirmed?
-    email_conf = (profile.email_auth == 0)
 
     Subscription.objects.filter(user=profile, challenge=challenge).delete()
 
@@ -1870,7 +1834,6 @@ def challenge_unsubscribe(request, challenge_id, comment_text=None, error_title=
                 'page_title'    : u'Unsubscribe challenge '+challenge.title,
                 'error_title'   : error_title,
                 'error_messages': error_messages,
-                'email_conf'	: email_conf,
                 'user_dashboard': True,
                 'profile'       : profile,
         }
@@ -1887,9 +1850,6 @@ def challenge_subscribe(request, challenge_id, comment_text=None, error_title=''
         profile = request.user.profile
     if (profile is None):
         raise Http404
-        
-    # Has the author's email been confirmed?
-    email_conf = (profile.email_auth == 0)
 
     Subscription.objects.get_or_create(user=profile, challenge=challenge)
 
@@ -1899,7 +1859,6 @@ def challenge_subscribe(request, challenge_id, comment_text=None, error_title=''
                 'page_title'    : u'Unsubscribe challenge '+challenge.title,
                 'error_title'   : error_title,
                 'error_messages': error_messages,
-                'email_conf'	: email_conf,
                 'user_dashboard': True,
                 'profile'       : profile,
         }

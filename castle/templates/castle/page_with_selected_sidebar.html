@@ -53,7 +53,7 @@ Copyright (C) 2015 Paul Robertson
               <h3 class="panel-title">User dashboard</h3>
             </div> <!-- id="" class="panel-heading" -->
             <div class="panel-body">
-			  {% if not email_conf %}
+			  {% if author and not email_conf %}
 			  <p><span class="glyphicon glyphicon-envelope"></span>
 			  <a href="{% url 'resend_email_conf' %}">Resend</a> my email confirmation.</p>
 			  {% endif %}	
@@ -109,12 +109,14 @@ Copyright (C) 2015 Paul Robertson
               <h3 class="panel-title">{{author.pen_name}}</h3>
             </div> <!-- id="" class="panel-heading" -->
             <div class="panel-body">
+			{% if profile %}
               {% if is_friend %}
               <a class="btn btn-info btn-block" href="/friendship/del/{{author.id}}/" id="make-link" type="button">Un-follow {{author.pen_name}}</a>
               {% else %}
               <a class="btn btn-success btn-block" href="/friendship/add/{{author.id}}/" id="make-link" type="button">Follow {{author.pen_name}}</a>
               {% endif %}
               <hr />
+             {% endif %}
               <h4>Friends <span>{{author|num_friends}}</span></h4>
               <div class="row">
                 {% for f in author.friends.all %}
