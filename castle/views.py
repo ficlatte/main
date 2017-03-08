@@ -917,6 +917,7 @@ def submit_story(request):
 
     # Is the story being published?
     if (not story.draft and (was_draft or new_story)):
+		# Set the publish time and send notifications to subscribed users of the prequel/sequel (if applicable)
         story.ptime = timezone.now()
 
     # Set modification time
@@ -971,6 +972,11 @@ def submit_story(request):
         challenge = chal
     )
     log.save()
+    
+    if (prequel_to):
+        send_notification_email_story(story, prequel_to)
+    elif (sequel_to):
+        send_notification_email_story(story, sequel_to)
 
     return HttpResponseRedirect(reverse('story', args=(story.id,)))
 
