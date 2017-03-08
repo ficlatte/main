@@ -140,7 +140,7 @@ def send_notification_email_story(story, parent):
 	child_url = u'{}{}'.format(url, reverse('story', args=[story.id]))
 	unsub_url = u'{}{}'.format(url, reverse('story-unsub', args=[parent.id]))
 
-    # Is the comment on a story or a blog?
+    # Is the story a prequel or a sequel?
 	if story.prequel_to == parent:
 		child_type = u'prequel'
 
@@ -158,7 +158,7 @@ def send_notification_email_story(story, parent):
 			child_type=child_type, parent_title=parent.title, story_user=story.user.pen_name)
 
 	message_template = Template("""Hi.
-This is the Ficlatte server.  You are currently subscribed to receive notifications of new stories posted to Ficlatte story "$parent_title".
+This is the Ficlatte server.  You are currently subscribed to receive notifications of new stories posted to the Ficlatte story "$parent_title".
 
 $child_user just posted a $child_type, "$child_title":
 
@@ -176,6 +176,44 @@ The Ficlatte team""")
 		child_user=story.user.pen_name, child_type=child_type, child_body=story.body,
 		child_url=child_url, parent_unsub_url=unsub_url,
 		user_profile_url=(url, reverse('profile')))
+
+    # Loop through everyone subscribed to this story
+	for sub in subs:
+        # But only send messages to people other than the story author
+		if sub.user != story.user:
+			send_notification_email(sub.user, subject, message)
+
+#-----------------------------------------------------------------------------
+def send_notification_email_challenge_story(story, challenge):
+	url = getattr(settings, 'SITE_URL', 'http://www.example.com/')
+
+	subs = Subscription.objects.filter(challenge=challenge)
+	story_url = u'{}{}'.format(url, reverse('story', args=[story.id]))
+	unsub_url = u'{}{}'.format(url, reverse('story-unsub', args=[story.id]))
+
+    # Build e-mail text
+	subject = Template(
+		'Ficlatte entry to "$challenge_title" by $story_user').substitute(
+			challenge_title=challenge.title, story_user=story.user.pen_name)
+
+	message_template = Template("""Hi.
+This is the Ficlatte server.  You are currently subscribed to receive notifications of new stories posted to the Ficlatte challenge "$challenge_title".
+
+$story_user just posted a entry, "$story_title":
+
+$story_body
+
+To read the story at Ficlatte, click here:
+$story_url
+
+Keep writing!
+
+The Ficlatte team""")
+
+	message = message_template.substitute(
+		challenge_title=challenge.title, story_title=story.title,
+		story_user=story.user.pen_name, story_body=story.body,
+		story_url=story_url)
 
     # Loop through everyone subscribed to this story
 	for sub in subs:

@@ -949,7 +949,6 @@ def submit_story(request):
     # Make log entry
     log_type = StoryLog.WRITE
     quel = None
-    chal = None
     if (sequel_to):
         log_type = StoryLog.SEQUEL
         quel = sequel_to
@@ -958,7 +957,7 @@ def submit_story(request):
         quel = prequel_to
     elif (challenge):
         log_type = StoryLog.CHALLENGE_ENT
-        chal = Challenge.objects.get(id=int(request.POST.get('chid')))
+        challenge = challenge
 
     if (not new_story):
         log_type = StoryLog.STORY_MOD
@@ -969,7 +968,7 @@ def submit_story(request):
         quel = quel,
         log_type = log_type,
         prompt = prompt,
-        challenge = chal
+        challenge = challenge
     )
     log.save()
     
@@ -977,6 +976,8 @@ def submit_story(request):
         send_notification_email_story(story, prequel_to)
     elif (sequel_to):
         send_notification_email_story(story, sequel_to)
+    elif (challenge):
+        send_notification_email_challenge_story(story, challenge)
 
     return HttpResponseRedirect(reverse('story', args=(story.id,)))
 
@@ -2186,6 +2187,10 @@ def profile_view(request, error_title=None, error_messages=None):
     new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_STORY_COMMENT, u'when you comment on a story')
     new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_BLOG, u'when you publish a blog post', 'castle.post_blog')
     new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_BLOG_COMMENT, u'when you comment on a blog post')
+    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_PROMPT, u'when you publish a prompt')
+    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_PROMPT_COMMENT, u'when you comment on a prompt')
+    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_CHALLENGE, u'when you publish a challenge')
+    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_CHALLENGE_COMMENT, u'when you comment on a challenge')
 
     # Page title
     if (profile):

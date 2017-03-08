@@ -113,7 +113,7 @@ class Challenge(models.Model):
     def active(self):
         # Note: this is determined by UTC, ie. server time, not by user's local time
         today = date.today()
-        return ((self.stime <= today) and (self.etime > today))
+        return ((self.stime <= today) and (today < self.etime))
     
     def started(self):
         # Has the challenge started?  It may or may not have ended
