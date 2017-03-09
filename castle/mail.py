@@ -132,25 +132,28 @@ The Ficlatte team""")
 			send_notification_email(sub.user, subject, message)
 
 #-----------------------------------------------------------------------------
-def send_notification_email_story(story, parent):
+def send_notification_email_story(story, parent, type_flag):
 	url = getattr(settings, 'SITE_URL', 'http://www.example.com/')
 
+	# Is the story a prequel or a sequel?
 	child_type = u''
-	subs = Subscription.objects.filter(story=parent)
-	child_url = u'{}{}'.format(url, reverse('story', args=[story.id]))
-	unsub_url = u'{}{}'.format(url, reverse('story-unsub', args=[parent.id]))
-
-    # Is the story a prequel or a sequel?
-	if story.prequel_to == parent:
+	child_type_p = u''
+	if type_flag == 1:
+		subs = Subscription.objects.filter(prequel_to=parent)
 		child_type = u'prequel'
-
-	elif story.sequel_to == parent:
+		child_type_p = u'prequels'
+		unsub_url = u'{}{}'.format(url, reverse('prequel-unsub', args=[parent.id]))
+	elif type_flag == 2:
+		subs = Subscription.objects.filter(sequel_to=parent)
 		child_type = u'sequel'
-
+		child_type_p = u'sequels'
+		unsub_url = u'{}{}'.format(url, reverse('sequel-unsub', args=[parent.id]))
 	else:
-        # Neither a prequel or a sequel, something weird is going on,
+		# Neither a prequel or a sequel, something weird is going on,
         # so just bug out here
 		return None
+		
+	child_url = u'{}{}'.format(url, reverse('story', args=[story.id]))
 
     # Build e-mail text
 	subject = Template(
@@ -167,15 +170,21 @@ $child_body
 To read the story at Ficlatte, click here:
 $child_url
 
+To stop receiving notifications of $child_type_p on this story, click here:
+$unsub_url
+
+To adjust your e-mail preferences, update your profile here:
+$user_profile_url
+
 Keep writing!
 
 The Ficlatte team""")
 
 	message = message_template.substitute(
 		parent_title=parent.title, child_title=story.title,
-		child_user=story.user.pen_name, child_type=child_type, child_body=story.body,
-		child_url=child_url, parent_unsub_url=unsub_url,
-		user_profile_url=(url, reverse('profile')))
+		child_user=story.user.pen_name, child_type=child_type, child_type_p=child_type_p, 
+		child_body=story.body, child_url=child_url, unsub_url=unsub_url,
+		user_profile_url=(url+reverse('profile')))
 
     # Loop through everyone subscribed to this story
 	for sub in subs:
@@ -187,9 +196,9 @@ The Ficlatte team""")
 def send_notification_email_challenge_story(story, challenge):
 	url = getattr(settings, 'SITE_URL', 'http://www.example.com/')
 
-	subs = Subscription.objects.filter(challenge=challenge)
+	subs = Subscription.objects.filter(ch_entry=challenge)
 	story_url = u'{}{}'.format(url, reverse('story', args=[story.id]))
-	unsub_url = u'{}{}'.format(url, reverse('story-unsub', args=[story.id]))
+	unsub_url = u'{}{}'.format(url, reverse('challenge-entry-unsub', args=[challenge.id]))
 
     # Build e-mail text
 	subject = Template(
@@ -199,12 +208,18 @@ def send_notification_email_challenge_story(story, challenge):
 	message_template = Template("""Hi.
 This is the Ficlatte server.  You are currently subscribed to receive notifications of new stories posted to the Ficlatte challenge "$challenge_title".
 
-$story_user just posted a entry, "$story_title":
+$story_user just posted an entry, "$story_title":
 
 $story_body
 
 To read the story at Ficlatte, click here:
 $story_url
+
+To stop receiving notifications of entries to this challenge, click here:
+$unsub_url
+
+To adjust your e-mail preferences, update your profile here:
+$user_profile_url
 
 Keep writing!
 
@@ -213,7 +228,8 @@ The Ficlatte team""")
 	message = message_template.substitute(
 		challenge_title=challenge.title, story_title=story.title,
 		story_user=story.user.pen_name, story_body=story.body,
-		story_url=story_url)
+		story_url=story_url, unsub_url=unsub_url,
+		user_profile_url=(url, reverse('profile')))
 
     # Loop through everyone subscribed to this story
 	for sub in subs:

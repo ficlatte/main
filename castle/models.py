@@ -53,16 +53,19 @@ class Profile(models.Model):
     HAS_AVATAR = 1
     
     # Email flags
-    NUM_EMAIL_FLAGS = 4
+    NUM_EMAIL_FLAGS = 1024
     
     AUTOSUBSCRIBE_ON_STORY         		= 1  # Subscribe to story's comments when user publishes a story
     AUTOSUBSCRIBE_ON_STORY_COMMENT 		= 2  # Subscribe to story's comments when user publishes comment
     AUTOSUBSCRIBE_ON_BLOG          		= 4  # Subscribe to blog's comments when user publishes a blog
     AUTOSUBSCRIBE_ON_BLOG_COMMENT  		= 8  # Subscribe to blog's comments when user publishes comment
-    AUTOSUBSCRIBE_ON_PROMPT        		= 10  # Subscribe to prompt's comments when user publishes a blog
-    AUTOSUBSCRIBE_ON_PROMPT_COMMENT  	= 12  # Subscribe to prompt's comments when user publishes comment
-    AUTOSUBSCRIBE_ON_CHALLENGE          = 14  # Subscribe to challenge's comments when user publishes a blog
-    AUTOSUBSCRIBE_ON_CHALLENGE_COMMENT  = 16  # Subscribe to challenges's comments when user publishes comment
+    AUTOSUBSCRIBE_ON_PROMPT        		= 16  # Subscribe to prompt's comments when user publishes a blog
+    AUTOSUBSCRIBE_ON_PROMPT_COMMENT  	= 32  # Subscribe to prompt's comments when user publishes comment
+    AUTOSUBSCRIBE_ON_CHALLENGE          = 64  # Subscribe to challenge's comments when user publishes a blog
+    AUTOSUBSCRIBE_ON_CHALLENGE_COMMENT  = 128  # Subscribe to challenges's comments when user publishes comment
+    AUTOSUBSCRIBE_TO_PREQUEL			= 256  # Subscribe to notifications when someone prequels your story
+    AUTOSUBSCRIBE_TO_SEQUEL		    	= 512  # Subscribe to notifications when someone sequels your story
+    AUTOSUBSCRIBE_TO_CHALLENGE_ENTRY    = 1024  # Subscribe to notifications when someone enters a story in your challenge
 
     def __unicode__(self):
         return unicode(self.pen_name)
@@ -306,6 +309,9 @@ class Subscription(models.Model):
     blog        = models.ForeignKey(Blog,  blank=True, null=True, related_name='subscriptions')
     prompt      = models.ForeignKey(Prompt,  blank=True, null=True, related_name='subscriptions')
     challenge   = models.ForeignKey(Challenge,  blank=True, null=True, related_name='subscriptions')
+    prequel_to 	= models.ForeignKey(Story, blank=True, null=True, related_name='prequel_subscriptions')
+    sequel_to	= models.ForeignKey(Story, blank=True, null=True, related_name='sequel_subscriptions')
+    ch_entry	= models.ForeignKey(Challenge, blank=True, null=True, related_name='entry_subscriptions')
     
     def __unicode__(self):
         r = unicode(self.user)
@@ -317,4 +323,10 @@ class Subscription(models.Model):
             r += u' subscribed to prompt '+unicode(self.prompt)
         if (self.challenge is not None):
             r += u' subscribed to challenge '+unicode(self.challenge)
+        if (self.prequel_to is not None):
+            r += u' subscribed to prequels on '+unicode(self.story)
+        if (self.sequel_to is not None):
+            r += u' subscribed to sequels '+unicode(self.story)
+        if (self.ch_entry is not None):
+            r += u' subscribed to entries on challenge '+unicode(self.challenge)
         return r
