@@ -19,27 +19,6 @@ import hashlib
 from castle.models import *
 from castle.views import *
 from .forms import ChallengeDateForm
-from .mail import *
-
-#-----------------------------------------------------------------------------
-# Global symbols
-#-----------------------------------------------------------------------------
-PAGE_COMMENTS   = 15
-PAGE_STORIES    = 15
-PAGE_BROWSE     = 25
-PAGE_PROMPTS    = 20
-PAGE_CHALLENGES = 15
-PAGE_BLOG       = 10
-PAGE_ALLTAGS    = 200
-
-re_crlf = re.compile(r'(\r\n|\r|\n)')
-
-#-----------------------------------------------------------------------------
-def safe_int(v, default=1):
-    try:
-        return int(v)
-    except ValueError:
-        return default
 
 #-----------------------------------------------------------------------------
 def get_popular_challenges(page_num=1, page_size=10):

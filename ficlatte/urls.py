@@ -43,6 +43,7 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
     
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'), # Sitemap
+    url(r'^prompts/', include('prompt.urls')), # Prompts
     url(r'^challenges/', include('challenge.urls')), # Challenges
     url(r'^notes/', include('notes.urls')), # Notes
     
@@ -75,16 +76,6 @@ urlpatterns = patterns('',
     url(r'^stories/$', 'castle.views.browse_stories', name='recent_stories'),
     url(r'^stories/active/$', 'castle.views.active_stories', name='active_stories'),
     url(r'^stories/popular/$', 'castle.views.popular_stories', name='popular_stories'),
-    url(r'^prompts/$', 'castle.views.prompts', name='prompts'),
-    url(r'^prompts/(?P<prompt_id>\d+)/$', 'castle.views.prompt_view', name='prompt'),
-    #url(r'^prompts/edit/(?P<prompt_id>\d+)/$', 'castle.views.edit_prompt', name='edit_prompt'),
-    url(r'^prompts/new/$', 'castle.views.new_prompt', name='new_prompt'),
-    url(r'^prompts/submit/$', 'castle.views.submit_prompt', name='submit_prompt'),
-    url(r'^prompts/unsubscribe/(?P<prompt_id>\d+)/$', 'castle.views.prompt_unsubscribe', name='prompt-unsub'),
-    url(r'^prompts/subscribe/(?P<prompt_id>\d+)/$', 'castle.views.prompt_subscribe', name='prompt-sub'),
-    url(r'^prompts/recent/$', 'castle.views.browse_prompts', name='prompts_recent'),
-    url(r'^prompts/active/$', 'castle.views.active_prompts', name='prompts_active'),
-    url(r'^prompts/popular/$', 'castle.views.popular_prompts', name='prompts_popular'),
 
     url(r'^blog/$', 'castle.views.blogs', name='blogs'),
     url(r'^blog/(?P<blog_id>\d+)/$', 'castle.views.blog_view', name='blog'),
