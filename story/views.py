@@ -1,3 +1,4 @@
+#coding: utf-8
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.contrib.auth import authenticate, login, logout
@@ -702,5 +703,65 @@ def sequel_unsubscribe(request, story_id, comment_text=None, error_title='', err
         }
 
     return render(request, 'castle/unsubscribed.html', context)
+    
+#-----------------------------------------------------------------------------
+def tags(request, tag_name):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    page_num = safe_int(request.GET.get('page_num', 1))
+
+    # Find stories with this tag name (forced to upper case)
+    tag_name = tag_name.upper()
+    (num_stories, stories) = get_tagged_stories(tag_name, page_num, PAGE_BROWSE)
+    if (num_stories == 0):
+        # No stories found, give the user
+        return tags_null(request, u'No stories tagged '+tag_name)
+
+    label = u'Stories tagged “'+unicode(tag_name)+u'”'
+    url = u'/tags/'+urlquote(tag_name)+u'/'
+
+    # Build context and render page
+    context = { 'profile'       : profile,
+                'stories'       : stories,
+                'page_title'    : u'Tag '+tag_name,
+                'page_url'      : url,
+                'pages'         : bs_pager(page_num, PAGE_BROWSE, num_stories),
+                'user_dashboard': 1,
+                'label'         : label,
+              }
+    return render(request, 'stories/browse.html', context)
+
+#-----------------------------------------------------------------------------
+def tags_null(request, error_msg = None):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    page_num = safe_int(request.GET.get('page_num', 1))
+
+    # List all the tags
+    num_tags = get_num_tags()
+    tags     = get_all_tags(page_num, PAGE_ALLTAGS)
+
+    url = u'/tags/'
+
+    error_title = u'Tag not found' if (error_msg) else None
+    error_messages = [error_msg] if (error_msg) else None
+
+    # Build context and render page
+    context = { 'profile'       : profile,
+                'tags'          : tags,
+                'page_title'    : u'Tag not found',
+                'page_url'      : url,
+                'pages'         : bs_pager(page_num, PAGE_ALLTAGS, num_tags),
+                'user_dashboard': 1,
+                'error_title'   : error_title,
+                'error_messages': error_messages,
+              }
+    return render(request, 'stories/all_tags.html', context)
     
 #-----------------------------------------------------------------------------

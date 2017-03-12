@@ -43,6 +43,7 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
     
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'), # Sitemap
+    url(r'^authors/', include('author.urls')), # Authors
     url(r'^stories/', include('story.urls')), # Stories
     url(r'^prompts/', include('prompt.urls')), # Prompts
     url(r'^challenges/', include('challenge.urls')), # Challenges
@@ -56,13 +57,7 @@ urlpatterns = patterns('',
     url(r'^signin/$',     'castle.views.signin',  name='signin'),       # Process log-in credentials
 #    url(r'^logout/$',     'castle.views.signout', name='signout'),
     url(r'^dashboard/$',  'castle.views.dashboard', name='dashboard'),
-    url(r'^authors/(?P<pen_name>[^/]+)/$', 'castle.views.author', name='author'),
-    url(r'^authors/u/drafts/$', 'castle.views.drafts', name='drafts'),
-    url(r'^authors/u/prompts/$', 'castle.views.author_prompts', name='author_prompts'),
-    url(r'^authors/u/challenges/$', 'castle.views.author_challenges', name='author_challenges'),
-    url(r'^authors/u/profile/$', 'castle.views.profile_view', name='profile'),
-    url(r'^authors/u/submit/$', 'castle.views.submit_profile', name='submit_profile'),
-    url(r'^register/$', 'castle.views.profile_view', name='register'),
+    url(r'^register/$', 'author.views.profile_view', name='register'),
 
     url(r'^blog/$', 'castle.views.blogs', name='blogs'),
     url(r'^blog/(?P<blog_id>\d+)/$', 'castle.views.blog_view', name='blog'),
@@ -71,8 +66,8 @@ urlpatterns = patterns('',
     url(r'^blog/submit/$', 'castle.views.submit_blog', name='submit_blog'),
     url(r'^blog/unsubscribe/(?P<blog_id>\d+)/$', 'castle.views.blog_unsubscribe', name='blog-unsub'),
     url(r'^comment/submit/$', 'castle.views.submit_comment', name='submit_comment'),
-    url(r'^tags/(?P<tag_name>[^/]+)/$', 'castle.views.tags', name='tags'),
-    url(r'^tags/$', 'castle.views.tags_null', name='tags_null'),
+    url(r'^tags/(?P<tag_name>[^/]+)/$', 'story.views.tags', name='tags'),
+    url(r'^tags/$', 'story.views.tags_null', name='tags_null'),
     url(r'^friendship/add/(?P<user_id>\d+)/$', 'castle.views.add_friend', name='add_friend'),
     url(r'^friendship/del/(?P<user_id>\d+)/$', 'castle.views.del_friend', name='del_friend'),    
     url(r'^admin/', include(admin.site.urls)),
