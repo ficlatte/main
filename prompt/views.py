@@ -339,3 +339,54 @@ def submit_prompt(request):
     return HttpResponseRedirect(reverse('prompt', args=(prompt.id,)))
     
 #-----------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
+@login_required
+def prompt_subscribe(request, prompt_id, comment_text=None, error_title='', error_messages=None):
+    prompt = get_object_or_404(Prompt, pk=prompt_id)
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    if (profile is None):
+        raise Http404
+
+    Subscription.objects.get_or_create(user=profile, prompt=prompt)
+
+    context = { 'thing'         : prompt,
+                'thing_type'    : u'prompt',
+                'thing_url'     : reverse('prompt', args=[prompt.id]),
+                'page_title'    : u'Subscribe prompt '+prompt.title,
+                'error_title'   : error_title,
+                'error_messages': error_messages,
+                'user_dashboard': True,
+                'profile'       : profile,
+        }
+
+    return render(request, 'castle/subscribed.html', context)
+    
+#-----------------------------------------------------------------------------
+@login_required
+def prompt_unsubscribe(request, prompt_id, comment_text=None, error_title='', error_messages=None):
+    prompt = get_object_or_404(Prompt, pk=prompt_id)
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    if (profile is None):
+        raise Http404
+
+    Subscription.objects.filter(user=profile, prompt=prompt).delete()
+
+    context = { 'thing'         : prompt,
+                'thing_type'    : u'prompt',
+                'thing_url'     : reverse('prompt', args=[prompt.id]),
+                'page_title'    : u'Unsubscribe prompt '+prompt.title,
+                'error_title'   : error_title,
+                'error_messages': error_messages,
+                'user_dashboard': True,
+                'profile'       : profile,
+        }
+
+    return render(request, 'castle/unsubscribed.html', context)
+
+#-----------------------------------------------------------------------------

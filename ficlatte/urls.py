@@ -43,12 +43,13 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
     
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'), # Sitemap
+    url(r'^stories/', include('story.urls')), # Stories
     url(r'^prompts/', include('prompt.urls')), # Prompts
     url(r'^challenges/', include('challenge.urls')), # Challenges
     url(r'^notes/', include('notes.urls')), # Notes
     
     #Dynamic Pages
-    url(r'^$',      'castle.views.home', name='home'),
+    url(r'^$',      'story.views.home', name='home'),
     url(r'^login/$', django.contrib.auth.views.login, {'template_name': 'castle/login.html'}, name='login'),
     url(r'^logout/$', castle.views.signout, name='signout'),
 #    url(r'^login/$',      TemplateView.as_view(template_name='castle/login.html'), name='signin'),
@@ -62,20 +63,6 @@ urlpatterns = patterns('',
     url(r'^authors/u/profile/$', 'castle.views.profile_view', name='profile'),
     url(r'^authors/u/submit/$', 'castle.views.submit_profile', name='submit_profile'),
     url(r'^register/$', 'castle.views.profile_view', name='register'),
-    url(r'^stories/(?P<story_id>\d+)/$', 'castle.views.story_view', name='story'),
-    url(r'^stories/edit/(?P<story_id>\d+)/$', 'castle.views.edit_story', name='edit_story'),
-    url(r'^stories/delete/(?P<story_id>\d+)/$', 'castle.views.delete_story', name='delete_story'),
-    url(r'^stories/new/$', 'castle.views.new_story', name='new_story'),
-    url(r'^stories/submit/$', 'castle.views.submit_story', name='submit_story'),
-    url(r'^stories/unsubscribe/(?P<story_id>\d+)/$', 'castle.views.story_unsubscribe', name='story-unsub'),
-    url(r'^stories/subscribe/(?P<story_id>\d+)/$', 'castle.views.story_subscribe', name='story-sub'),
-    url(r'^stories/prequels/unsubscribe/(?P<story_id>\d+)/$', 'castle.views.prequel_unsubscribe', name='prequel-unsub'),
-    url(r'^stories/prequels/subscribe/(?P<story_id>\d+)/$', 'castle.views.prequel_subscribe', name='prequel-sub'),
-    url(r'^stories/sequels/unsubscribe/(?P<story_id>\d+)/$', 'castle.views.sequel_unsubscribe', name='sequel-unsub'),
-    url(r'^stories/sequels/subscribe/(?P<story_id>\d+)/$', 'castle.views.sequel_subscribe', name='sequel-sub'),
-    url(r'^stories/$', 'castle.views.browse_stories', name='recent_stories'),
-    url(r'^stories/active/$', 'castle.views.active_stories', name='active_stories'),
-    url(r'^stories/popular/$', 'castle.views.popular_stories', name='popular_stories'),
 
     url(r'^blog/$', 'castle.views.blogs', name='blogs'),
     url(r'^blog/(?P<blog_id>\d+)/$', 'castle.views.blog_view', name='blog'),
