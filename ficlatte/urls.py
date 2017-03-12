@@ -43,7 +43,8 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
     
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'), # Sitemap
-    url(r'^notes/', include('notes.urls')), #Notes
+    url(r'^challenges/', include('challenge.urls')), # Challenges
+    url(r'^notes/', include('notes.urls')), # Notes
     
     #Dynamic Pages
     url(r'^$',      'castle.views.home', name='home'),
@@ -84,19 +85,7 @@ urlpatterns = patterns('',
     url(r'^prompts/recent/$', 'castle.views.browse_prompts', name='prompts_recent'),
     url(r'^prompts/active/$', 'castle.views.active_prompts', name='prompts_active'),
     url(r'^prompts/popular/$', 'castle.views.popular_prompts', name='prompts_popular'),
-    url(r'^challenges/$', 'castle.views.challenges', name='challenges'),
-    url(r'^challenges/recent/$', 'castle.views.browse_challenges', name='challenges_recent'),
-    url(r'^challenges/active/$', 'castle.views.active_challenges', name='challenges_active'),
-    url(r'^challenges/popular/$', 'castle.views.popular_challenges', name='challenges_popular'),
-    url(r'^challenges/(?P<challenge_id>\d+)/$', 'castle.views.challenge_view', name='challenge'),
-    url(r'^challenges/(?P<challenge_id>\d+)/winner/(?P<story_id>\d+)/$', 'castle.views.challenge_winner', name='challenge_winner'),
-    #url(r'^challenges/edit/(?P<challenge_id>\d+)/$', 'castle.views.edit_challenge', name='edit_challenge'),
-    url(r'^challenges/new/$', 'castle.views.new_challenge', name='new_challenge'),
-    url(r'^challenges/submit/$', 'castle.views.submit_challenge', name='submit_challenge'),
-    url(r'^challenges/unsubscribe/(?P<challenge_id>\d+)/$', 'castle.views.challenge_unsubscribe', name='challenge-unsub'),
-    url(r'^challenges/subscribe/(?P<challenge_id>\d+)/$', 'castle.views.challenge_subscribe', name='challenge-sub'),
-    url(r'^challenges/entries/unsubscribe/(?P<challenge_id>\d+)/$', 'castle.views.challenge_entry_unsubscribe', name='challenge-entry-unsub'),
-    url(r'^challenges/entries/subscribe/(?P<challenge_id>\d+)/$', 'castle.views.challenge_entry_subscribe', name='challenge-entry-sub'),
+
     url(r'^blog/$', 'castle.views.blogs', name='blogs'),
     url(r'^blog/(?P<blog_id>\d+)/$', 'castle.views.blog_view', name='blog'),
     url(r'^blog/edit/(?P<blog_id>\d+)/$', 'castle.views.edit_blog', name='edit_blog'),
