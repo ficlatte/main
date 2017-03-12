@@ -1,4 +1,3 @@
-
 #coding: utf-8
 #This file is part of Ficlatté.
 #Copyright (C) 2015 Paul Robertson
@@ -184,6 +183,8 @@ def validate_email_addr( email ):
         return False
 
 #-----------------------------------------------------------------------------
+# Registration and Authentication
+#-----------------------------------------------------------------------------
 @transaction.atomic
 def signin(request):
     username = request.POST.get('username', None)
@@ -257,219 +258,222 @@ def signout(request):
     return HttpResponseRedirect(reverse('home'))
 
 #-----------------------------------------------------------------------------
-# Blog views
-#-----------------------------------------------------------------------------
-def blogs(request):
-    # Get user profile
-    profile = None
-    if (request.user.is_authenticated()):
-        profile = request.user.profile
+def new_email_flag_entry(request, items, profile, code, descr, perm=None):
+    node = {}
 
-    # Get blogs
-    page_num = safe_int(request.GET.get('page_num', 1))
-    blogs = Blog.objects.exclude(draft=True).order_by('-ptime')[(page_num-1)*PAGE_BLOG:page_num*PAGE_BLOG]
-    num_blogs = Blog.objects.exclude(draft = True).count()
-
-    # Build context and render page
-    context = { 'profile'       : profile,
-                'blogs'         : blogs,
-                'page_title'    : u'Blog page {}'.format(page_num),
-                'page_url'      : u'/blog/',
-                'pages'         : bs_pager(1, 10, blogs.count()),
-            }
-    return render(request, 'castle/blogs.html', context)
-
-#-----------------------------------------------------------------------------
-def blog_view(request, blog_id, comment_text=None, error_title='', error_messages=None):
-    blog = get_object_or_404(Blog, pk=blog_id)
-
-    # Get user profile
-    profile = None
-    if (request.user.is_authenticated()):
-        profile = request.user.profile
-
-    # Is logged-in user the author?
-    author = blog.user
-    owner = ((profile is not None) and (profile == author))
-
-    # Get comments
-    page_num = safe_int(request.GET.get('page_num', 1))
-    comments = blog.comment_set.all().order_by('ctime')[(page_num-1)*PAGE_COMMENTS:page_num*PAGE_COMMENTS]
-
-    # Is user subscribed?
-    subscribed = False
-    if (profile is not None):
-        subscribed = (blog.subscriptions.filter(user=profile).count()>0)
-
-    # Build context and render page
-    context = { 'profile'       : profile,
-                'author'        : blog.user,
-                'blog'          : blog,
-                'comments'      : comments,
-                'page_url'      : u'/stories/'+unicode(blog_id),
-                'pages'         : bs_pager(page_num, PAGE_COMMENTS, blog.comment_set.count()),
-                'owner'         : owner,
-                'comment_text'  : comment_text,
-                'subscribed'    : subscribed,
-                'error_title'   : error_title,
-                'error_messages': error_messages,
-                'page_title'    : u'Blog '+blog.title,
-            }
-    return render(request, 'castle/blog.html', context)
-
-#-----------------------------------------------------------------------------
-@login_required
-def blog_unsubscribe(request, blog_id, comment_text=None, error_title='', error_messages=None):
-    blog = get_object_or_404(Blog, pk=blog_id)
-    # Get user profile
-    profile = None
-    if (request.user.is_authenticated()):
-        profile = request.user.profile
-    if (profile is None):
-        raise Http404
-
-    Subscription.objects.filter(user=profile, blog=blog).delete()
-
-    context = { 'thing'         : blog,
-                'thing_type'    : u'blog',
-                'thing_url'     : reverse('blog', args=[blog.id]),
-                'page_title'    : u'Unsubscribe blog '+blog.title,
-                'error_title'   : error_title,
-                'error_messages': error_messages,
-                'user_dashboard': True,
-                'profile'       : profile,
-        }
-
-    return render(request, 'castle/unsubscribed.html', context)
-    
-#-----------------------------------------------------------------------------
-@login_required
-def new_blog(request):
-    # Get user profile
-    profile = None
-    if (request.user.is_authenticated()):
-        profile = request.user.profile
-
-    if ((profile is None) or (not request.user.has_perm("castle.post_blog"))):
-        raise Http404
-
-    # Build context and render page
-    context = { 'profile'       : profile,
-                'blog'          : Blog(),      # Create blank blog for default purposes
-                'page_title'    : u'Write new blog',
-                'length_limit'  : 20480,
-                'length_min'    : 60,
-                'user_dashboard': 1,
-            }
-
-    return render(request, 'castle/edit_blog.html', context)
-
-#-----------------------------------------------------------------------------
-@login_required
-def edit_blog(request, blog_id):
-    # Get blog
-    blog = get_object_or_404(Blog, pk=blog_id)
-
-    # Get user profile
-    profile = None
-    if (request.user.is_authenticated()):
-        profile = request.user.profile
-
-    if ((profile is None) or (not request.user.has_perm("castle.post_blog"))):
-        raise Http404
-
-    # Build context and render page
-    context = { 'profile'       : profile,
-                'blog'          : blog,
-                'page_title'    : u'Edit blog '+blog.title,
-                'length_limit'  : 20480,
-                'length_min'    : 60,
-                'user_dashboard': 1,
-            }
-
-    return render(request, 'castle/edit_blog.html', context)
-
-#-----------------------------------------------------------------------------
-@login_required
-@transaction.atomic
-def submit_blog(request):
-    # Get user profile
-    profile = None
-    if (request.user.is_authenticated()):
-        profile = request.user.profile
-
-    if ((profile is None) or (not request.user.has_perm("castle.post_blog"))):
-        raise Http404
-
-    # Get bits and bobs
-    errors     = []
-    blog       = get_foo(request.POST, Blog,  'bid')
-    new_blog   = (blog is None)
-    was_draft  = False
-    if (not new_blog):         # Remember if the blog was draft
-        was_draft = blog.draft
-    draft      = request.POST.get('is_draft', False)
-    bbcode     = request.POST.get('is_bbcode', False)
-
-    if (not profile.email_authenticated()):
-        errors.append(u'You must have authenticated your e-mail address before posting a blog');
+    node['code']  = code
+    node['descr'] = descr
+    if (profile):
+        node['is_set'] = ((profile.email_flags & code) > 0)
     else:
-        # Get blog object, either existing or new
-        if (blog is None):
-            blog = Blog(user = profile)
+        node['is_set'] = True
 
-        # Populate blog object with data from submitted form
-        blog.title  = request.POST.get('title', '')
-        blog.body   = request.POST.get('body', '')
-        blog.draft  = draft
-        blog.bbcode = bbcode
+    # If permissions required, check
+    if (perm):
+        if (request.user.has_perm(perm)):
+            items.append(node)
+    else:
+        items.append(node)
 
-        # Condense all end-of-line markers into \n
-        blog.body = re_crlf.sub(u"\n", blog.body)
+#-----------------------------------------------------------------------------
+def confirmation(request, yesno, uid, token):
+    profile = get_object_or_404(Profile, pk=uid)
 
-        # Check for submission errors
-        if (len(blog.title) < 1):
-            errors.append(u'Blog title must be at least 1 character long')
+    logged_in_user = None
+    if (request.user.is_authenticated()):
+        logged_in_user = request.user.profile
 
-        l = len(blog.body)
-        if ((not blog.draft) and (l < 60)):
-            errors.append(u'Blog body must be at least 60 characters long')
+    int_token = safe_int(token, -1)
 
-        if (l > 20480):
-            errors.append(u'Blog is over 20480 characters (currently ' + unicode(l) + u')')
+    # Check to see if the UID and token are valid before we do anything else.
+    # Also, keep user feedback vague, as we don't want to leak user data
 
-    # If there have been errors, re-display the page
-    if (errors):
-    # Build context and render page
-        context = { 'profile'       : profile,
-                    'blog'          : blog,
-                    'page_title'    : u'Edit blog '+blog.title,
-                    'length_limit'  : 20480,
-                    'length_min'    : 60,
-                    'user_dashboard': 1,
-                    'error_title'   : 'Blog submission unsuccessful',
-                    'error_messages': errors,
-                }
+    # The request is valid if the profile object has a non-null email_auth
+    # and the token in the request matches it.  We send the token unsigned
+    # but the underlying database stores it signed, so we need to do a bit
+    # of munging before we do the comparison
+    if (not profile.email_auth):
+        return render(request, 'castle/status_message.html',
+                      {'profile': logged_in_user,
+                      'status_type': 'info',
+                      'status_message': u'E-mail address already authenticated.'})
+    elif (int_token == to_unsigned64(profile.email_auth)):
+        # Request is authorised, now we look at the yes/no
+        if (yesno == 'yes'):
+            # It's a valid e-mail confirmation message
+            profile.email_auth = 0
+            profile.email_time = timezone.now()
+            profile.save()
+            return render(request, 'castle/status_message.html',
+                          {'profile': logged_in_user,
+                           'status_type': 'success',
+                           'status_message': u'E-mail address confirmed successfully',})
+        elif (yesno == 'no'):
+            # FIXME: need to add e-mail to blacklist
+            return render(request, 'castle/status_message.html',
+                          {'profile': logged_in_user,
+                           'status_type': 'danger',
+                           'status_message': u'E-mail address added to do-not-send list',})
+        else:
+            raise Http404
 
-        return render(request, 'castle/edit_blog.html', context)
+    return render(request, 'castle/status_message.html',
+                      {'profile': logged_in_user,
+                      'status_type': 'danger',
+                      'status_message': u'Authentication token mismatch'})
 
-    # Is the blog being published?
-    if (not draft and (was_draft or new_blog)):
-        blog.ptime = timezone.now()
+#-----------------------------------------------------------------------------
+@login_required
+def resend_email_conf(request):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    # Get data from form
+    pen_name        = profile.pen_name
+    email_addr      = profile.email_addr
+    email_auth      = profile.email_auth
+    email_time      = profile.email_time
 
     # Set modification time
-    blog.mtime = timezone.now()
+    time_now = timezone.now()
 
-    # No problems, update the database and redirect
-    blog.save()
+    # Has the author's email address been confirmed?
+    email_conf = (profile.email_auth == 0)
+    if (not email_conf):
+        # Get random 64 bit integer
+        token = random64()
+        token_s = to_signed64(token)
+        profile.email_auth = token_s
+        profile.email_time = time_now
+        send_conf_email(profile, token)
+        profile.save()
 
-    # Auto-subscribe to e-mail notifications according to user's preferences
-    if (new_blog):
-        if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_BLOG):
-            Subscription.objects.get_or_create(user=profile, blog=blog)
+    #Build context and render page
+    context = {
+        'page_title'        : u'Resend email confirmation',
+        'email_conf'        : email_conf,
+        }
 
-    return HttpResponseRedirect(reverse('blog', args=(blog.id,)))
+    return render(request, 'castle/registration/resend_email_confirmation.html', context)
 
+#-----------------------------------------------------------------------------
+# User Dashboard
+#-----------------------------------------------------------------------------
+@login_required
+def dashboard(request):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    if ((profile is None) or (not request.user.has_perm("castle.admin"))):
+        raise Http404
+
+    # Count number of views in last 24 hours:
+    date_from = timezone.now() - timedelta(days=1)
+    views = StoryLog.objects.filter(log_type=StoryLog.VIEW, ctime__gte=date_from).count()
+
+    # Count users
+    users = Profile.objects.count()
+
+    # Count stories
+    tot_stories = Story.objects.count()
+    act_stories = Story.objects.filter(activity__gt = 0).count()
+    pub_stories = Story.objects.exclude(draft=True).count()
+
+    # Recent log entries
+    log = StoryLog.objects.exclude(log_type=StoryLog.VIEW).order_by('-ctime')[0:25]
+
+    # Recent users
+    recent_users = Profile.objects.all().order_by('-ctime')[0:10]
+
+    # Build context and render page
+    context = {
+        'profile'       : profile,
+        'views'         : views,
+        'users'         : users,
+        'page_title'    : u'Dashboard',
+        'tot_stories'   : tot_stories,
+        'act_stories'   : act_stories,
+        'pub_stories'   : pub_stories,
+        'log'           : log,
+        'recent_users'  : recent_users,
+        }
+
+    return render(request, 'castle/dashboard.html', context)
+    
+#-----------------------------------------------------------------------------    
+@login_required
+def add_friend(request, user_id):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    # get friend object
+    friend = get_object_or_404(Profile, pk=user_id)
+
+    # Add friend to profile's friendship list
+    profile.friends.add(friend)
+
+    return HttpResponseRedirect(reverse('author', args=(friend.pen_name,)))
+
+#-----------------------------------------------------------------------------
+@login_required
+def del_friend(request, user_id):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    # get friend object
+    friend = get_object_or_404(Profile, pk=user_id)
+
+    # Add friend to profile's friendship list
+    profile.friends.remove(friend)
+
+    return HttpResponseRedirect(reverse('author', args=(friend.pen_name,)))    
+
+#-----------------------------------------------------------------------------
+@login_required
+def avatar_upload(request):
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+
+    if (request.method == 'POST'):
+        form = AvatarUploadForm(request.POST, request.FILES)
+        if (form.is_valid()):
+            # Happy
+            f = request.FILES['image_file']
+            path = getattr(settings, 'AVATAR_PATH', None)
+            fnm = path + '/tmp/' + str(profile.id)
+            destination = open(fnm, 'wb+')
+            for chunk in f.chunks():
+                destination.write(chunk)
+            destination.close()
+            failure = convert_avatars(profile)
+            os.remove(fnm)
+            if (not failure):
+                profile.flags = profile.flags | Profile.HAS_AVATAR
+                profile.save()
+
+            return HttpResponseRedirect(reverse('home'))
+    else:
+        form = AvatarUploadForm()
+
+    context = {
+		'profile'		: profile,
+        'page_title'    : u'Upload avatar',
+        'form'          : form,
+        }
+    return render(request, 'castle/avatar_upload.html', context)
+
+#-----------------------------------------------------------------------------
+# Comment Submission
 #-----------------------------------------------------------------------------
 @login_required
 @transaction.atomic
@@ -623,184 +627,9 @@ def submit_comment(request):
         return HttpResponseRedirect(reverse('prompt', args=(prompt.id,)))
     elif (challenge):
         return HttpResponseRedirect(reverse('challenge', args=(challenge.id,)))
-
+        
 #-----------------------------------------------------------------------------
-def new_email_flag_entry(request, items, profile, code, descr, perm=None):
-    node = {}
-
-    node['code']  = code
-    node['descr'] = descr
-    if (profile):
-        node['is_set'] = ((profile.email_flags & code) > 0)
-    else:
-        node['is_set'] = True
-
-    # If permissions required, check
-    if (perm):
-        if (request.user.has_perm(perm)):
-            items.append(node)
-    else:
-        items.append(node)
-
-#-----------------------------------------------------------------------------
-def confirmation(request, yesno, uid, token):
-    profile = get_object_or_404(Profile, pk=uid)
-
-    logged_in_user = None
-    if (request.user.is_authenticated()):
-        logged_in_user = request.user.profile
-
-    int_token = safe_int(token, -1)
-
-    # Check to see if the UID and token are valid before we do anything else.
-    # Also, keep user feedback vague, as we don't want to leak user data
-
-    # The request is valid if the profile object has a non-null email_auth
-    # and the token in the request matches it.  We send the token unsigned
-    # but the underlying database stores it signed, so we need to do a bit
-    # of munging before we do the comparison
-    if (not profile.email_auth):
-        return render(request, 'castle/status_message.html',
-                      {'profile': logged_in_user,
-                      'status_type': 'info',
-                      'status_message': u'E-mail address already authenticated.'})
-    elif (int_token == to_unsigned64(profile.email_auth)):
-        # Request is authorised, now we look at the yes/no
-        if (yesno == 'yes'):
-            # It's a valid e-mail confirmation message
-            profile.email_auth = 0
-            profile.email_time = timezone.now()
-            profile.save()
-            return render(request, 'castle/status_message.html',
-                          {'profile': logged_in_user,
-                           'status_type': 'success',
-                           'status_message': u'E-mail address confirmed successfully',})
-        elif (yesno == 'no'):
-            # FIXME: need to add e-mail to blacklist
-            return render(request, 'castle/status_message.html',
-                          {'profile': logged_in_user,
-                           'status_type': 'danger',
-                           'status_message': u'E-mail address added to do-not-send list',})
-        else:
-            raise Http404
-
-    return render(request, 'castle/status_message.html',
-                      {'profile': logged_in_user,
-                      'status_type': 'danger',
-                      'status_message': u'Authentication token mismatch'})
-
-#-----------------------------------------------------------------------------
-@login_required
-def resend_email_conf(request):
-    # Get user profile
-    profile = None
-    if (request.user.is_authenticated()):
-        profile = request.user.profile
-
-    # Get data from form
-    pen_name        = profile.pen_name
-    email_addr      = profile.email_addr
-    email_auth      = profile.email_auth
-    email_time      = profile.email_time
-
-    # Set modification time
-    time_now = timezone.now()
-
-    # Has the author's email address been confirmed?
-    email_conf = (profile.email_auth == 0)
-    if (not email_conf):
-        # Get random 64 bit integer
-        token = random64()
-        token_s = to_signed64(token)
-        profile.email_auth = token_s
-        profile.email_time = time_now
-        send_conf_email(profile, token)
-        profile.save()
-
-    #Build context and render page
-    context = {
-        'page_title'        : u'Resend email confirmation',
-        'email_conf'        : email_conf,
-        }
-
-    return render(request, 'castle/registration/resend_email_confirmation.html', context)
-
-#-----------------------------------------------------------------------------
-@login_required
-def dashboard(request):
-    # Get user profile
-    profile = None
-    if (request.user.is_authenticated()):
-        profile = request.user.profile
-
-    if ((profile is None) or (not request.user.has_perm("castle.admin"))):
-        raise Http404
-
-    # Count number of views in last 24 hours:
-    date_from = timezone.now() - timedelta(days=1)
-    views = StoryLog.objects.filter(log_type=StoryLog.VIEW, ctime__gte=date_from).count()
-
-    # Count users
-    users = Profile.objects.count()
-
-    # Count stories
-    tot_stories = Story.objects.count()
-    act_stories = Story.objects.filter(activity__gt = 0).count()
-    pub_stories = Story.objects.exclude(draft=True).count()
-
-    # Recent log entries
-    log = StoryLog.objects.exclude(log_type=StoryLog.VIEW).order_by('-ctime')[0:25]
-
-    # Recent users
-    recent_users = Profile.objects.all().order_by('-ctime')[0:10]
-
-    # Build context and render page
-    context = {
-        'profile'       : profile,
-        'views'         : views,
-        'users'         : users,
-        'page_title'    : u'Dashboard',
-        'tot_stories'   : tot_stories,
-        'act_stories'   : act_stories,
-        'pub_stories'   : pub_stories,
-        'log'           : log,
-        'recent_users'  : recent_users,
-        }
-
-    return render(request, 'castle/dashboard.html', context)
-    
-#-----------------------------------------------------------------------------    
-@login_required
-def add_friend(request, user_id):
-    # Get user profile
-    profile = None
-    if (request.user.is_authenticated()):
-        profile = request.user.profile
-
-    # get friend object
-    friend = get_object_or_404(Profile, pk=user_id)
-
-    # Add friend to profile's friendship list
-    profile.friends.add(friend)
-
-    return HttpResponseRedirect(reverse('author', args=(friend.pen_name,)))
-
-#-----------------------------------------------------------------------------
-@login_required
-def del_friend(request, user_id):
-    # Get user profile
-    profile = None
-    if (request.user.is_authenticated()):
-        profile = request.user.profile
-
-    # get friend object
-    friend = get_object_or_404(Profile, pk=user_id)
-
-    # Add friend to profile's friendship list
-    profile.friends.remove(friend)
-
-    return HttpResponseRedirect(reverse('author', args=(friend.pen_name,)))    
-
+# Static Views        
 #-----------------------------------------------------------------------------
 def static_view(request, template_name):
     # Get user profile
@@ -812,41 +641,3 @@ def static_view(request, template_name):
         'profile'       : profile
         }
     return render(request, 'castle/'+template_name, context)
-
-#-----------------------------------------------------------------------------
-@login_required
-def avatar_upload(request):
-    # Get user profile
-    profile = None
-    if (request.user.is_authenticated()):
-        profile = request.user.profile
-
-    if (request.method == 'POST'):
-        form = AvatarUploadForm(request.POST, request.FILES)
-        if (form.is_valid()):
-            # Happy
-            f = request.FILES['image_file']
-            path = getattr(settings, 'AVATAR_PATH', None)
-            fnm = path + '/tmp/' + str(profile.id)
-            destination = open(fnm, 'wb+')
-            for chunk in f.chunks():
-                destination.write(chunk)
-            destination.close()
-            failure = convert_avatars(profile)
-            os.remove(fnm)
-            if (not failure):
-                profile.flags = profile.flags | Profile.HAS_AVATAR
-                profile.save()
-
-            return HttpResponseRedirect(reverse('home'))
-    else:
-        form = AvatarUploadForm()
-
-    context = {
-		'profile'		: profile,
-        'page_title'    : u'Upload avatar',
-        'form'          : form,
-        }
-    return render(request, 'castle/avatar_upload.html', context)
-
-#-----------------------------------------------------------------------------
