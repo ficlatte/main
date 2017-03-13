@@ -30,10 +30,11 @@ $ cd ficlatte
 $ cp settings-example.py settings.py  
 $ vi/emacs/whatever settings.py  
 
-and edit the settings file (see https://docs.djangoproject.com/en/1.8/ref/settings/ ).  Under DATABASES, make sure that the NAME is set to the name of the database ('ficlatte' if you followed the instructions above), that USER is set to the database username (also 'ficlatte' if you followed the instructions) and that PASSWORD is set to the password, which really should not be 'password'.  It would be useful for you to set up the EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER and EMAIL_HOST_PASSWORD to settings provided by your e-mail provider.  This will allow the system to send you notification e-mails (handy for those pesky new-user verification e-mails).  If you want to fake e-mail verification, use the admin interface to edit the user's profile entry directly and set email_auth to 0.
+and edit the settings file (see https://docs.djangoproject.com/en/1.8/ref/settings/ or see below for the current settings in use).  Under DATABASES, make sure that the NAME is set to the name of the database ('ficlatte' if you followed the instructions above), that USER is set to the database username (also 'ficlatte' if you followed the instructions) and that PASSWORD is set to the password, which really should not be 'password'.  It would be useful for you to set up the EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER and EMAIL_HOST_PASSWORD to settings provided by your e-mail provider.  This will allow the system to send you notification e-mails (handy for those pesky new-user verification e-mails).  If you want to fake e-mail verification, use the admin interface to edit the user's profile entry directly and set email_auth to 0.
 
 Now, create all the database structures:
 
+$ python manage.py makemigrations  
 $ python manage.py migrate
 
 After you've done that, create yourself a superuser account (useful).  Note that the admin account is not normally associated with a Ficlatté author profile.
@@ -52,15 +53,33 @@ $ pip install django-datetime-widget
 
 Update settings.py:
 
-INSTALLED_APPS (  
-   ...  
-   'datetimewidget',  
-)  
+INSTALLED_APPS = (  
+    'django.contrib.admin',  
+    'django.contrib.auth',  
+    'django.contrib.contenttypes',  
+    'django.contrib.sessions',  
+    'django.contrib.messages',  
+    'django.contrib.staticfiles',  
+    'django.contrib.sitemaps',  
+    'castle',  
+    'blog',  
+    'author',  
+    'story',  
+    'prompt',  
+    'challenge',  
+    'notes',  
+    'bbcode',  
+    'datetimewidget',  
+)   
 
-MIDDLEWARE_CLASSES (
-	'django.contrib.sessions.middleware.SessionMiddleware',  
+MIDDLEWARE_CLASSES = (  
+    'django.contrib.sessions.middleware.SessionMiddleware',  
     'django.middleware.locale.LocaleMiddleware',  
     'django.middleware.common.CommonMiddleware',  
-    ...  
-)
+    'django.middleware.csrf.CsrfViewMiddleware',  
+    'django.contrib.auth.middleware.AuthenticationMiddleware',  
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',  
+    'django.contrib.messages.middleware.MessageMiddleware',  
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',  
+)  
 

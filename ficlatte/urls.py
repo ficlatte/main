@@ -51,7 +51,7 @@ urlpatterns = patterns('',
     url(r'^notes/', include('notes.urls')), # Notes
     
     # Registration and Authentication
-    url(r'^$',      'story.views.home', name='home'),
+    url(r'^$', 'story.views.home', name='home'),
     url(r'^login/$', django.contrib.auth.views.login, {'template_name': 'castle/login.html'}, name='login'),
     url(r'^logout/$', castle.views.signout, name='signout'),
     url(r'^signin/$',     'castle.views.signin',  name='signin'),       # Process log-in credentials
