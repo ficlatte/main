@@ -18,6 +18,7 @@ import re
 import hashlib
 from castle.models import *
 from castle.views import *
+from comment.views import *
 
 #-----------------------------------------------------------------------------
 def blogs(request):

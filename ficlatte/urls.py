@@ -48,6 +48,7 @@ urlpatterns = patterns('',
     url(r'^stories/', include('story.urls')), # Stories
     url(r'^prompts/', include('prompt.urls')), # Prompts
     url(r'^challenges/', include('challenge.urls')), # Challenges
+    url(r'^comment/', include('comment.urls')), # Comments
     url(r'^notes/', include('notes.urls')), # Notes
     
     # Registration and Authentication
@@ -70,7 +71,6 @@ urlpatterns = patterns('',
     url(r'^avatar_upload/', 'castle.views.avatar_upload', name='avatar_upload'),
 
 	# Miscellaneous Story
-    url(r'^comment/submit/$', 'castle.views.submit_comment', name='submit_comment'),
     url(r'^tags/(?P<tag_name>[^/]+)/$', 'story.views.tags', name='tags'),
     url(r'^tags/$', 'story.views.tags_null', name='tags_null'),    
     

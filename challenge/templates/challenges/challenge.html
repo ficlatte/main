@@ -100,17 +100,20 @@ Copyright (C) 2015 Paul Robertson
 			</div>
 			<div class="col-sm-6 col-md-6">
 				<h3>Discussion</h3>
-				<ul class="challenge-comments">
-					{% for comment in comments %}
-					<li class="challenge-comment">
+				{% for comment in comments %}
+				<div class="row comment-row">					
+					<div class="col-sm-3">
+						{{comment.user|avatar}}
+					</div> <!-- id="" class="col-md-2" -->
+					<div class="col-sm-9 comment-body">
 						{{comment.user|author_link:'h4'}}
 						{{comment.body|encode_story}}
 						<ul class="list-inline">
 							<li class="posted">Posted <abbr class="dtposted" title="{{comment.ctime|date:'Y-m-d'}}">{{comment.ctime|age}}</abbr></li>
 						</ul>
-					</li>
-					{% endfor %}
-				</ul>
+					</div>
+				</div>
+				{% endfor %}				
 				{% if profile %}
 				<div id="comment-box">
 					<form action="/comment/submit/" id="comment-form" method="post" role="form">

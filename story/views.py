@@ -19,6 +19,7 @@ import re
 import hashlib
 from castle.models import *
 from castle.views import *
+from comment.views import *
 
 #-----------------------------------------------------------------------------
 def home(request):
@@ -553,7 +554,6 @@ def active_stories(request):
 def popular_stories(request):
     return browse_stories(request, 2)
 
-#-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------
 @login_required
 def story_subscribe(request, story_id, comment_text=None, error_title='', error_messages=None):
