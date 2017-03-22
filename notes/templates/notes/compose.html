@@ -6,7 +6,7 @@
 
 {% block notes %}
 
-		<div class="well" id="new-note">
+        <div class="well" id="new-note">
             <h2>Write Note</h2>
             <form accept-charset="utf-8" action="/notes/compose/submit/" class="form-horizontal" id="note-form" method="post" role="form">
               {% csrf_token %}
@@ -14,7 +14,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label" for="note_recipient">Recipient</label>
                 <div class="col-sm-10">
-                  <input class="form-control" id="note_recipient" maxlength="64" name="recipient" tabindex="2" type="text" value="{{note.recipient}}" />
+                  <input class="form-control" id="note_recipient" maxlength="64" name="recipient" tabindex="2" type="text" value="{{recipient_name}}" {% if is_reply %}readonly{% endif %}/>
                 </div> <!-- id="" class="col-sm-10" -->
               </div> <!-- id="" class="form-group" -->
               <div class="form-group">

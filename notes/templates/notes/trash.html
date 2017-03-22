@@ -5,23 +5,23 @@
 {% load note_tags %}
 
 {% block notes %}
-		
-		<div class="well well-sm">
-			<h1>Trash</h1>
-			
-			<div class="list-group">
-		
-				{% if note_list %}
-					{% for note in note_list %}
-					<div class="list-group-item">
-						To: {{ note.recipient }} | From: {{ note.sender }} | {{ note|note_link }} | {{ note.sent_date|age }}						
-					</div>
-					{% endfor %}
-				{% else %}
+        
+        <div class="well well-sm">
+            <h1>Trash</h1>
+            
+            <div class="list-group">
+        
+                {% if note_list %}
+                    {% for note in note_list %}
+                    <div class="list-group-item">
+                        To: {{ note.recipient }} | From: {{ note.sender }} | {{ note|note_link }} | {{ note.sent_date|age }}                        
+                    </div>
+                    {% endfor %}
+                {% else %}
 
-				<p>No notes.</p>
-				{% endif %}
-			</div> <!-- class="list-group" -->
-		</div><!-- class="well well-sm" -->
+                <p>No notes.</p>
+                {% endif %}
+            </div> <!-- class="list-group" -->
+        </div><!-- class="well well-sm" -->
 
 {% endblock %}

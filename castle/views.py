@@ -283,10 +283,16 @@ def home(request):
             featured = featured_query[0]
     
     # Get latest challenge
-    challenge = Challenge.objects.all().order_by('-id')[0]
+    try:
+        challenge = Challenge.objects.all().order_by('-id')[0]
+    except IndexError:
+        challenge = None
     
     # Get latest prompt
-    prompt = Prompt.objects.all().order_by('-id')[0]
+    try:
+        prompt = Prompt.objects.all().order_by('-id')[0]
+    except IndexError:
+        prompt = None
 
     # Suppress story if marked as mature and either the user is not logged in
     # or the user has not enabled viewing of mature stories
