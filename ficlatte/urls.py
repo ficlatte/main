@@ -41,8 +41,8 @@ urlpatterns = patterns('',
     # url(r'^$', 'ficlatte.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
     
-    # Sitemap
-    url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'), # Sitemap
+    url(r'^notes/', include('notes.urls')), #Notes
     
     #Dynamic Pages
     url(r'^$',      'castle.views.home', name='home'),

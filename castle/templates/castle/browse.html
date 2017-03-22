@@ -27,7 +27,7 @@ Copyright (C) 2015 Paul Robertson
               <ul class="story_list">
               {% for story in stories %}
                 <li class="story_list_item">
-					<h3 class="entry_title"><a class="story_link" href="/stories/{{story.id}}">{{story.title}}{% if story.mature %} <small><span class="glyphicon glyphicon-flash" style="color:red"></span></small>{% endif %}</a></h3>
+					<h3 class="entry_title">{{story|story_link}}</h3>
 					<blockquote class="entry_content">
 						{% if story.mature %}
 							{% if not profile.mature and story.user != profile %}

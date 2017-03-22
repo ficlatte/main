@@ -28,7 +28,7 @@ Copyright (C) 2015 Paul Robertson
               <ul class="story_list">
                 {% for c in challenges %}
                 <li class="story_list_item">
-					<h3 class="entry_title"><a class="challenge_link" href="/challenges/{{ c.id }}">{{c.title}}{% if c.mature %} <small><span class="glyphicon glyphicon-flash" style="color:red"></span></small>{% endif %}</a></h3>
+					<h3 class="entry_title">{{c|challenge_link}}</h3>
 					<ul class="story_meta">
 						<li id="startdate">Challenge start date: {{c.stime|date:"jS F Y"}}</li>
 						<li id="enddate">Challenge end date: {{c.etime|date:"jS F Y"}}</li>

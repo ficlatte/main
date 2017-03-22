@@ -1,0 +1,36 @@
+{% extends "notes/notes_sidebar.html" %}
+{% load i18n %}
+
+{% load staticfiles %}
+{% load castle_tags %}
+{% load note_tags %}
+
+{% block primary_panel %}
+
+        <div class="panel panel-success">
+            <div class="panel-heading">
+              <div class="row">
+                <div class="col-sm-2 col-md-2">
+                  {{author|avatar}}
+                </div> <!-- id="" class="col-sm-2 col-md-2" -->
+                <div class="col-sm-8 col-md-8">
+                  {{author|author_link:"h1"}}
+                  <p id="user-desc">Joined Ficlatt&eacute; in <span>{{author.ctime|date:"F Y"}}</span></p>
+                  <p id="user-stats"></p>
+                </div> <!-- id="" class="col-sm-8 col-md-8" -->
+              </div> <!-- id="" class="row" -->
+            </div> <!-- id="" class="panel-heading" -->
+            <div class="panel-body">
+              <a class="btn btn-success btn-block" href="/notes/compose/" id="compose-note-link" type="button"><span class="glyphicon glyphicon-pencil"></span> &nbsp; New note</a>
+              <ul class="notes-navigation">
+                <li><span class=" glyphicon glyphicon-inbox"></span> <a href="/notes/inbox/">Inbox</a></li>
+                <li><span class=" glyphicon glyphicon-envelope"></span> <a href="/notes/outbox">Outbox</a></li>
+                <li><span class=" glyphicon glyphicon-trash"></span> <a href="/notes/trash/">Trash</a></li>
+            </ul>
+            </div> <!-- id="" class="panel-body" -->
+          </div> <!-- id="" class="panel panel-success" -->
+          
+{% block notes %}
+{% endblock notes %}
+
+{% endblock primary_panel %}

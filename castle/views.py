@@ -120,7 +120,7 @@ def get_tagged_stories(tag_name, page_num=1, page_size=10):
 def get_all_tags(page_num=1, page_size=10):
     first = (page_num-1) * page_size
     last  = first + page_size
-    return Tag.objects.values('tag').annotate(n=Count('tag')).order_by('-n','tag')[first:last]
+    return Tag.objects.values('tag').annotate(n=Count('tag')).order_by('tag')[first:last]
 
 #-----------------------------------------------------------------------------
 def get_num_tags():
@@ -281,6 +281,18 @@ def home(request):
         featured_query = Story.objects.filter(id=featured_id[0].i_val)
         if (featured_query):
             featured = featured_query[0]
+    
+    # Get latest challenge
+    try:
+        challenge = Challenge.objects.all().order_by('-id')[0]
+    except IndexError:
+        challenge = None
+    
+    # Get latest prompt
+    try:
+        prompt = Prompt.objects.all().order_by('-id')[0]
+    except IndexError:
+        prompt = None
 
     # Suppress story if marked as mature and either the user is not logged in
     # or the user has not enabled viewing of mature stories
@@ -299,7 +311,9 @@ def home(request):
     context = { 'profile'       : profile,
                 'blog_latest'   : blog,
                 'featured'      : featured,
-                'popular'       : get_popular_stories(1,4),
+                'challenge'		: challenge,
+                'prompt'		: prompt,
+                'popular'       : get_popular_stories(1,5),
                 'active'        : get_active_stories(1,10),
                 'recent'        : get_recent_stories(1,10),
                 'old'           : get_old_stories(10),
@@ -375,6 +389,9 @@ def drafts(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+    
+    # Has the author's email been confirmed?
+    email_conf = (profile.email_auth == 0)
 
     # Build story list (owner sees their drafts)
     page_num = safe_int(request.GET.get('page_num', 1))
@@ -386,6 +403,7 @@ def drafts(request):
                 'author'        : profile,
                 'story_list'    : story_list,
                 'page_title'    : profile.pen_name,
+                'email_conf'	: email_conf,
                 'page_url'      : u'/authors/'+urlquote(profile.pen_name)+u'/',
                 'pages'         : bs_pager(page_num, PAGE_STORIES, num_stories),
                 'drafts_page'   : True,
@@ -402,6 +420,9 @@ def author_prompts(request):
     if (request.user.is_authenticated()):
         profile = request.user.profile
 
+    # Has the author's email been confirmed?
+    email_conf = (profile.email_auth == 0)
+
     # Build story list (owner sees their drafts)
     page_num = safe_int(request.GET.get('page_num', 1))
     num_prompts = Prompt.objects.count()
@@ -410,8 +431,9 @@ def author_prompts(request):
     # Build context and render page
     context = { 'profile'       : profile,
                 'author'        : profile,
-                'prompt_list'    : prompt_list,
+                'prompt_list'   : prompt_list,
                 'page_title'    : profile.pen_name,
+                'email_conf'	: email_conf,
                 'page_url'      : u'/authors/'+urlquote(profile.pen_name)+u'/',
                 'pages'         : bs_pager(page_num, PAGE_STORIES, num_prompts),
                 'prompts_page'  : True,
@@ -427,6 +449,9 @@ def author_challenges(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        
+    # Has the author's email been confirmed?
+    email_conf = (profile.email_auth == 0)
 
     # Build story list (owner sees their drafts)
     page_num = safe_int(request.GET.get('page_num', 1))
@@ -436,8 +461,9 @@ def author_challenges(request):
     # Build context and render page
     context = { 'profile'       : profile,
                 'author'        : profile,
-                'challenge_list'    : challenge_list,
+                'challenge_list': challenge_list,
                 'page_title'    : profile.pen_name,
+                'email_conf'	: email_conf,
                 'page_url'      : u'/authors/'+urlquote(profile.pen_name)+u'/',
                 'pages'         : bs_pager(page_num, PAGE_STORIES, num_challenges),
                 'challenges_page' : True,
@@ -747,6 +773,8 @@ def submit_story(request):
     story.mature = request.POST.get('is_mature', False)
     story.draft  = request.POST.get('is_draft', False)
     story.prompt_text = ptext
+    if challenge:
+		    story.challenge_id = challenge.id
 
     # Condense all end-of-line markers into \n
     story.body = re_crlf.sub(u"\n", story.body)
@@ -2189,6 +2217,7 @@ def avatar_upload(request):
         form = AvatarUploadForm()
 
     context = {
+		'profile'		: profile,
         'page_title'    : u'Upload avatar',
         'form'          : form,
         }

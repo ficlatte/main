@@ -20,7 +20,7 @@ Copyright (C) 2015 Paul Robertson
 {% load castle_tags %}
 
 {% block primary_panel %}
-          <h1>{% if story.draft %}[DRAFT] {% endif %}{{story.title}}{% if story.mature %} <small><span class="glyphicon glyphicon-flash" style="color:red"></span></small>{% endif %}</h1>
+          {% if story.draft %}[DRAFT] {% endif %}{{story|story_link:'h1'}}
           <div class="row">
             <div class="col-sm-2 col-md-2">
               {{author|avatar}}
@@ -32,11 +32,14 @@ Copyright (C) 2015 Paul Robertson
           </div> <!-- id="" class="row" -->
           <hr />
           <div class="content-body">
-          {% if suppressed %}
-          <p>Story is marked as mature</p>
-          {% else %}
-          {{story.body|encode_story}}
-          {% endif %}
+			{% if suppressed %}
+			<span class="mature-warning">Story is marked as mature.</span> <button>Show me anyway</button><br /><br />
+			<div class="mature-content">
+				{{story.body|encode_story}}
+			</div>
+			{% else %}
+				{{story.body|encode_story}}
+			{% endif %}
           </div>
           <div class="row" id="prequel-and-sequel">
             <div class="col-md-6" id="prequel-group">
@@ -92,9 +95,8 @@ Copyright (C) 2015 Paul Robertson
             {{rating_num|rating_pencils}}
           </p>
           {% endif %}
-          {% if not suppressed %}
           {% for comment in comments %}
-          <div class="row">
+          <div class="row comment-row">
             <div class="col-md-2">
               {{comment.user|avatar}}
             </div> <!-- id="" class="col-md-2" -->
@@ -142,7 +144,6 @@ Copyright (C) 2015 Paul Robertson
               </div> <!-- id="" class="form-group" -->
             </form>
           </div> <!-- id="comment-box" class="" -->
-        {% endif %}
         {% endif %}
 
 {% endblock paged_content %}

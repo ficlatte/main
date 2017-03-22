@@ -1,0 +1,27 @@
+{% extends "notes/notes_primary.html" %}
+{% load i18n %}
+
+{% load castle_tags %}
+{% load note_tags %}
+
+{% block notes %}
+        
+        <div class="well well-sm">
+            <h1>Inbox</h1>
+            
+            <div class="list-group">
+        
+                {% if note_list %}
+                    {% for note in note_list %}
+                    <div class="list-group-item">
+                        From: {{ note.sender }} | {{ note|note_link }} | {{ note.sent_date|age }}                       
+                    </div>
+                    {% endfor %}
+                {% else %}
+
+                <p>No notes.</p>
+                {% endif %}
+            </div> <!-- class="list-group" -->
+        </div><!-- class="well well-sm" -->
+
+{% endblock %}
