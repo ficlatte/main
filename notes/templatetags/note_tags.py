@@ -24,7 +24,7 @@ def inbox_count(profile):
     if count > 0:
 	    return mark_safe(u'<span class="inbox-count">' + escape(count) + u'</span>')
     else:
-        return mark_safe(u'<span>' + escape(count) + u'</span>')
+        return mark_safe(u'<span class="inbox-zero">' + escape(count) + u'</span>')
 
 #-----------------------------------------------------------------------------
 @register.filter
