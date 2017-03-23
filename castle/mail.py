@@ -1,7 +1,7 @@
 
 #coding: utf-8
 #This file is part of Ficlatté.
-#Copyright (C) 2015 Paul Robertson
+#Copyright (C) 2015 Paul Robertson & Jim Stitzel
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of version 3 of the GNU Affero General Public
@@ -62,50 +62,50 @@ def send_notification_email(profile, subject, message):
 
 #-----------------------------------------------------------------------------
 def send_notification_email_comment(com):
-	url = getattr(settings, 'SITE_URL', 'http://www.example.com/')
+    url = getattr(settings, 'SITE_URL', 'http://www.example.com/')
 
     # Is the comment on a story, prompt, challenge, or blog?
-	if (com.story):
-		parent = com.story
-		parent_type = u'story'
-		subs = Subscription.objects.filter(story=parent)
-		parent_url = u'{}{}'.format(url, reverse('story', args=[parent.id]))
-		unsub_url = u'{}{}'.format(url, reverse('story-unsub', args=[parent.id]))
+    if (com.story):
+        parent = com.story
+        parent_type = u'story'
+        subs = Subscription.objects.filter(story=parent)
+        parent_url = u'{}{}'.format(url, reverse('story', args=[parent.id]))
+        unsub_url = u'{}{}'.format(url, reverse('story-unsub', args=[parent.id]))
         
-	elif (com.prompt):
-		parent = com.prompt
-		parent_type = u'prompt'
-		subs = Subscription.objects.filter(prompt=parent)
-		parent_url = u'{}{}'.format(url, reverse('prompt', args=[parent.id]))
-		unsub_url = u'{}{}'.format(url, reverse('prompt-unsub', args=[parent.id]))
+    elif (com.prompt):
+        parent = com.prompt
+        parent_type = u'prompt'
+        subs = Subscription.objects.filter(prompt=parent)
+        parent_url = u'{}{}'.format(url, reverse('prompt', args=[parent.id]))
+        unsub_url = u'{}{}'.format(url, reverse('prompt-unsub', args=[parent.id]))
         
-	elif (com.challenge):
-		parent = com.challenge
-		parent_type = u'challenge'
-		subs = Subscription.objects.filter(challenge=parent)
-		parent_url = u'{}{}'.format(url, reverse('challenge', args=[parent.id]))
-		unsub_url = u'{}{}'.format(url, reverse('challenge-unsub', args=[parent.id]))
+    elif (com.challenge):
+        parent = com.challenge
+        parent_type = u'challenge'
+        subs = Subscription.objects.filter(challenge=parent)
+        parent_url = u'{}{}'.format(url, reverse('challenge', args=[parent.id]))
+        unsub_url = u'{}{}'.format(url, reverse('challenge-unsub', args=[parent.id]))
 
-	elif (com.blog):
-		parent = com.blog
-		parent_type = u'blog'
-		subs = Subscription.objects.filter(blog=parent)
-		parent_url = u'{}{}'.format(url, reverse('blog', args=[parent.id]))
-		unsub_url = u'{}{}'.format(url, reverse('blog-unsub', args=[parent.id]))
+    elif (com.blog):
+        parent = com.blog
+        parent_type = u'blog'
+        subs = Subscription.objects.filter(blog=parent)
+        parent_url = u'{}{}'.format(url, reverse('blog', args=[parent.id]))
+        unsub_url = u'{}{}'.format(url, reverse('blog-unsub', args=[parent.id]))
         
-	else:
+    else:
         # Not a blog, prompt, challenge, or story, something weird is going on,
         # so just bug out here
-		return None
+        return None
     
     # Build e-mail text
-	subject = Template('Ficlatte comment on $parent_title by $comment_user').substitute(parent_title=parent.title, comment_user=com.user.pen_name)
+    subject = Template('Ficlatte comment on $parent_title by $comment_user').substitute(parent_title=parent.title, comment_user=com.user.pen_name)
 
-	message_template = Template("""Hi.
+    message_template = Template("""Hi.
 This is the Ficlatte server.  You are currently subscribed to receive notifications of new comments posted to Ficlatte $parent_type "$parent_title".
 
 $comment_user just posted a comment:
-	
+
 $comment_body
 
 To see the comment at Ficlatte, click here:
@@ -119,48 +119,48 @@ Keep writing!
 
 The Ficlatte team""")
 
-	message = message_template.substitute(
-		parent_type=parent_type, parent_title=parent.title,
-		comment_user=com.user.pen_name, comment_body=com.body,
-		parent_url=parent_url, parent_unsub_url=unsub_url,
-		user_profile_url=(url + reverse('profile')))
+    message = message_template.substitute(
+        parent_type=parent_type, parent_title=parent.title,
+        comment_user=com.user.pen_name, comment_body=com.body,
+        parent_url=parent_url, parent_unsub_url=unsub_url,
+        user_profile_url=(url + reverse('profile')))
 
     # Loop through everyone subscribed to this thread
-	for sub in subs:
+    for sub in subs:
         # But only send messages to people other than the comment author, and only if there is comment text
-		if (sub.user != com.user and com.body):
-			send_notification_email(sub.user, subject, message)
+        if (sub.user != com.user and com.body):
+            send_notification_email(sub.user, subject, message)
 
 #-----------------------------------------------------------------------------
 def send_notification_email_story(story, parent, type_flag):
-	url = getattr(settings, 'SITE_URL', 'http://www.example.com/')
+    url = getattr(settings, 'SITE_URL', 'http://www.example.com/')
 
-	# Is the story a prequel or a sequel?
-	child_type = u''
-	child_type_p = u''
-	if type_flag == 1:
-		subs = Subscription.objects.filter(prequel_to=parent)
-		child_type = u'prequel'
-		child_type_p = u'prequels'
-		unsub_url = u'{}{}'.format(url, reverse('prequel-unsub', args=[parent.id]))
-	elif type_flag == 2:
-		subs = Subscription.objects.filter(sequel_to=parent)
-		child_type = u'sequel'
-		child_type_p = u'sequels'
-		unsub_url = u'{}{}'.format(url, reverse('sequel-unsub', args=[parent.id]))
-	else:
-		# Neither a prequel or a sequel, something weird is going on,
+    # Is the story a prequel or a sequel?
+    child_type = u''
+    child_type_p = u''
+    if type_flag == 1:
+        subs = Subscription.objects.filter(prequel_to=parent)
+        child_type = u'prequel'
+        child_type_p = u'prequels'
+        unsub_url = u'{}{}'.format(url, reverse('prequel-unsub', args=[parent.id]))
+    elif type_flag == 2:
+        subs = Subscription.objects.filter(sequel_to=parent)
+        child_type = u'sequel'
+        child_type_p = u'sequels'
+        unsub_url = u'{}{}'.format(url, reverse('sequel-unsub', args=[parent.id]))
+    else:
+        # Neither a prequel or a sequel, something weird is going on,
         # so just bug out here
-		return None
-		
-	child_url = u'{}{}'.format(url, reverse('story', args=[story.id]))
+        return None
+
+    child_url = u'{}{}'.format(url, reverse('story', args=[story.id]))
 
     # Build e-mail text
-	subject = Template(
-		'Ficlatte $child_type to "$parent_title" by $story_user').substitute(
-			child_type=child_type, parent_title=parent.title, story_user=story.user.pen_name)
+    subject = Template(
+        'Ficlatte $child_type to "$parent_title" by $story_user').substitute(
+            child_type=child_type, parent_title=parent.title, story_user=story.user.pen_name)
 
-	message_template = Template("""Hi.
+    message_template = Template("""Hi.
 This is the Ficlatte server.  You are currently subscribed to receive notifications of new stories posted to the Ficlatte story "$parent_title".
 
 $child_user just posted a $child_type, "$child_title":
@@ -180,32 +180,32 @@ Keep writing!
 
 The Ficlatte team""")
 
-	message = message_template.substitute(
-		parent_title=parent.title, child_title=story.title,
-		child_user=story.user.pen_name, child_type=child_type, child_type_p=child_type_p, 
-		child_body=story.body, child_url=child_url, unsub_url=unsub_url,
-		user_profile_url=(url+reverse('profile')))
+    message = message_template.substitute(
+        parent_title=parent.title, child_title=story.title,
+        child_user=story.user.pen_name, child_type=child_type, child_type_p=child_type_p,
+        child_body=story.body, child_url=child_url, unsub_url=unsub_url,
+        user_profile_url=(url+reverse('profile')))
 
     # Loop through everyone subscribed to this story
-	for sub in subs:
+    for sub in subs:
         # But only send messages to people other than the story author
-		if sub.user != story.user:
-			send_notification_email(sub.user, subject, message)
+        if sub.user != story.user:
+            send_notification_email(sub.user, subject, message)
 
 #-----------------------------------------------------------------------------
 def send_notification_email_challenge_story(story, challenge):
-	url = getattr(settings, 'SITE_URL', 'http://www.example.com/')
+    url = getattr(settings, 'SITE_URL', 'http://www.example.com/')
 
-	subs = Subscription.objects.filter(ch_entry=challenge)
-	story_url = u'{}{}'.format(url, reverse('story', args=[story.id]))
-	unsub_url = u'{}{}'.format(url, reverse('challenge-entry-unsub', args=[challenge.id]))
+    subs = Subscription.objects.filter(ch_entry=challenge)
+    story_url = u'{}{}'.format(url, reverse('story', args=[story.id]))
+    unsub_url = u'{}{}'.format(url, reverse('challenge-entry-unsub', args=[challenge.id]))
 
     # Build e-mail text
-	subject = Template(
-		'Ficlatte entry to "$challenge_title" by $story_user').substitute(
-			challenge_title=challenge.title, story_user=story.user.pen_name)
+    subject = Template(
+        'Ficlatte entry to "$challenge_title" by $story_user').substitute(
+            challenge_title=challenge.title, story_user=story.user.pen_name)
 
-	message_template = Template("""Hi.
+    message_template = Template("""Hi.
 This is the Ficlatte server.  You are currently subscribed to receive notifications of new stories posted to the Ficlatte challenge "$challenge_title".
 
 $story_user just posted an entry, "$story_title":
@@ -225,14 +225,14 @@ Keep writing!
 
 The Ficlatte team""")
 
-	message = message_template.substitute(
-		challenge_title=challenge.title, story_title=story.title,
-		story_user=story.user.pen_name, story_body=story.body,
-		story_url=story_url, unsub_url=unsub_url,
-		user_profile_url=(url, reverse('profile')))
+    message = message_template.substitute(
+        challenge_title=challenge.title, story_title=story.title,
+        story_user=story.user.pen_name, story_body=story.body,
+        story_url=story_url, unsub_url=unsub_url,
+        user_profile_url=(url, reverse('profile')))
 
     # Loop through everyone subscribed to this story
-	for sub in subs:
+    for sub in subs:
         # But only send messages to people other than the story author
-		if sub.user != story.user:
-			send_notification_email(sub.user, subject, message)
+        if sub.user != story.user:
+            send_notification_email(sub.user, subject, message)
