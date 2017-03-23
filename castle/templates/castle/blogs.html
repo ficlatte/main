@@ -22,20 +22,30 @@ Copyright (C) 2015 Paul Robertson
 {% block primary_panel %}
           <div class="blog-header">
             <h1 class="blog-title">The Ficlatt&eacute; blog</h1>
-            <p class="lead blog-description">What&#39;s going on</p>
           </div> <!-- id="" class="blog-header" -->
-          <div class="row">
+          <div class="panel panel-success browse">
+			<div class="panel-heading blog-summary">
+				<h3 class="panel-title">What&#39;s going on</h3>
+			</div>
+			<div class="panel-body">
 {% block paged_content %}
-            <div class="col-md-8 blog-main">
-              {% for blog in blogs %}
-              <div class="blog-post">
-                <h2 class="blog-post-title"><a href="/blog/{{blog.id}}">{{blog.title}}</a></h2>
-                {{blog|blog_snippet}}
-                <p class="blog-post-meta">{{blog.user|author_span}} {{blog|num_comments_txt}} Posted <abbr class="dtposted" title="{{blog.ptime|date:'Y-m-d'}}">{{blog.ptime|age}}</abbr></p>
-              </div> <!-- id="" class="blog-post" -->
-              {% endfor %}
-            </div> <!-- id="" class="col-md-8 blog-main" -->
+				<div class="blog-main list-group">
+				{% for blog in blogs %}
+					<div class="blog-post list-group-item">
+						<h3 class="blog-post-title"><a href="/blog/{{blog.id}}">{{blog.title}}</a></h3>
+						<div class="entry_content browse-content">
+							{{blog|blog_snippet}}
+						</div>
+						<div class="story-foot">
+							<span class="author">{{blog.user|author_span}}</span>
+							<span class="posted">Posted <abbr class="dtposted" title="{{blog.ptime|date:'Y-m-d'}}">{{blog.ptime|age}}</abbr></span>
+							<span class="blog-comments-count">{{blog|num_comments_txt}}</span>
+						</div> <!-- id="" class="story-foot" -->
+					</div>
+				{% endfor %}
+				</div> <!-- id="" class="blog-main list-group" -->
+          </div>
  {% endblock paged_content %}
 {% block pager %}{{block.super}}{%endblock%}
-         </div> <!-- id="" class="row" -->
+       </div> <!-- id="" class="panel-body" -->
 {% endblock primary_panel %}

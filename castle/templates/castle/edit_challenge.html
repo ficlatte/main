@@ -30,8 +30,11 @@ Copyright (C) 2015 Paul Robertson
 
     
 {% block primary_panel %}
-          <div class="well" id="new-challenge">
-            <h2>Create Challenge</h2>
+          <div class="panel panel-success" id="new-challenge">
+			<div class="panel-heading">
+				<h2 class="panel-title">Create Challenge</h2>
+            </div>
+            <div class="panel-body">
             <form accept-charset="utf-8" action="/challenges/submit/" class="form-horizontal" id="challenge-form" method="POST" role="form">
               {% csrf_token %}
               <input name="chid" type="hidden" value="{{challenge.id}}" />
@@ -96,6 +99,7 @@ Copyright (C) 2015 Paul Robertson
                   <button class="btn btn-success" id="text-submit" tabindex="6" type="submit">Publish!</button>
                 </div> <!-- id="" class="col-sm-offset-2 col-sm-10" -->
               </div> <!-- id="" class="form-group" -->
-            </form>            
+            </form>
+            </div>            
           </div> <!-- id="new-challenge" class="well" -->
 {% endblock primary_panel %}

@@ -19,12 +19,13 @@
 from django import template
 from django.utils.safestring import mark_safe
 from datetime import timedelta, datetime
+from django.db.models import F
 from django.utils.timezone import utc
 from django.utils.html import escape
 from django.utils.http import urlquote
 from django.template.defaultfilters import stringfilter
 from django.conf import settings
-from castle.models import StoryLog, Profile
+from castle.models import StoryLog, Profile, Challenge
 from bbcode import util as bbcode
 import math
 import re
@@ -97,6 +98,11 @@ def num_challenges_txt(obj):
         return u'1 challenge';
     else:
         return unicode(c) + u' challenges'
+
+#-----------------------------------------------------------------------------
+@register.filter
+def num_challenge_wins(obj):
+	return obj.story_set.filter(challenge__winner=F('id')).count()
    
 #-----------------------------------------------------------------------------
 @register.filter
@@ -183,6 +189,27 @@ def author_link(profile, tag=None):
     
     # FIXME: Need proper URL magic here
     return mark_safe(t1+u'<a href="/authors/'+urlquote(profile.pen_name)+u'">'+ escape(profile.pen_name)+u'</a>'+t2)
+    
+#-----------------------------------------------------------------------------
+@register.filter
+def author_social_media(profile):
+	if (profile is None):
+		return u''
+	s = ''
+	f = ''
+	t = ''
+	w = ''
+	
+	if (profile.site_url is not None):
+		s = u'<a href="'+profile.site_url+u'" alt="'+profile.site_name+u'" target="_blank"><img src="/static/img/social-media/earth.png" class="social-media-icon"></a>'
+	if (profile.facebook_username is not None):
+		f = u'<a href="http://facebook.com/'+profile.facebook_username+u'" target="_blank"><img src="/static/img/social-media/facebook.png" class="social-media-icon"></a>'
+	if (profile.twitter_username is not None):
+		t = u'<a href="http://twitter.com/'+profile.twitter_username+u'" target="_blank"><img src="/static/img/social-media/twitter.png" class="social-media-icon"></a>'
+	if (profile.wattpad_username is not None):
+		w = u'<a href="http://wattpad.com/user/'+profile.wattpad_username+u'" target="_blank"><img src="/static/img/social-media/wattpad.png" class="social-media-icon"></a>'
+		
+	return mark_safe(f + t + w + s)
 
 #-----------------------------------------------------------------------------
 @register.filter
@@ -247,12 +274,12 @@ def story_link(story, tag=None):
     d = '[DRAFT] ' if (story.draft) else ''
     m = u'<span class="glyphicon glyphicon-flash" style="color:red"></span>' if (story.mature) else ''
     
-    w = u'<span class="glyphicon glyphicon-flag" style="color:red"></span>' if (story.winner.count()>0) else ''
+    w = u'<img src="/static/img/badge-40.png">' if (story.winner.count()>0) else ''
     # FIXME: fix URL
     if tag == 'h1':
-        return mark_safe(t1+ escape(d + story.title) + u' ' + mark_safe(m) + mark_safe(w) + t2)
+        return mark_safe(t1+ escape(d + story.title) + u' ' + mark_safe(w) + mark_safe(m) + t2)
     else:
-        return mark_safe(u'<a href="/stories/' + unicode(story.id) + u'" class="story-link">' + t1 + escape(d + story.title) + u' ' + mark_safe(m) + mark_safe(w) + t2 + u'</a>') 
+        return mark_safe(u'<a href="/stories/' + unicode(story.id) + u'" class="story-link">' + t1 + escape(d + story.title) + u' ' + mark_safe(w) + mark_safe(m) + t2 + u'</a>') 
 
 #-----------------------------------------------------------------------------
 @register.filter
@@ -302,6 +329,8 @@ def activity_entry(log):
     elif (log.log_type == StoryLog.COMMENT):
 		if (log.story):
 			return mark_safe(author_link(log.user)+u' wrote a comment on '+story_link(log.story))
+		if (log.prompt):
+			return mark_safe(author_link(log.user)+u' wrote a comment on '+prompt_link(log.prompt))
 		else:
 			return mark_safe(author_link(log.user)+u' wrote a comment on '+challenge_link(log.challenge))
         
@@ -364,6 +393,8 @@ def dashboard_entry(log):
     elif (log.log_type == StoryLog.COMMENT):
 		if (log.story):
 			return mark_safe(author_link(log.user)+u' wrote a comment on '+story_link(log.story)+u' by '+author_link(log.story.user))
+		if (log.prompt):
+			return mark_safe(author_link(log.user)+u' wrote a comment on '+prompt_link(log.prompt))
 		else:
 			return mark_safe(author_link(log.user)+u' wrote a comment on '+challenge_link(log.challenge)+u' by '+author_link(log.challenge.user))
         

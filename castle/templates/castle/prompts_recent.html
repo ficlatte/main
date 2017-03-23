@@ -20,38 +20,38 @@ Copyright (C) 2015 Paul Robertson
 {% load castle_tags %}
 
 {% block primary_panel %}
-          <div class="panel panel-success browse">
-			<div class="panel-heading story-summary">
-				<h3 class="panel-title">{{label}}</h3>
-			</div>
+		<div class="panel panel-success browse">
+          <div class="panel-heading prompt-summary">
+            <h3 class="panel-title">{{label}}</h3>
+          </div>
 {% block paged_content %}
             <div class="panel-body">
               <ul class="list-group">
-              {% for story in stories %}
+                {% for p in prompts %}
                 <li class="list-group-item">
-					<h3 class="entry_title">{{story|story_link}}</h3>
+					<h3 class="entry_title">{{p|prompt_link}}</h3>
 					<div class="entry_content browse-content">
-						{% if story.mature %}
-							{% if not profile.mature and story.user != profile %}
-								<p>Story is marked as mature</p>
+						{% if p.mature %}
+							{% if not profile.mature and p.user != profile %}
+								<p>Prompt is marked as mature</p>
 							{% else %}
-								{{story.body|big_snippet}}
+								{{p.body|big_snippet}}
 							{% endif %}
 						{% else %}
-								{{story.body|big_snippet}}
+							{{p.body|big_snippet}}
 						{% endif %}
 					</div>
 					<div class="story-foot">
-						<span class="author">{{story.user|author_span}}</span>
-						<span class="posted">Posted <abbr class="dtposted" title="{{story.ptime|date:'Y-m-d'}}">{{story.ptime|age}}</abbr></span>
-
-					</div>
+						<span class="author">{{p.user|author_span}}</span>
+						<span class="posted">Posted <abbr class="dtposted" title="{{p.ctime|date:'Y-m-d'}}">{{p.ctime|age}}</abbr></span>
+						<span class="count">{{p|num_stories_txt}}</span>
+					</span>
 				</li>
-              {% endfor %}
-              </ul> <!-- class="list-group" -->
+                {% endfor %}
+              </ul>
             </div> <!-- id="" class="panel-body" -->
 {% endblock paged_content %}
 {% block pager %}{{block.super}}{%endblock%}
-		</div> <!-- id="" class="panel panel-success story-summary" -->
+          </div> <!-- id="" class="panel panel-success browse" -->
 {% endblock primary_panel %}
 

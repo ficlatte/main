@@ -30,6 +30,7 @@ Copyright (C) 2015 Paul Robertson
     <meta content="amazing" name="keywords" />
     <title>{% if page_title %}{{page_title}} on {% endif %}{{0|site_name}}</title>
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Ubuntu">
     <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script>
@@ -103,12 +104,9 @@ $(document).ready(function(){
       <div class="container">
         <div class="jumbotron">
           <div class="row">
-            <div class="col-md-2">
-              <img alt="Logo" class="img-thumbnail" src="/static/img/ficlatte-logo-mono.png" />
-            </div> <!-- id="" class="col-md-2" -->
-            <div class="col-md-10">
-              <h1>{{0|site_name}}<br /><small>Tiny shots of fiction. With milk</small></h1>
-            </div> <!-- id="" class="col-md-10" -->
+            <div class="col-md-12">
+              <img alt="Logo" class="img-thumbnail img-banner" src="/static/img/ficlatte-logo.png" />
+            </div> <!-- id="" class="col-md-12" -->
           </div> <!-- id="" class="row" -->
         </div> <!-- id="" class="jumbotron" -->
       </div> <!-- id="" class="container" -->

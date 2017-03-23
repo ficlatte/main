@@ -48,46 +48,60 @@ def send_notification_email(profile, subject, message):
               fail_silently = False)
 
 def send_notification_email_comment(com):
-    url = getattr(settings, 'SITE_URL', 'http://www.example.com/')
+	url = getattr(settings, 'SITE_URL', 'http://www.example.com/')
 
-    # Is the comment on a story or a blog?
-    if (com.story):
-        parent = com.story
-        parent_type = u'story'
-        subs = Subscription.objects.filter(story=parent)
-        url1 = u'{}{}'.format(url, reverse('story', args=[parent.id]))
-        unsub_url = u'{}{}'.format(url, reverse('story-unsub', args=[parent.id]))
-
-    elif (com.blog):
-        parent = com.blog
-        parent_type = u'blog'
-        subs = Subscription.objects.filter(blog=parent)
-        url1 = u'{}{}'.format(url, reverse('blog', args=[parent.id]))
-        unsub_url = u'{}{}'.format(url, reverse('blog-unsub', args=[parent.id]))
+    # Is the comment on a story, prompt, challenge, or blog?
+	if (com.story):
+		parent = com.story
+		parent_type = u'story'
+		subs = Subscription.objects.filter(story=parent)
+		url1 = u'{}{}'.format(url, reverse('story', args=[parent.id]))
+		unsub_url = u'{}{}'.format(url, reverse('story-unsub', args=[parent.id]))
         
-    else:
-        # Neither a blog nor a story, something weird is going on,
+	elif (com.prompt):
+		parent = com.prompt
+		parent_type = u'prompt'
+		subs = Subscription.objects.filter(prompt=parent)
+		url1 = u'{}{}'.format(url, reverse('prompt', args=[parent.id]))
+		unsub_url = u'{}{}'.format(url, reverse('prompt-unsub', args=[parent.id]))
+        
+	elif (com.challenge):
+		parent = com.challenge
+		parent_type = u'challenge'
+		subs = Subscription.objects.filter(challenge=parent)
+		url1 = u'{}{}'.format(url, reverse('challenge', args=[parent.id]))
+		unsub_url = u'{}{}'.format(url, reverse('challenge-unsub', args=[parent.id]))
+
+	elif (com.blog):
+		parent = com.blog
+		parent_type = u'blog'
+		subs = Subscription.objects.filter(blog=parent)
+		url1 = u'{}{}'.format(url, reverse('blog', args=[parent.id]))
+		unsub_url = u'{}{}'.format(url, reverse('blog-unsub', args=[parent.id]))
+        
+	else:
+        # Not a blog, prompt, challenge, or story, something weird is going on,
         # so just bug out here
-        return None
+		return None
     
     # Build e-mail text
-    subject  = u'Ficlatte comment on '+parent.title+u' by '+com.user.pen_name
+	subject  = u'Ficlatte comment on '+parent.title+u' by '+com.user.pen_name
     
-    message  = u"Hi.\nThis is the Ficlatte server.  You are currently subscribed to "
-    message += u"receive notifications of new comments posted to Ficlatte "+parent_type+" "
-    message += u'"'+parent.title+u'".\n\n'
-    message += com.user.pen_name+u' just posted a comment:\n\n'
-    message += com.body
-    message += u'\n\nTo see the comment at Ficlatte, click here:\n'
-    message += url1+u'\n'
-    message += u'To stop receiving notifications of comments on this '+parent_type+u', click here:\n'
-    message += unsub_url+u'\n'
-    message += u'To adjust your e-mail preferences, update your profile here:\n'
-    message += u'{}{}'.format(url, reverse('profile'))
-    message += u'\n\nKeep writing!\n\nThe Ficlatte team\n'
+	message  = u"Hi.\nThis is the Ficlatte server.  You are currently subscribed to "
+	message += u"receive notifications of new comments posted to Ficlatte "+parent_type+" "
+	message += u'"'+parent.title+u'".\n\n'
+	message += com.user.pen_name+u' just posted a comment:\n\n'
+	message += com.body
+	message += u'\n\nTo see the comment at Ficlatte, click here:\n'
+	message += url1+u'\n'
+	message += u'To stop receiving notifications of comments on this '+parent_type+u', click here:\n'
+	message += unsub_url+u'\n'
+	message += u'To adjust your e-mail preferences, update your profile here:\n'
+	message += u'{}{}'.format(url, reverse('profile'))
+	message += u'\n\nKeep writing!\n\nThe Ficlatte team\n'
 
     # Loop through everyone subscribed to this thread
-    for s in subs:
+	for s in subs:
         # But only send messages to people other than the comment author, and only if there is comment text
-        if (s.user != com.user and com.body):
-            send_notification_email(s.user, subject, message)
+		if (s.user != com.user and com.body):
+			send_notification_email(s.user, subject, message)

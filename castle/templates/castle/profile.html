@@ -24,12 +24,13 @@ Copyright (C) 2015 Paul Robertson
             {% csrf_token %}
             <h2 class="form-signin-heading"><span class="glyphicon glyphicon-globe"></span> {% if profile %}Update your details{% else %}Please register{% endif %}</h2>
             <h3 class="form-signin-heading">Enter your details</h3>
+            <h5 class="form-signin-heading">* indicates a required field</h5>
             <div class="form-group">
-              <label for="pen_name">Pen name</label>
+              <label for="pen_name">Pen name*</label>
               <input autofocus class="form-control" id="pen_name" name="pen_name" placeholder="Pen name" required type="text" value="{{ profile.pen_name }}" />
             </div> <!-- id="" class="form-group" -->
             <div class="form-group">
-              <label for="password">Password</label>
+              <label for="password">Password*</label>
               <input class="form-control" id="password" name="password" placeholder="Password"{% if not profile %} required{% endif %} type="password" />
             </div> <!-- id="" class="form-group" -->
             {% if profile %}
@@ -39,26 +40,38 @@ Copyright (C) 2015 Paul Robertson
             </div> <!-- id="" class="form-group" -->
             {% endif %}
             <div class="form-group">
-              <label for="password_again">Password check</label>
+              <label for="password_again">Password check*</label>
               <input class="form-control" id="password_again" name="password_again" placeholder="Password check" type="password" />
             </div> <!-- id="" class="form-group" -->
             <div class="form-group">
               <label for="site_url">Site URL</label>
-              <input class="form-control" id="site_url" name="site_url" placeholder="Site URL" type="text" value="{{ profile.site_url }}" />
+              <input class="form-control" id="site_url" name="site_url" placeholder="Site URL" type="text" {% if profile.site_url %}value="{{ profile.site_url }}"{% endif %}/>
             </div> <!-- id="" class="form-group" -->
             <div class="form-group">
               <label for="site_name">Site name</label>
-              <input class="form-control" id="site_name" name="site_name" placeholder="Site name" type="text" value="{{ profile.site_name }}" />
+              <input class="form-control" id="site_name" name="site_name" placeholder="Site name" type="text" {% if profile.site_name %}value="{{ profile.site_name }}"{% endif %} />
             </div> <!-- id="" class="form-group" -->
             <div class="form-group">
-              <label for="biography">Bio</label>
+              <label for="facebook_username">Facebook username</label>
+              <input class="form-control" id="facebook_username" name="facebook_username" placeholder="Facebook username" type="text" {% if profile.faceboook_username %}value="{{ profile.facebook_username }}"{% endif %} />
+            </div> <!-- id="" class="form-group" -->
+            <div class="form-group">
+              <label for="twitter_username">Twitter username</label>
+              <input class="form-control" id="twitter_username" name="twitter_username" placeholder="Twitter username" type="text" {% if profile.twitter_username %}value="{{ profile.twitter_username }}"{% endif %} />
+            </div> <!-- id="" class="form-group" -->
+            <div class="form-group">
+              <label for="wattpad_username">Wattpad username</label>
+              <input class="form-control" id="wattpad_username" name="wattpad_username" placeholder="Wattpad username" type="text" {% if profile.wattpad_username %}value="{{ profile.wattpad_username }}"{% endif %} />
+            </div> <!-- id="" class="form-group" -->
+            <div class="form-group">
+              <label for="biography">Bio*</label>
               <textarea class="form-control" id="biography" name="biography" placeholder="Biography" required rows="10">{{ profile.biography }}</textarea>
             </div> <!-- id="" class="form-group" -->
             <div class="checkbox">
               <label><input name="mature" type="checkbox" {% if profile.mature %}checked {% endif %}/>Show mature content</label>
             </div> <!-- id="" class="checkbox" -->
             <div class="form-group">
-              <label for="email_addr">E-mail address</label>
+              <label for="email_addr">E-mail address*</label>
               <input class="form-control" id="email_addr" name="email_addr" placeholder="E-mail address" required type="text" value="{{ profile.email_addr }}" />
             </div> <!-- id="" class="form-group" -->
             <fieldset class="panty-group">
