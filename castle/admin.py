@@ -44,23 +44,3 @@ class CommentInLine(admin.TabularInline):
         (None, {'fields': ['user', 'body']}),
     ]
     extra = 0
-
-class StoryAdmin(admin.ModelAdmin):
-    fieldsets = [
-        (None, {'fields' : ['user', 'title', 'body', 'prompt_text']}),
-        ('Links', {'fields': ['prequel_to', 'sequel_to', 'prompt'], 'classes': ['collapse']}),
-        ('Bits', {'fields': ['mature', 'draft', 'ficly', 'activity', 'prompt_text'], 'classes': ['collapse']}),
-        ('Dates', {'fields': ['ctime', 'mtime', 'ptime', 'ftime'], 'classes': ['collapse']}),
-    ]
-    inlines = [CommentInLine, RatingInLine]
-
-class BlogAdmin(admin.ModelAdmin):
-    fieldsets = [
-        (None, {'fields' : ['user', 'title', 'body']}),
-        ('Bits', {'fields': ['draft'], 'classes': ['collapse']}),
-        ('Dates', {'fields': ['ctime', 'mtime', 'ptime'], 'classes': ['collapse']}),
-    ]
-    inlines = [CommentInLine]
-
-admin.site.register(Story, StoryAdmin)
-admin.site.register(Blog,  BlogAdmin)
