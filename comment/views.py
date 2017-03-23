@@ -162,4 +162,86 @@ def submit_comment(request):
     elif challenge:
         return HttpResponseRedirect(reverse('challenge', args=(challenge.id,)))
 
+
 # -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+@login_required
+def comment_view(request, story_id, comment_id):
+    story = get_object_or_404(Story, pk=story_id)
+    comment = get_object_or_404(Comment, pk=comment_id)
+    # Get user profile
+    profile = None
+    if request.user.is_authenticated():
+        profile = request.user.profile
+    if profile is None:
+        raise Http404
+
+    like_flag = CommentLike.objects.filter(user=profile, comment_id=comment_id)
+
+    context = {'story': story,
+               'author': profile,
+               'comment': comment,
+               'like_flag': like_flag,
+               'profile': profile,
+               }
+
+    return render(request, 'stories/story.html', context)
+
+
+# -----------------------------------------------------------------------------
+@login_required
+def like_comment(request, comment_id, error_title='', error_messages=None):
+    comment = get_object_or_404(Comment, pk=comment_id)
+    # Get user profile
+    profile = None
+    if request.user.is_authenticated():
+        profile = request.user.profile
+    if profile is None:
+        raise Http404
+
+    CommentLike.objects.get_or_create(user=profile, comment=comment)
+
+    context = {'thing': comment,
+               'thing_type': u'comment',
+               'error_title': error_title,
+               'error_messages': error_messages,
+               'profile': profile,
+               }
+
+    return HttpResponseRedirect(reverse('comment', args=(comment.id,)))
+
+
+# -----------------------------------------------------------------------------
+@login_required
+def unlike_comment(request, comment_id, error_title='', error_messages=None):
+    comment = get_object_or_404(Comment, pk=comment_id)
+    # Get user profile
+    profile = None
+    if request.user.is_authenticated():
+        profile = request.user.profile
+    if profile is None:
+        raise Http404
+
+    CommentLike.objects.filter(user=profile, comment=comment).delete()
+
+    context = {'thing': comment,
+               'thing_type': u'comment',
+               'error_title': error_title,
+               'error_messages': error_messages,
+               'profile': profile,
+               }
+
+    import blog
+    import story
+    import prompt
+    import challenge
+    if blog:
+        return HttpResponseRedirect(reverse('blog', args=(blog.id,)))
+    elif story:
+        return HttpResponseRedirect(reverse('story', args=(story.id,)))
+    elif prompt:
+        return HttpResponseRedirect(reverse('prompt', args=(prompt.id,)))
+    elif challenge:
+        return HttpResponseRedirect(reverse('challenge', args=(challenge.id,)))
+
+        # -----------------------------------------------------------------------------
