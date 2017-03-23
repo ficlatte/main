@@ -68,6 +68,7 @@ INSTALLED_APPS = (
     'prompt',  
     'challenge',  
     'notes',  
+    'comment',  
     'bbcode',  
     'datetimewidget',  
 )   
