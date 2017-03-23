@@ -1,97 +1,92 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
-from django.db import transaction
-from django.conf import settings
-from django.utils import timezone
-from datetime import datetime, timedelta, date
-from castle.models import *
-from castle.mail import *
+from django.core.exceptions import ObjectDoesNotExist
 from castle.views import *
 
-#-----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 # Comment Submission
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 @login_required
 @transaction.atomic
 def submit_comment(request):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if request.user.is_authenticated():
         profile = request.user.profile
-    if (not profile):
+    if not profile:
         raise Http404
 
     # Get bits and bobs
-    errors     = []
+    errors = []
     old_rating = None
-    blog       = get_foo(request.POST, Blog,  'bid')
-    story      = get_foo(request.POST, Story, 'sid')
-    prompt	   = get_foo(request.POST, Prompt, 'pid')
-    challenge  = get_foo(request.POST, Challenge, 'chid')
+    blog = get_foo(request.POST, Blog, 'bid')
+    story = get_foo(request.POST, Story, 'sid')
+    prompt = get_foo(request.POST, Prompt, 'pid')
+    challenge = get_foo(request.POST, Challenge, 'chid')
 
-    if (story):
+    if story:
         try:
             r = Rating.objects.get(user=profile, story=story)
             old_rating = r.rating
         except ObjectDoesNotExist:
             old_rating = None
 
-    rating     = request.POST.get('rating', None)
-    if (rating is not None):
+    rating = request.POST.get('rating', None)
+    if rating is not None:
         rating = int(rating)
 
-    if (not profile.email_authenticated()):
-        errors.append(u'You must have authenticated your e-mail address before posting a comment');
+    if not profile.email_authenticated():
+        errors.append(u'You must have authenticated your e-mail address before posting a comment')
 
     # Create comment object
-    comment = Comment(user = profile,
-                        blog = blog,
-                        story = story,
-                        prompt = prompt,
-                        challenge = challenge)
+    comment = Comment(user=profile,
+                      blog=blog,
+                      story=story,
+                      prompt=prompt,
+                      challenge=challenge)
 
     # Populate comment object with data from submitted form
-    comment.body   = request.POST.get('body', '')
+    comment.body = request.POST.get('body', '')
 
     # Condense all end-of-line markers into \n
     comment.body = re_crlf.sub(u"\n", comment.body)
 
     # Check for submission errors
     l = len(comment.body)
-    if ((l < 1) and (rating is None)):
+    if (l < 1) and (rating is None):
         # Empty comments are allowed if the user is making a rating
         errors.append(u'Comment body must be at least 1 character long')
 
-    if (l > 1024):
+    if l > 1024:
         errors.append(u'Comment is over 1024 characters (currently ' + unicode(l) + u')')
 
     # If there have been errors, re-display the page
-    if (errors):
-    # Build context and render page
-        if (blog):
-            return blog_view(request, blog.id, comment.body, 'Comment submission unsuccessful', errors)
-        elif (story):
+    if errors:
+        # Build context and render page
+        if blog:
+            from blog.views import blog_view
+            return blog_view(request, blog.id, comment.body, u'Comment submission failed', errors)
+        elif story:
+            from story.views import story_view
             return story_view(request, story.id, comment.body, rating, u'Comment submission failed', errors)
-        elif (prompt):
+        elif prompt:
+            from prompt.views import prompt_view
             return prompt_view(request, prompt.id, comment.body, u'Comment submission failed', errors)
         else:
+            from challenge.views import challenge_view
             return challenge_view(request, challenge.id, comment.body, u'Comment submission failed', errors)
 
     # Set modification time
     comment.mtime = timezone.now()
 
     # No problems, update the database and redirect
-    if (l > 0):
+    if l > 0:
         comment.save()
 
     # Update rating, if applicable
-    if (story):
-        if ((story is not None) and (rating is not None)):
+    if story:
+        if (story is not None) and (rating is not None):
             rating_set = Rating.objects.filter(story=story, user=profile)
-            if (rating_set):
+            if rating_set:
                 rating_obj = rating_set[0]
             else:
                 rating_obj = Rating(user=profile, story=story)
@@ -100,145 +95,71 @@ def submit_comment(request):
                 rating_obj.save()
 
     # Make log entries but only for story or challenge comments
-    if (story):
+    if story:
         # If comment body is longer than 0, log that comment has been made
-        if (l > 0):
+        if l > 0:
             log = StoryLog(
-                user = profile,
-                story = story,
-                comment = comment,
-                log_type = StoryLog.COMMENT
-                )
+                user=profile,
+                story=story,
+                comment=comment,
+                log_type=StoryLog.COMMENT
+            )
             log.save()
         # If there was no previous rating and there is a rating,
         # log that a rating has been made
-        if ((rating is not None) and (old_rating is None)):
+        if (rating is not None) and (old_rating is None):
             log = StoryLog(
-                user = profile,
-                story = story,
-                log_type = StoryLog.RATE
-                )
+                user=profile,
+                story=story,
+                log_type=StoryLog.RATE
+            )
             log.save()
-    elif (prompt):
+    elif prompt:
         # If comment body is longer than 0, log that comment has been made
-        if (l > 0):
+        if l > 0:
             log = StoryLog(
-                user = profile,
-                prompt = prompt,
-                comment = comment,
-                log_type = StoryLog.COMMENT
-                )
+                user=profile,
+                prompt=prompt,
+                comment=comment,
+                log_type=StoryLog.COMMENT
+            )
             log.save()
-    elif (challenge):
+    elif challenge:
         # If comment body is longer than 0, log that comment has been made
-        if (l > 0):
+        if l > 0:
             log = StoryLog(
-                user = profile,
-                challenge = challenge,
-                comment = comment,
-                log_type = StoryLog.COMMENT
-                )
+                user=profile,
+                challenge=challenge,
+                comment=comment,
+                log_type=StoryLog.COMMENT
+            )
             log.save()
 
     # Send e-mail messages to subscribed users
     send_notification_email_comment(comment)
 
     # Auto-subscribe to e-mail notifications according to user's preferences
-    if (profile):
-        if (blog):
-            if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_BLOG_COMMENT):
+    if profile:
+        if blog:
+            if profile.email_flags & Profile.AUTOSUBSCRIBE_ON_BLOG_COMMENT:
                 Subscription.objects.get_or_create(user=profile, blog=blog)
-        elif (story):
-            if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_STORY_COMMENT):
+        elif story:
+            if profile.email_flags & Profile.AUTOSUBSCRIBE_ON_STORY_COMMENT:
                 Subscription.objects.get_or_create(user=profile, story=story)
-        elif (prompt):
-            if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_PROMPT_COMMENT):
+        elif prompt:
+            if profile.email_flags & Profile.AUTOSUBSCRIBE_ON_PROMPT_COMMENT:
                 Subscription.objects.get_or_create(user=profile, prompt=prompt)
-        elif (challenge):
-            if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_CHALLENGE_COMMENT):
+        elif challenge:
+            if profile.email_flags & Profile.AUTOSUBSCRIBE_ON_CHALLENGE_COMMENT:
                 Subscription.objects.get_or_create(user=profile, challenge=challenge)
 
-    if (blog):
+    if blog:
         return HttpResponseRedirect(reverse('blog', args=(blog.id,)))
-    elif (story):
+    elif story:
         return HttpResponseRedirect(reverse('story', args=(story.id,)))
-    elif (prompt):
+    elif prompt:
         return HttpResponseRedirect(reverse('prompt', args=(prompt.id,)))
-    elif (challenge):
+    elif challenge:
         return HttpResponseRedirect(reverse('challenge', args=(challenge.id,)))
-        
-#-----------------------------------------------------------------------------
-@login_required
-def comment_view(request, story_id, comment_id):
-    story = get_object_or_404(Story, pk=story_id)
-    comment = get_object_or_404(Comment, pk=comment_id)	
-    # Get user profile
-    profile = None
-    if (request.user.is_authenticated()):
-        profile = request.user.profile
-    if (profile is None):
-        raise Http404  
-    
-    like_flag = CommentLike.objects.filter(user=profile, comment_id=comment_id)
-    
-    context = { 'story'			: story,
-				'author'		: profile,
-                'comment'       : comment,
-			    'like_flag'		: like_flag,
-                'profile'       : profile,
-        }
 
-    return render(request, 'stories/story.html', context)
-
-#-----------------------------------------------------------------------------
-@login_required
-def like_comment(request, comment_id, error_title='', error_messages=None):
-    comment = get_object_or_404(Comment, pk=comment_id)	
-    # Get user profile
-    profile = None
-    if (request.user.is_authenticated()):
-        profile = request.user.profile
-    if (profile is None):
-        raise Http404  
-    
-    CommentLike.objects.get_or_create(user=profile, comment=comment)
-    
-    context = { 'thing'         : comment,
-                'thing_type'    : u'comment',
-                'error_title'   : error_title,
-                'error_messages': error_messages,
-                'profile'       : profile,
-        }
-
-    return HttpResponseRedirect(reverse('comment', args=(comment.id,)))
-        
-#-----------------------------------------------------------------------------
-@login_required
-def unlike_comment(request, comment_id, error_title='', error_messages=None):
-    comment = get_object_or_404(Comment, pk=comment_id)	
-    # Get user profile
-    profile = None
-    if (request.user.is_authenticated()):
-        profile = request.user.profile
-    if (profile is None):
-        raise Http404
-    
-    CommentLike.objects.filter(user=profile, comment=comment).delete()
-    
-    context = { 'thing'         : comment,
-                'thing_type'    : u'comment',
-                'error_title'   : error_title,
-                'error_messages': error_messages,
-                'profile'       : profile,
-        }
-
-    if (blog):
-        return HttpResponseRedirect(reverse('blog', args=(blog.id,)))
-    elif (story):
-        return HttpResponseRedirect(reverse('story', args=(story.id,)))
-    elif (prompt):
-        return HttpResponseRedirect(reverse('prompt', args=(prompt.id,)))
-    elif (challenge):
-        return HttpResponseRedirect(reverse('challenge', args=(challenge.id,)))
-        
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------

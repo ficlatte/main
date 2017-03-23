@@ -1,6 +1,6 @@
-#coding: utf-8
-#This file is part of Ficlatté.
-#Copyright (C) 2015 Paul Robertson
+# coding: utf-8
+# This file is part of Ficlatté.
+# Copyright (C) 2015 Paul Robertson
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of version 3 of the GNU Affero General Public
@@ -15,66 +15,58 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+import hashlib
+import math
+import os
+import re
+from datetime import timedelta
+from struct import unpack
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
-from django.db.models import Sum, Avg, Q, Count, F
-from django.utils.http import urlquote_plus, urlquote
-from django.conf import settings
-from django.utils import timezone
-from .models import *
-from .mail import *
-from datetime import datetime, timedelta, date
-from random import randint
-from struct import unpack
-import os
-import math
-import re
-import hashlib
+from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.shortcuts import render, get_object_or_404
 from .forms import AvatarUploadForm
 from .images import convert_avatars
+from .mail import *
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Global symbols
-#-----------------------------------------------------------------------------
-PAGE_COMMENTS   = 15
-PAGE_STORIES    = 15
-PAGE_BROWSE     = 25
-PAGE_PROMPTS    = 20
+# -----------------------------------------------------------------------------
+PAGE_COMMENTS = 15
+PAGE_STORIES = 15
+PAGE_BROWSE = 25
+PAGE_PROMPTS = 20
 PAGE_CHALLENGES = 15
-PAGE_BLOG       = 10
-PAGE_ALLTAGS    = 200
+PAGE_BLOG = 10
+PAGE_ALLTAGS = 200
 
 re_crlf = re.compile(r'(\r\n|\r|\n)')
 
-#-----------------------------------------------------------------------------
-# Pager
-#-----------------------------------------------------------------------------
-def bs_pager(cur_page, page_size, num_items):
 
-    num_pages = int(math.ceil(num_items / (page_size+0.0)))
+# -----------------------------------------------------------------------------
+# Pager
+# -----------------------------------------------------------------------------
+def bs_pager(cur_page, page_size, num_items):
+    num_pages = int(math.ceil(num_items / (page_size + 0.0)))
 
     # No need for a pager if we have fewer than two pages
-    if (num_pages < 2):
+    if num_pages < 2:
         return None
 
     # Empty list
     page_nums = []
 
-    if (cur_page > 1):  # Previous page mark if we're not on page 1
-        page_nums.append(('P', cur_page-1));
+    if cur_page > 1:  # Previous page mark if we're not on page 1
+        page_nums.append(('P', cur_page - 1))
 
-    if (num_pages < 11):
+    if num_pages < 11:
         # Fewer than 13 pages, list them all
-        for n in range(1, num_pages+1):
-            if (n == cur_page):
-                page_nums.append(('C', n))      # Current page
+        for n in range(1, num_pages + 1):
+            if n == cur_page:
+                page_nums.append(('C', n))  # Current page
             else:
-                page_nums.append(('G',n))       # Go to page n
+                page_nums.append(('G', n))  # Go to page n
     else:
         # More than ten pages, we have three cases here
         # We aim to show the current page, and 4 pages either side of
@@ -83,50 +75,51 @@ def bs_pager(cur_page, page_size, num_items):
         #   case 1: cur_page near the start
         #   case 2: cur_page near the end
         #   case 3: cur_page not near either end
-        if (cur_page < 6):
+        if cur_page < 6:
             for n in range(1, 10):
-                if (n == cur_page):
+                if n == cur_page:
                     page_nums.append(('C', n))  # Current page
                 else:
-                    page_nums.append(('G',n))   # Go to page n
-            page_nums.append(('S', 0))          # Separator goes here
-            page_nums.append(('G', num_pages-1))# then last two pages
+                    page_nums.append(('G', n))  # Go to page n
+            page_nums.append(('S', 0))  # Separator goes here
+            page_nums.append(('G', num_pages - 1))  # then last two pages
             page_nums.append(('G', num_pages))
-        elif (cur_page >= (num_pages-5)):
+        elif cur_page >= (num_pages - 5):
             # First two pages go here, then a separator
             page_nums.append(('G', 1))
             page_nums.append(('G', 2))
-            page_nums.append(('S', 0))    # Separator goes here
+            page_nums.append(('S', 0))  # Separator goes here
             # Then the last nine pages
-            for n in range (num_pages-8, num_pages+1):
-                if (n == cur_page):
+            for n in range(num_pages - 8, num_pages + 1):
+                if n == cur_page:
                     page_nums.append(('C', n))  # Current page
                 else:
-                    page_nums.append(('G',n))   # Go to page n
+                    page_nums.append(('G', n))  # Go to page n
         else:
             # First two pages, a separator, then nine pages in the middle,
             # then another separator, then the last two.
             page_nums.append(('G', 1))
             page_nums.append(('G', 2))
-            page_nums.append(('S', 0))    # Separator goes here
+            page_nums.append(('S', 0))  # Separator goes here
             # Then the last nine pages
-            for n in range (cur_page-3, cur_page+4):
-                if (n == cur_page):
+            for n in range(cur_page - 3, cur_page + 4):
+                if n == cur_page:
                     page_nums.append(('C', n))  # Current page
                 else:
-                    page_nums.append(('G',n))   # Go to page n
-            page_nums.append(('S', 0))    # Separator goes here
-            page_nums.append(('G', num_pages-1))# then last two pages
+                    page_nums.append(('G', n))  # Go to page n
+            page_nums.append(('S', 0))  # Separator goes here
+            page_nums.append(('G', num_pages - 1))  # then last two pages
             page_nums.append(('G', num_pages))
 
-    if (cur_page < num_pages):  # Next page mark if we're not last page
-        page_nums.append(('N', cur_page+1))
+    if cur_page < num_pages:  # Next page mark if we're not last page
+        page_nums.append(('N', cur_page + 1))
 
     return page_nums
 
-#-----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 # Helper functions
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 def get_foo(request, foo, key):
     """Uses a request.POST or a request.GET enquiry to attempt to
        get hold of a named GET or POST parameter and look it up in the
@@ -136,84 +129,90 @@ def get_foo(request, foo, key):
        get_foo(request.GET, Story, 'sid')
        """
     sid = request.get(key, None)
-    if ((sid is None) or (sid == '') or (sid == 'None')):  # Text 'None' results in None return
+    if (sid is None) or (sid == '') or (sid == 'None'):  # Text 'None' results in None return
         return None
 
     # The id may be invalid; the story may not exist.
     # Return it if it's there or None otherwise
     sl = foo.objects.filter(pk=sid)
-    if (sl):
+    if sl:
         return sl[0]
     else:
         return None
 
-#-----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 def safe_int(v, default=1):
     try:
         return int(v)
     except ValueError:
         return default
 
-#-----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 def random64():
     return unpack("!Q", os.urandom(8))[0]
 
-#-----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 def to_signed64(u):
-    if (u > (1<<63)):
-        return u - (1<<64)
+    if u > (1 << 63):
+        return u - (1 << 64)
     else:
         return u
 
-#-----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 def to_unsigned64(s):
-    if (s < 0):
-        return s + (1<<64)
+    if s < 0:
+        return s + (1 << 64)
     else:
         return s
 
-#-----------------------------------------------------------------------------
-def validate_email_addr( email ):
+
+# -----------------------------------------------------------------------------
+def validate_email_addr(email):
     from django.core.validators import validate_email
     from django.core.exceptions import ValidationError
     try:
-        validate_email( email )
+        validate_email(email)
         return True
     except ValidationError:
         return False
 
-#-----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 # Registration and Authentication
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 @transaction.atomic
 def signin(request):
     username = request.POST.get('username', None)
     password = request.POST.get('password', None)
     nxt = request.POST.get('next', None)
 
-    if ((username is None) or (password is None)):
+    if (username is None) or (password is None):
         raise Http404
 
     # Now we work magic to match the Django auth system with the
     # legacy Ficlatté auth system
-    prof = Profile.objects.filter(pen_name_uc = username.upper())
-    if (not prof):
+    prof = Profile.objects.filter(pen_name_uc=username.upper())
+    if not prof:
         return render(request, 'castle/login.html', {
-                'error_title' : u'Log in failed',
-                'error_messages' : [u'Invalid pen name or password'],
-            })
+            'error_title': u'Log in failed',
+            'error_messages': [u'Invalid pen name or password'],
+        })
     profile = prof[0]
 
     user = None
     grunt = "none"
     # Check to see if legacy auth tokens remain
-    if (profile.old_salt is not None and len(profile.old_salt) == 16):
+    if profile.old_salt is not None and len(profile.old_salt) == 16:
         # Run old-fashioned auth
         ph = hashlib.sha256()
         ph.update(profile.old_salt)
         ph.update(password)
         grunt = "old auth but failed"
-        if (ph.hexdigest() == profile.old_auth):
+        if ph.hexdigest() == profile.old_auth:
             grunt = "old auth succeeded"
             # Fake successful authentication
             user = profile.user
@@ -226,9 +225,9 @@ def signin(request):
             profile.save()
             # For some reason, we need to log in again now
             user = authenticate(username=profile.user.username, password=password)
-            login(request,user)
+            login(request, user)
 
-            if (nxt):
+            if nxt:
                 return HttpResponseRedirect(nxt)
             else:
                 return HttpResponseRedirect(reverse('home'))
@@ -240,7 +239,7 @@ def signin(request):
         if user.is_active:
             login(request, user)
 
-            if (nxt):
+            if nxt:
                 return HttpResponseRedirect(nxt)
             else:
                 return HttpResponseRedirect(reverse('home'))
@@ -248,39 +247,42 @@ def signin(request):
             return HttpResponse("Account disabled")
     else:
         return render(request, 'castle/login.html', {
-                'error_title' : u'Log in failed',
-                'error_messages' : [u'Invalid pen name or password'],
-            })
+            'error_title': u'Log in failed',
+            'error_messages': [u'Invalid pen name or password'],
+        })
 
-#-----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 def signout(request):
     logout(request)
     return HttpResponseRedirect(reverse('home'))
 
-#-----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 def new_email_flag_entry(request, items, profile, code, descr, perm=None):
     node = {}
 
-    node['code']  = code
+    node['code'] = code
     node['descr'] = descr
-    if (profile):
+    if profile:
         node['is_set'] = ((profile.email_flags & code) > 0)
     else:
         node['is_set'] = True
 
     # If permissions required, check
-    if (perm):
-        if (request.user.has_perm(perm)):
+    if perm:
+        if request.user.has_perm(perm):
             items.append(node)
     else:
         items.append(node)
 
-#-----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 def confirmation(request, yesno, uid, token):
     profile = get_object_or_404(Profile, pk=uid)
 
     logged_in_user = None
-    if (request.user.is_authenticated()):
+    if request.user.is_authenticated():
         logged_in_user = request.user.profile
 
     int_token = safe_int(token, -1)
@@ -292,14 +294,14 @@ def confirmation(request, yesno, uid, token):
     # and the token in the request matches it.  We send the token unsigned
     # but the underlying database stores it signed, so we need to do a bit
     # of munging before we do the comparison
-    if (not profile.email_auth):
+    if not profile.email_auth:
         return render(request, 'castle/status_message.html',
                       {'profile': logged_in_user,
-                      'status_type': 'info',
-                      'status_message': u'E-mail address already authenticated.'})
-    elif (int_token == to_unsigned64(profile.email_auth)):
+                       'status_type': 'info',
+                       'status_message': u'E-mail address already authenticated.'})
+    elif int_token == to_unsigned64(profile.email_auth):
         # Request is authorised, now we look at the yes/no
-        if (yesno == 'yes'):
+        if yesno == 'yes':
             # It's a valid e-mail confirmation message
             profile.email_auth = 0
             profile.email_time = timezone.now()
@@ -307,41 +309,36 @@ def confirmation(request, yesno, uid, token):
             return render(request, 'castle/status_message.html',
                           {'profile': logged_in_user,
                            'status_type': 'success',
-                           'status_message': u'E-mail address confirmed successfully',})
-        elif (yesno == 'no'):
+                           'status_message': u'E-mail address confirmed successfully', })
+        elif yesno == 'no':
             # FIXME: need to add e-mail to blacklist
             return render(request, 'castle/status_message.html',
                           {'profile': logged_in_user,
                            'status_type': 'danger',
-                           'status_message': u'E-mail address added to do-not-send list',})
+                           'status_message': u'E-mail address added to do-not-send list', })
         else:
             raise Http404
 
     return render(request, 'castle/status_message.html',
-                      {'profile': logged_in_user,
-                      'status_type': 'danger',
-                      'status_message': u'Authentication token mismatch'})
+                  {'profile': logged_in_user,
+                   'status_type': 'danger',
+                   'status_message': u'Authentication token mismatch'})
 
-#-----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 @login_required
 def resend_email_conf(request):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if request.user.is_authenticated():
         profile = request.user.profile
-
-    # Get data from form
-    pen_name        = profile.pen_name
-    email_addr      = profile.email_addr
-    email_auth      = profile.email_auth
-    email_time      = profile.email_time
 
     # Set modification time
     time_now = timezone.now()
 
     # Has the author's email address been confirmed?
     email_conf = (profile.email_auth == 0)
-    if (not email_conf):
+    if not email_conf:
         # Get random 64 bit integer
         token = random64()
         token_s = to_signed64(token)
@@ -350,25 +347,26 @@ def resend_email_conf(request):
         send_conf_email(profile, token)
         profile.save()
 
-    #Build context and render page
+    # Build context and render page
     context = {
-        'page_title'        : u'Resend email confirmation',
-        'email_conf'        : email_conf,
-        }
+        'page_title': u'Resend email confirmation',
+        'email_conf': email_conf,
+    }
 
     return render(request, 'castle/registration/resend_email_confirmation.html', context)
 
-#-----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 # User Dashboard
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 @login_required
 def dashboard(request):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if request.user.is_authenticated():
         profile = request.user.profile
 
-    if ((profile is None) or (not request.user.has_perm("castle.admin"))):
+    if (profile is None) or (not request.user.has_perm("castle.admin")):
         raise Http404
 
     # Count number of views in last 24 hours:
@@ -380,7 +378,7 @@ def dashboard(request):
 
     # Count stories
     tot_stories = Story.objects.count()
-    act_stories = Story.objects.filter(activity__gt = 0).count()
+    act_stories = Story.objects.filter(activity__gt=0).count()
     pub_stories = Story.objects.exclude(draft=True).count()
 
     # Recent log entries
@@ -391,25 +389,26 @@ def dashboard(request):
 
     # Build context and render page
     context = {
-        'profile'       : profile,
-        'views'         : views,
-        'users'         : users,
-        'page_title'    : u'Dashboard',
-        'tot_stories'   : tot_stories,
-        'act_stories'   : act_stories,
-        'pub_stories'   : pub_stories,
-        'log'           : log,
-        'recent_users'  : recent_users,
-        }
+        'profile': profile,
+        'views': views,
+        'users': users,
+        'page_title': u'Dashboard',
+        'tot_stories': tot_stories,
+        'act_stories': act_stories,
+        'pub_stories': pub_stories,
+        'log': log,
+        'recent_users': recent_users,
+    }
 
     return render(request, 'castle/dashboard.html', context)
-    
-#-----------------------------------------------------------------------------    
+
+
+# -----------------------------------------------------------------------------
 @login_required
 def add_friend(request, user_id):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if request.user.is_authenticated():
         profile = request.user.profile
 
     # get friend object
@@ -420,12 +419,13 @@ def add_friend(request, user_id):
 
     return HttpResponseRedirect(reverse('author', args=(friend.pen_name,)))
 
-#-----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 @login_required
 def del_friend(request, user_id):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if request.user.is_authenticated():
         profile = request.user.profile
 
     # get friend object
@@ -434,19 +434,20 @@ def del_friend(request, user_id):
     # Add friend to profile's friendship list
     profile.friends.remove(friend)
 
-    return HttpResponseRedirect(reverse('author', args=(friend.pen_name,)))    
+    return HttpResponseRedirect(reverse('author', args=(friend.pen_name,)))
 
-#-----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 @login_required
 def avatar_upload(request):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if request.user.is_authenticated():
         profile = request.user.profile
 
-    if (request.method == 'POST'):
+    if request.method == 'POST':
         form = AvatarUploadForm(request.POST, request.FILES)
-        if (form.is_valid()):
+        if form.is_valid():
             # Happy
             f = request.FILES['image_file']
             path = getattr(settings, 'AVATAR_PATH', None)
@@ -457,7 +458,7 @@ def avatar_upload(request):
             destination.close()
             failure = convert_avatars(profile)
             os.remove(fnm)
-            if (not failure):
+            if not failure:
                 profile.flags = profile.flags | Profile.HAS_AVATAR
                 profile.save()
 
@@ -466,22 +467,23 @@ def avatar_upload(request):
         form = AvatarUploadForm()
 
     context = {
-		'profile'		: profile,
-        'page_title'    : u'Upload avatar',
-        'form'          : form,
-        }
+        'profile': profile,
+        'page_title': u'Upload avatar',
+        'form': form,
+    }
     return render(request, 'castle/avatar_upload.html', context)
-        
-#-----------------------------------------------------------------------------
+
+
+# -----------------------------------------------------------------------------
 # Static Views        
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 def static_view(request, template_name):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if request.user.is_authenticated():
         profile = request.user.profile
 
     context = {
-        'profile'       : profile
-        }
-    return render(request, 'castle/'+template_name, context)
+        'profile': profile
+    }
+    return render(request, 'castle/' + template_name, context)
