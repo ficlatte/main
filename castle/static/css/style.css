@@ -576,6 +576,29 @@ li.notes-nav {
 	color: #bbb;
 }
 
+.inbox-zero {
+	margin-left: 5px;
+	position: absolute;
+	width: 30px;
+	height: 20px;
+	text-align: center;
+	font-weight: bold;
+	background-color: #000;
+	border-radius: 3px;
+}
+
+.inbox-zero:before {
+	content: "";
+	position: absolute;
+	top: 12px;
+	left: 7px;
+	width: 0;
+	height: 0;
+	border-bottom: 6px solid transparent;
+	border-left: 5px solid #000;
+	border-top: 8px solid transparent;
+}
+
 .inbox-count {
 	margin-left: 5px;
 	position: absolute;
