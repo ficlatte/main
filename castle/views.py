@@ -724,30 +724,40 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
     if ((profile) and (Subscription.objects.filter(story=story, user=profile).count()>0)):
         subscribed = True
 
+    prequel_subscribed = False
+    if ((profile) and (Subscription.objects.filter(prequel_to=story, user=profile).count()>0)):
+        prequel_subscribed = True
+		
+    sequel_subscribed = False
+    if ((profile) and (Subscription.objects.filter(sequel_to=story, user=profile).count()>0)):
+        sequel_subscribed = True
+
     # Build context and render page
-    context = { 'profile'       : profile,
-                'author'        : story.user,
-                'story'         : story,
-                'prequels'      : prequels,
-                'sequels'       : sequels,
-                'rating_str'    : rating_str,
-                'rating_num'    : rating,
-                'comments'      : comments,
-                'subscribed'    : subscribed,
-                'page_title'    : story.title,
-                'page_url'      : u'/stories/'+unicode(story_id)+u'/',
-                'pages'         : bs_pager(page_num, PAGE_COMMENTS, story.comment_set.count()),
-                'story_sidepanel':1 ,
-                'owner'         : owner,
-                'challenge'     : challenge,
-                'ch_owner'      : ch_owner,
-                'viewed'        : viewed,
-                'rated'         : rated,
-                'comment_text'  : comment_text, # in case of failed comment submission
-                'user_rating'   : user_rating,
-                'suppressed'    : suppressed,
-                'error_title'   : error_title,
-                'error_messages': error_messages,
+    context = { 'profile'       		: profile,
+				'author'        		: story.user,
+                'story'         		: story,
+                'prequels'      		: prequels,
+                'sequels'       		: sequels,
+                'rating_str'    		: rating_str,
+                'rating_num'    		: rating,
+                'comments'      		: comments,
+                'subscribed'    		: subscribed,
+				'prequel_subscribed'	: prequel_subscribed,
+                'sequel_subscribed'		: sequel_subscribed,
+                'page_title'    		: story.title,
+                'page_url'      		: u'/stories/'+unicode(story_id)+u'/',
+                'pages'         		: bs_pager(page_num, PAGE_COMMENTS, story.comment_set.count()),
+                'story_sidepanel'		:1 ,
+                'owner'         		: owner,
+                'challenge'     		: challenge,
+                'ch_owner'      		: ch_owner,
+                'viewed'        		: viewed,
+                'rated'         		: rated,
+                'comment_text'  		: comment_text, # in case of failed comment submission
+                'user_rating'   		: user_rating,
+                'suppressed'    		: suppressed,
+                'error_title'   		: error_title,
+                'error_messages'		: error_messages,
                 }
 
     return render(request, 'castle/story.html', context)
@@ -923,6 +933,7 @@ def submit_story(request):
 
     # Is the story being published?
     if (not story.draft and (was_draft or new_story)):
+		# Set the publish time and send notifications to subscribed users of the prequel/sequel (if applicable)
         story.ptime = timezone.now()
 
     # Set modification time
@@ -950,11 +961,15 @@ def submit_story(request):
     if (new_story):
         if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_STORY):
             Subscription.objects.get_or_create(user=profile, story=story)
+        if (profile.email_flags & Profile.AUTOSUBSCRIBE_TO_PREQUEL):
+            Subscription.objects.get_or_create(user=profile, prequel_to=story)
+        if (profile.email_flags & Profile.AUTOSUBSCRIBE_TO_SEQUEL):
+            Subscription.objects.get_or_create(user=profile, sequel_to=story)
+        
 
     # Make log entry
     log_type = StoryLog.WRITE
     quel = None
-    chal = None
     if (sequel_to):
         log_type = StoryLog.SEQUEL
         quel = sequel_to
@@ -963,7 +978,7 @@ def submit_story(request):
         quel = prequel_to
     elif (challenge):
         log_type = StoryLog.CHALLENGE_ENT
-        chal = Challenge.objects.get(id=int(request.POST.get('chid')))
+        challenge = challenge
 
     if (not new_story):
         log_type = StoryLog.STORY_MOD
@@ -974,9 +989,16 @@ def submit_story(request):
         quel = quel,
         log_type = log_type,
         prompt = prompt,
-        challenge = chal
+        challenge = challenge
     )
     log.save()
+    
+    if (prequel_to):
+        send_notification_email_story(story, prequel_to, 1)
+    elif (sequel_to):
+        send_notification_email_story(story, sequel_to, 2)
+    elif (challenge):
+        send_notification_email_challenge_story(story, challenge)
 
     return HttpResponseRedirect(reverse('story', args=(story.id,)))
 
@@ -1418,6 +1440,10 @@ def challenge_view(request, challenge_id, comment_text=None, error_title='', err
 	subscribed = False
 	if ((profile) and (Subscription.objects.filter(challenge=challenge, user=profile).count()>0)):
 		subscribed = True
+		
+	entry_subscribed = False
+	if ((profile) and (Subscription.objects.filter(ch_entry=challenge, user=profile).count()>0)):
+		entry_subscribed = True
 
     # Build context and render page
 	context = { 'profile'             : profile,
@@ -1425,6 +1451,7 @@ def challenge_view(request, challenge_id, comment_text=None, error_title='', err
 				'stories'             : stories,
 				'owner'               : owner,
 				'subscribed'		  : subscribed,
+				'entry_subscribed'	  : entry_subscribed,
 				'participants'		  : participants,
 				'comments'            : comments,
 				'page_title'          : u'Challenge '+challenge.title,
@@ -1580,6 +1607,8 @@ def submit_challenge(request):
     if (new_challenge):
         if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_CHALLENGE):
             Subscription.objects.get_or_create(user=profile, challenge=challenge)
+        if (profile.email_flags & Profile.AUTOSUBSCRIBE_TO_CHALLENGE_ENTRY):
+            Subscription.objects.get_or_create(user=profile, ch_entry=challenge)
 
     # Log entry
     log_type = StoryLog.CHALLENGE
@@ -1720,6 +1749,31 @@ def blog_unsubscribe(request, blog_id, comment_text=None, error_title='', error_
         }
 
     return render(request, 'castle/unsubscribed.html', context)
+    
+#-----------------------------------------------------------------------------
+@login_required
+def story_subscribe(request, story_id, comment_text=None, error_title='', error_messages=None):
+    story = get_object_or_404(Story, pk=story_id)
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    if (profile is None):
+        raise Http404
+
+    Subscription.objects.get_or_create(user=profile, story=story)
+
+    context = { 'thing'         : story,
+                'thing_type'    : u'story',
+                'thing_url'     : reverse('story', args=[story.id]),
+                'page_title'    : u'Subscribe story '+story.title,
+                'error_title'   : error_title,
+                'error_messages': error_messages,
+                'user_dashboard': True,
+                'profile'       : profile,
+        }
+
+    return render(request, 'castle/subscribed.html', context)
 
 #-----------------------------------------------------------------------------
 @login_required
@@ -1745,10 +1799,10 @@ def story_unsubscribe(request, story_id, comment_text=None, error_title='', erro
         }
 
     return render(request, 'castle/unsubscribed.html', context)
-
+    
 #-----------------------------------------------------------------------------
 @login_required
-def story_subscribe(request, story_id, comment_text=None, error_title='', error_messages=None):
+def prequel_subscribe(request, story_id, comment_text=None, error_title='', error_messages=None):
     story = get_object_or_404(Story, pk=story_id)
     # Get user profile
     profile = None
@@ -1757,12 +1811,112 @@ def story_subscribe(request, story_id, comment_text=None, error_title='', error_
     if (profile is None):
         raise Http404
 
-    Subscription.objects.get_or_create(user=profile, story=story)
+    Subscription.objects.get_or_create(user=profile, prequel_to=story)
 
     context = { 'thing'         : story,
-                'thing_type'    : u'story',
+                'thing_type'    : u'prequel',
                 'thing_url'     : reverse('story', args=[story.id]),
-                'page_title'    : u'Unsubscribe story '+story.title,
+                'page_title'    : u'Subscribe to prequels on story '+story.title,
+                'error_title'   : error_title,
+                'error_messages': error_messages,
+                'user_dashboard': True,
+                'profile'       : profile,
+        }
+
+    return render(request, 'castle/subscribed.html', context)
+    
+#-----------------------------------------------------------------------------
+@login_required
+def prequel_unsubscribe(request, story_id, comment_text=None, error_title='', error_messages=None):
+    story = get_object_or_404(Story, pk=story_id)
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    if (profile is None):
+        raise Http404
+
+    Subscription.objects.filter(user=profile, prequel_to=story).delete()
+
+    context = { 'thing'         : story,
+                'thing_type'    : u'prequel',
+                'thing_url'     : reverse('story', args=[story.id]),
+                'page_title'    : u'Unsubscribe to prequels on story '+story.title,
+                'error_title'   : error_title,
+                'error_messages': error_messages,
+                'user_dashboard': True,
+                'profile'       : profile,
+        }
+
+    return render(request, 'castle/unsubscribed.html', context)
+    
+#-----------------------------------------------------------------------------
+@login_required
+def sequel_subscribe(request, story_id, comment_text=None, error_title='', error_messages=None):
+    story = get_object_or_404(Story, pk=story_id)
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    if (profile is None):
+        raise Http404
+
+    Subscription.objects.get_or_create(user=profile, sequel_to=story)
+
+    context = { 'thing'         : story,
+                'thing_type'    : u'sequel',
+                'thing_url'     : reverse('story', args=[story.id]),
+                'page_title'    : u'Subscribe to sequels on story '+story.title,
+                'error_title'   : error_title,
+                'error_messages': error_messages,
+                'user_dashboard': True,
+                'profile'       : profile,
+        }
+
+    return render(request, 'castle/subscribed.html', context)
+    
+#-----------------------------------------------------------------------------
+@login_required
+def sequel_unsubscribe(request, story_id, comment_text=None, error_title='', error_messages=None):
+    story = get_object_or_404(Story, pk=story_id)
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    if (profile is None):
+        raise Http404
+
+    Subscription.objects.filter(user=profile, sequel_to=story).delete()
+
+    context = { 'thing'         : story,
+                'thing_type'    : u'sequel',
+                'thing_url'     : reverse('story', args=[story.id]),
+                'page_title'    : u'Unsubscribe to sequels on story '+story.title,
+                'error_title'   : error_title,
+                'error_messages': error_messages,
+                'user_dashboard': True,
+                'profile'       : profile,
+        }
+
+    return render(request, 'castle/unsubscribed.html', context)
+    
+#-----------------------------------------------------------------------------
+@login_required
+def prompt_subscribe(request, prompt_id, comment_text=None, error_title='', error_messages=None):
+    prompt = get_object_or_404(Prompt, pk=prompt_id)
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    if (profile is None):
+        raise Http404
+
+    Subscription.objects.get_or_create(user=profile, prompt=prompt)
+
+    context = { 'thing'         : prompt,
+                'thing_type'    : u'prompt',
+                'thing_url'     : reverse('prompt', args=[prompt.id]),
+                'page_title'    : u'Subscribe prompt '+prompt.title,
                 'error_title'   : error_title,
                 'error_messages': error_messages,
                 'user_dashboard': True,
@@ -1795,11 +1949,11 @@ def prompt_unsubscribe(request, prompt_id, comment_text=None, error_title='', er
         }
 
     return render(request, 'castle/unsubscribed.html', context)
-
+    
 #-----------------------------------------------------------------------------
 @login_required
-def prompt_subscribe(request, prompt_id, comment_text=None, error_title='', error_messages=None):
-    prompt = get_object_or_404(Prompt, pk=prompt_id)
+def challenge_subscribe(request, challenge_id, comment_text=None, error_title='', error_messages=None):
+    challenge = get_object_or_404(Challenge, pk=challenge_id)
     # Get user profile
     profile = None
     if (request.user.is_authenticated()):
@@ -1807,12 +1961,12 @@ def prompt_subscribe(request, prompt_id, comment_text=None, error_title='', erro
     if (profile is None):
         raise Http404
 
-    Subscription.objects.get_or_create(user=profile, prompt=prompt)
+    Subscription.objects.get_or_create(user=profile, ch_entry=challenge)
 
-    context = { 'thing'         : prompt,
-                'thing_type'    : u'prompt',
-                'thing_url'     : reverse('prompt', args=[prompt.id]),
-                'page_title'    : u'Unsubscribe prompt '+prompt.title,
+    context = { 'thing'         : challenge,
+                'thing_type'    : u'challenge',
+                'thing_url'     : reverse('challenge', args=[challenge.id]),
+                'page_title'    : u'Subscribe challenge '+challenge.title,
                 'error_title'   : error_title,
                 'error_messages': error_messages,
                 'user_dashboard': True,
@@ -1845,10 +1999,10 @@ def challenge_unsubscribe(request, challenge_id, comment_text=None, error_title=
         }
 
     return render(request, 'castle/unsubscribed.html', context)
-
+    
 #-----------------------------------------------------------------------------
 @login_required
-def challenge_subscribe(request, challenge_id, comment_text=None, error_title='', error_messages=None):
+def challenge_entry_subscribe(request, challenge_id, comment_text=None, error_title='', error_messages=None):
     challenge = get_object_or_404(Challenge, pk=challenge_id)
     # Get user profile
     profile = None
@@ -1857,12 +2011,12 @@ def challenge_subscribe(request, challenge_id, comment_text=None, error_title=''
     if (profile is None):
         raise Http404
 
-    Subscription.objects.get_or_create(user=profile, challenge=challenge)
+    Subscription.objects.get_or_create(user=profile, ch_entry=challenge)
 
     context = { 'thing'         : challenge,
-                'thing_type'    : u'challenge',
+                'thing_type'    : u'challenge entry',
                 'thing_url'     : reverse('challenge', args=[challenge.id]),
-                'page_title'    : u'Unsubscribe challenge '+challenge.title,
+                'page_title'    : u'Subscribe to entries on challenge '+challenge.title,
                 'error_title'   : error_title,
                 'error_messages': error_messages,
                 'user_dashboard': True,
@@ -1870,6 +2024,31 @@ def challenge_subscribe(request, challenge_id, comment_text=None, error_title=''
         }
 
     return render(request, 'castle/subscribed.html', context)
+    
+#-----------------------------------------------------------------------------
+@login_required
+def challenge_entry_unsubscribe(request, challenge_id, comment_text=None, error_title='', error_messages=None):
+    challenge = get_object_or_404(Challenge, pk=challenge_id)
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    if (profile is None):
+        raise Http404
+
+    Subscription.objects.filter(user=profile, ch_entry=challenge).delete()
+
+    context = { 'thing'         : challenge,
+                'thing_type'    : u'challenge entry',
+                'thing_url'     : reverse('challenge', args=[challenge.id]),
+                'page_title'    : u'Unsubscribe to entries on challenge '+challenge.title,
+                'error_title'   : error_title,
+                'error_messages': error_messages,
+                'user_dashboard': True,
+                'profile'       : profile,
+        }
+
+    return render(request, 'castle/unsubscribed.html', context)
 
 #-----------------------------------------------------------------------------
 @login_required
@@ -2186,6 +2365,13 @@ def profile_view(request, error_title=None, error_messages=None):
     new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_STORY_COMMENT, u'when you comment on a story')
     new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_BLOG, u'when you publish a blog post', 'castle.post_blog')
     new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_BLOG_COMMENT, u'when you comment on a blog post')
+    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_PROMPT, u'when you publish a prompt')
+    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_PROMPT_COMMENT, u'when you comment on a prompt')
+    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_CHALLENGE, u'when you publish a challenge')
+    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_CHALLENGE_COMMENT, u'when you comment on a challenge')
+    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_TO_PREQUEL, u'when someone prequels a story you wrote')
+    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_TO_SEQUEL, u'when someone sequels a story you wrote')
+    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_TO_CHALLENGE_ENTRY, u'when someone enters a story in a challenge you created')
 
     # Page title
     if (profile):

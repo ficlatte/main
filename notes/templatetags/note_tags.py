@@ -22,7 +22,7 @@ def note_link(note):
 def inbox_count(profile):
     count = Note.objects.filter(recipient=profile, read_date__isnull=True, recipient_deleted_date__isnull=True).count()
     if count > 0:
-	    return mark_safe(u'<span class="inbox-count">' + escape(count) + u'</span>')
+        return mark_safe(u'<span class="inbox-count">' + escape(count) + u'</span>')
     else:
         return mark_safe(u'<span class="inbox-zero">' + escape(count) + u'</span>')
 

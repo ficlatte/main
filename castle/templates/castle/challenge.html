@@ -37,6 +37,13 @@ Copyright (C) 2015 Paul Robertson
 					{% else %}
 						{{challenge.body|encode_story}}
 					{% endif %}
+					{% if profile %}
+						{% if entry_subscribed %}
+							<p><a href="{% url 'challenge-entry-unsub' challenge.id %}">Unsubscribe to new entries on this challenge</a></p>
+						{% else %}
+							<p><a href="{% url 'challenge-entry-sub' challenge.id %}">Send me e-mail notifications of new entries</a></p>
+						{% endif %}
+					{% endif %}
 				</div>
 				<div class="col-sm-5 col-md-5">
 					{% if not challenge.started %}Challenge starts: {% else %}Challenge started:{% endif %} {{challenge.stime|date:"j M Y"}}<br />
