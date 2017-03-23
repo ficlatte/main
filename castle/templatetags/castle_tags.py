@@ -51,6 +51,11 @@ def num_comments_txt(obj):
 @register.filter
 def num_comments(obj):
     return obj.comment_set.count()
+        
+#-----------------------------------------------------------------------------
+@register.filter
+def num_comment_likes(obj):
+    return obj.commentlike_set.count()
 
 #-----------------------------------------------------------------------------
 @register.filter
