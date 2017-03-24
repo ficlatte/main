@@ -184,6 +184,7 @@ Copyright (C) 2015 Paul Robertson
 			{% endif %}
 			{% if story.prequel_to %}
             {% if story.prompt %}<hr>{% endif %}
+
 				<h4 class="panel-title">Inspired by (prequel to):</h4>
             </div>
             <div class="panel-body">
@@ -213,6 +214,7 @@ Copyright (C) 2015 Paul Robertson
 			</div>
 			{% endif %}
 			{% if story.tag_set.count > 0 %}
+
             {% if story.prompt or story.prequel_to or story.sequel_to %}<hr>{% endif %}
 				<div class="tag-cloud" id="tags">
 					<p>This story&#39;s tags are</p>
