@@ -6,12 +6,12 @@ from castle.views import *
 def author(request, pen_name):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
     # Get target author's information
     author = Profile.objects.filter(pen_name_uc=pen_name.upper())
-    if not author:
+    if (not author):
         raise Http404()
     author = author[0]  # Get single object from collection
 
@@ -20,54 +20,50 @@ def author(request, pen_name):
 
     # Has the author's email been confirmed?
     email_conf = True
-    if profile:
+    if (profile):
         email_conf = (profile.email_auth == 0)
 
     # Build story list (owner sees their drafts)
     page_num = safe_int(request.GET.get('page_num', 1))
-    if owner:
+    if (owner):
         num_stories = Story.objects.filter(user=author).count()
-        story_list = Story.objects.filter(user=author).order_by('-draft', '-ptime', '-mtime')[
-                     (page_num - 1) * PAGE_STORIES:page_num * PAGE_STORIES]
+        story_list = Story.objects.filter(user=author).order_by('-draft', '-ptime', '-mtime')[(page_num - 1) * PAGE_STORIES:page_num * PAGE_STORIES]
         num_prompts = Prompt.objects.filter(user=author).count()
-        prompt_list = Prompt.objects.filter(user=author).order_by('-mtime')[
-                      (page_num - 1) * PAGE_PROMPTS:page_num * PAGE_PROMPTS]
+        prompt_list = Prompt.objects.filter(user=author).order_by('-mtime')[(page_num - 1) * PAGE_PROMPTS:page_num * PAGE_PROMPTS]
         num_challenges = Challenge.objects.filter(user=author).count()
-        challenge_list = Challenge.objects.filter(user=author).order_by('-mtime')[
-                         (page_num - 1) * PAGE_CHALLENGES:page_num * PAGE_CHALLENGES]
+        challenge_list = Challenge.objects.filter(user=author).order_by('-mtime')[(page_num - 1) * PAGE_CHALLENGES:page_num * PAGE_CHALLENGES]
     else:
         num_stories = Story.objects.filter(user=author, draft=False).count()
-        story_list = Story.objects.filter(user=author, draft=False).order_by('-ptime')[
-                     (page_num - 1) * PAGE_STORIES:page_num * PAGE_STORIES]
+        story_list = Story.objects.filter(user=author, draft=False).order_by('-ptime')[(page_num - 1) * PAGE_STORIES:page_num * PAGE_STORIES]
         num_prompts = Prompt.objects.filter(user=author).count()
-        prompt_list = Prompt.objects.filter(user=author).order_by('-mtime')[
-                      (page_num - 1) * PAGE_PROMPTS:page_num * PAGE_PROMPTS]
+        prompt_list = Prompt.objects.filter(user=author).order_by('-mtime')[(page_num - 1) * PAGE_PROMPTS:page_num * PAGE_PROMPTS]
         num_challenges = Challenge.objects.filter(user=author).count()
-        challenge_list = Challenge.objects.filter(user=author).order_by('-mtime')[
-                         (page_num - 1) * PAGE_CHALLENGES:page_num * PAGE_CHALLENGES]
+        challenge_list = Challenge.objects.filter(user=author).order_by('-mtime')[(page_num - 1) * PAGE_CHALLENGES:page_num * PAGE_CHALLENGES]
 
     # Friendship?
     is_friend = False
-    if profile and author:
+    if (profile and author):
         is_friend = profile.is_friend(author)
 
     # Build context and render page
-    context = {'profile': profile,
-               'author': author,
-               'owner': owner,
-               'story_list': story_list,
-               'num_prompts': num_prompts,
-               'prompt_list': prompt_list, 'num_challenges': num_challenges,
-               'challenge_list': challenge_list,
-               'email_conf': email_conf,
-               'page_title': author.pen_name,
-               'page_url': u'/authors/' + urlquote(author.pen_name) + u'/',
-               'pages': bs_pager(page_num, PAGE_STORIES, num_stories),
-               'is_friend': is_friend,
-               'user_dashboard': owner, 'other_user_sidepanel': (not owner),
+    context = {'profile'             : profile,
+               'author'              : author,
+               'owner'               : owner,
+               'story_list'          : story_list,
+               'num_prompts'         : num_prompts,
+               'prompt_list'         : prompt_list,
+               'num_challenges'      : num_challenges,
+               'challenge_list'      : challenge_list,
+               'email_conf'          : email_conf,
+               'page_title'          : author.pen_name,
+               'page_url'            : u'/authors/' + urlquote(author.pen_name) + u'/',
+               'pages'               : bs_pager(page_num, PAGE_STORIES, num_stories),
+               'is_friend'           : is_friend,
+               'user_dashboard'      : owner,
+               'other_user_sidepanel': (not owner),
                }
-    return \
-        render(request, 'authors/author.html', context)
+
+    return render(request, 'authors/author.html', context)
 
 
 # -----------------------------------------------------------------------------
@@ -75,7 +71,7 @@ def author(request, pen_name):
 def drafts(request):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
     # Has the author's email been confirmed?
@@ -84,19 +80,18 @@ def drafts(request):
     # Build story list (owner sees their drafts)
     page_num = safe_int(request.GET.get('page_num', 1))
     num_stories = Story.objects.filter(user=profile, draft=True).count()
-    story_list = Story.objects.filter(user=profile, draft=True).order_by('-mtime')[
-                 (page_num - 1) * PAGE_STORIES:page_num * PAGE_STORIES]
+    story_list = Story.objects.filter(user=profile, draft=True).order_by('-mtime')[(page_num - 1) * PAGE_STORIES:page_num * PAGE_STORIES]
 
     # Build context and render page
-    context = {'profile': profile,
-               'author': profile,
-               'story_list': story_list,
-               'page_title': profile.pen_name, 'email_conf': email_conf,
-               'page_url': u'/authors/' + urlquote(profile.pen_name) + u'/',
-               'pages': bs_pager(page_num, PAGE_STORIES, num_stories),
-               'drafts_page': True,
-               'user_dashboard': True,
-               'other_user_sidepanel': False,
+    context = {'profile'                : profile,
+               'author'                 : profile,
+               'story_list'             : story_list,
+               'page_title'             : profile.pen_name, 'email_conf': email_conf,
+               'page_url'               : u'/authors/' + urlquote(profile.pen_name) + u'/',
+               'pages'                  : bs_pager(page_num, PAGE_STORIES, num_stories),
+               'drafts_page'            : True,
+               'user_dashboard'         : True,
+               'other_user_sidepanel'   : False,
                }
     return render(request, 'authors/author.html', context)
 
@@ -106,7 +101,7 @@ def drafts(request):
 def author_prompts(request):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
     # Has the author's email been confirmed?
@@ -115,20 +110,19 @@ def author_prompts(request):
     # Build story list (owner sees their drafts)
     page_num = safe_int(request.GET.get('page_num', 1))
     num_prompts = Prompt.objects.count()
-    prompt_list = Prompt.objects.filter(user=profile).order_by('-mtime')[
-                  (page_num - 1) * PAGE_STORIES:page_num * PAGE_STORIES]
+    prompt_list = Prompt.objects.filter(user=profile).order_by('-mtime')[(page_num - 1) * PAGE_STORIES:page_num * PAGE_STORIES]
 
     # Build context and render page
-    context = {'profile': profile,
-               'author': profile,
-               'prompt_list': prompt_list,
-               'page_title': profile.pen_name,
-               'email_conf': email_conf,
-               'page_url': u'/authors/' + urlquote(profile.pen_name) + u'/',
-               'pages': bs_pager(page_num, PAGE_STORIES, num_prompts),
-               'prompts_page': True,
-               'user_dashboard': True,
-               'other_user_sidepanel': False,
+    context = {'profile'                : profile,
+               'author'                 : profile,
+               'prompt_list'            : prompt_list,
+               'page_title'             : profile.pen_name,
+               'email_conf'             : email_conf,
+               'page_url'               : u'/authors/' + urlquote(profile.pen_name) + u'/',
+               'pages'                  : bs_pager(page_num, PAGE_STORIES, num_prompts),
+               'prompts_page'           : True,
+               'user_dashboard'         : True,
+               'other_user_sidepanel'   : False,
                }
     return render(request, 'authors/author.html', context)
 
@@ -138,7 +132,7 @@ def author_prompts(request):
 def author_challenges(request):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
     # Has the author's email been confirmed?
@@ -147,20 +141,19 @@ def author_challenges(request):
     # Build story list (owner sees their drafts)
     page_num = safe_int(request.GET.get('page_num', 1))
     num_challenges = Challenge.objects.count()
-    challenge_list = Challenge.objects.filter(user=profile).order_by('-mtime')[
-                     (page_num - 1) * PAGE_STORIES:page_num * PAGE_STORIES]
+    challenge_list = Challenge.objects.filter(user=profile).order_by('-mtime')[(page_num - 1) * PAGE_STORIES:page_num * PAGE_STORIES]
 
     # Build context and render page
-    context = {'profile': profile,
-               'author': profile,
-               'challenge_list': challenge_list,
-               'page_title': profile.pen_name,
-               'email_conf': email_conf,
-               'page_url': u'/authors/' + urlquote(profile.pen_name) + u'/',
-               'pages': bs_pager(page_num, PAGE_STORIES, num_challenges),
-               'challenges_page': True,
-               'user_dashboard': True,
-               'other_user_sidepanel': False,
+    context = {'profile'                : profile,
+               'author'                 : profile,
+               'challenge_list'         : challenge_list,
+               'page_title'             : profile.pen_name,
+               'email_conf'             : email_conf,
+               'page_url'               : u'/authors/' + urlquote(profile.pen_name) + u'/',
+               'pages'                  : bs_pager(page_num, PAGE_STORIES, num_challenges),
+               'challenges_page'        : True,
+               'user_dashboard'         : True,
+               'other_user_sidepanel'   : False,
                }
     return render(request, 'authors/author.html', context)
 
@@ -170,47 +163,38 @@ def author_challenges(request):
 def profile_view(request, error_title=None, error_messages=None):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
     # Do e-mail subscription bits
     email_flags = []
 
     new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_STORY, u'when you publish a story')
-    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_STORY_COMMENT,
-                         u'when you comment on a story')
-    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_BLOG, u'when you publish a blog post',
-                         'castle.post_blog')
-    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_BLOG_COMMENT,
-                         u'when you comment on a blog post')
+    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_STORY_COMMENT, u'when you comment on a story')
+    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_BLOG, u'when you publish a blog post')
+    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_BLOG_COMMENT, u'when you comment on a blog post')
     new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_PROMPT, u'when you publish a prompt')
-    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_PROMPT_COMMENT,
-                         u'when you comment on a prompt')
-    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_CHALLENGE,
-                         u'when you publish a challenge')
-    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_CHALLENGE_COMMENT,
-                         u'when you comment on a challenge')
-    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_TO_PREQUEL,
-                         u'when someone prequels a story you wrote')
-    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_TO_SEQUEL,
-                         u'when someone sequels a story you wrote')
-    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_TO_CHALLENGE_ENTRY,
-                         u'when someone enters a story in a challenge you created')
+    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_PROMPT_COMMENT, u'when you comment on a prompt')
+    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_CHALLENGE, u'when you publish a challenge')
+    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_ON_CHALLENGE_COMMENT, u'when you comment on a challenge')
+    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_TO_PREQUEL, u'when someone prequels a story you wrote')
+    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_TO_SEQUEL, u'when someone sequels a story you wrote')
+    new_email_flag_entry(request, email_flags, profile, Profile.AUTOSUBSCRIBE_TO_CHALLENGE_ENTRY, u'when someone enters a story in a challenge you created')
 
     # Page title
-    if profile:
+    if (profile):
         page_title = u'Profile of ' + profile.pen_name
     else:
         page_title = u'Register new user'
 
     # Build context and render page
-    context = {'profile': profile,
-               'length_limit': 1024,
-               'length_min': 1,
-               'page_title': page_title,
-               'email_flags': email_flags,
-               'error_title': error_title,
-               'error_messages': error_messages,
+    context = {'profile'          : profile,
+               'length_limit'     : 1024,
+               'length_min'       : 1,
+               'page_title'       : page_title,
+               'email_flags'      : email_flags,
+               'error_title'      : error_title,
+               'error_messages'   : error_messages,
                }
 
     return render(request, 'authors/profile.html', context)
@@ -222,7 +206,7 @@ def submit_profile(request):
     # Get user profile
     new_registration = False
     new_email_addr = False
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
     else:
         profile = Profile()
@@ -245,86 +229,84 @@ def submit_profile(request):
 
     # Update and verify profile object
     errors = []
-    if pen_name and ((profile.pen_name_uc is None) or (pen_name.upper() != profile.pen_name_uc)):
+    if (pen_name and ((profile.pen_name_uc is None) or (pen_name.upper() != profile.pen_name_uc))):
         # Pen name is set and it is different from the stored value
         profile.pen_name = pen_name
         profile.pen_name_uc = pen_name.upper()
-        if Profile.objects.filter(pen_name_uc=pen_name.upper()):
+        if (Profile.objects.filter(pen_name_uc=pen_name.upper())):
             errors.append(u'Sorry, that pen-name is already taken')
 
-    if new_registration:
+    if (new_registration):
         # Password check for new user
-        if len(password) < 6:
+        if (len(password) < 6):
             errors.append(u'Password must be at least 6 characters')
-        if password != password_again:
+        if (password != password_again):
             errors.append(u'Password and password check did not match')
-    elif new_password:
-        if not request.user.check_password(password):
+    elif (new_password):
+        if (not request.user.check_password(password)):
             errors.append(u'Old password incorrect')
-        if len(new_password) < 6:
+        if (len(new_password) < 6):
             errors.append(u'Password must be at least 6 characters')
-        if new_password != password_again:
+        if (new_password != password_again):
             errors.append(u'Password and password check did not match')
-    elif password:
-        if not request.user.check_password(password):
+    elif (password):
+        if (not request.user.check_password(password)):
             errors.append(u'Old password incorrect')
 
-    if site_url == '':
+    if (site_url == ''):
         profile.site_url = None
     else:
         profile.site_url = site_url
 
-    if site_name == '':
+    if (site_name == ''):
         profile.site_name = None
     else:
         profile.site_name = site_name
 
-    if facebook_username == '':
+    if (facebook_username == ''):
         profile.facebook_username = None
     else:
         profile.facebook_username = facebook_username
 
-    if twitter_username == '':
+    if (twitter_username == ''):
         profile.twitter_username = None
     else:
         profile.twitter_username = twitter_username
 
-    if wattpad_username == '':
+    if (wattpad_username == ''):
         profile.wattpad_username = None
     else:
         profile.wattpad_username = wattpad_username
 
-    if new_registration or biography:
+    if (new_registration or biography):
         # Condense all end-of-line markers into \n
         profile.biography = re_crlf.sub(u"\n", biography)
 
-        if len(biography) < 2:
+        if (len(biography) < 2):
             errors.append(u'Biography must be at least 2 characters.  Tell us a bit about yourself')
-    if mature:
+    if (mature):
         profile.mature = True
     else:
         profile.mature = False
-    if (new_registration or email_addr) and not validate_email_addr(email_addr):
+    if ((new_registration or email_addr) and not validate_email_addr(email_addr)):
         errors.append(u'Sorry, but we need an e-mail address')
-    if not rules:
+    if (not rules):
         errors.append(u'You need to agree to the rules before you play')
 
     # E-mail preferences
     eflags = 0
     flag = 1
     for i in range(Profile.NUM_EMAIL_FLAGS):
-        if 'ef_{}'.format(flag) in request.POST:
+        if ('ef_{}'.format(flag) in request.POST):
             eflags = eflags | flag
         flag *= 2
     profile.email_flags = eflags
 
     # If user is changing e-mail address, they need their password too
-    if (not new_registration and (
-                (email_addr and email_addr != profile.email_addr) or
-                (pen_name and pen_name.upper() != profile.pen_name_uc))):
-        if not password:
+    if (not new_registration and ((email_addr and email_addr != profile.email_addr) or (pen_name and pen_name.upper() != profile.pen_name_uc))):
+        if (not password):
             errors.append(u'When you change your pen name or e-mail address, you need to supply your password too.')
-        elif not request.user.check_password(password):
+        elif (not request.user.check_password(password)):
             errors.append(u'Old password incorrect')
         else:
             new_email_addr = True
@@ -334,14 +316,14 @@ def submit_profile(request):
     profile.mtime = time_now
 
     # If there have been errors, re-display the page
-    if errors:
-        if new_registration:
+    if (errors):
+        if (new_registration):
             return profile_view(request, 'Registration unsuccessful', errors)
         else:
             return profile_view(request, 'Profile update unsuccessful', errors)
 
     # If new registration, we should create a new Django user
-    if new_registration:
+    if (new_registration):
         # Create a temporary user name because we need to call the
         # user something whilst we create the profile entry
         # We then go back and update the Django user name to express clearly
@@ -367,7 +349,7 @@ def submit_profile(request):
         profile.save()
 
     # If this is a new user, or the e-mail address is changed, send a conf email
-    if new_registration or new_email_addr:
+    if (new_registration or new_email_addr):
         # Get random 64 bit integer
         token = random64()
         token_s = to_signed64(token)

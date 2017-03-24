@@ -52,19 +52,19 @@ class Profile(models.Model):
     HAS_AVATAR = 1
     
     # Email flags
-    NUM_EMAIL_FLAGS = 1024
+    NUM_EMAIL_FLAGS = 11
     
     AUTOSUBSCRIBE_ON_STORY                 = 1  # Subscribe to story's comments when user publishes a story
     AUTOSUBSCRIBE_ON_STORY_COMMENT         = 2  # Subscribe to story's comments when user publishes comment
     AUTOSUBSCRIBE_ON_BLOG                  = 4  # Subscribe to blog's comments when user publishes a blog
     AUTOSUBSCRIBE_ON_BLOG_COMMENT          = 8  # Subscribe to blog's comments when user publishes comment
     AUTOSUBSCRIBE_ON_PROMPT                = 16  # Subscribe to prompt's comments when user publishes a blog
-    AUTOSUBSCRIBE_ON_PROMPT_COMMENT      = 32  # Subscribe to prompt's comments when user publishes comment
-    AUTOSUBSCRIBE_ON_CHALLENGE          = 64  # Subscribe to challenge's comments when user publishes a blog
-    AUTOSUBSCRIBE_ON_CHALLENGE_COMMENT  = 128  # Subscribe to challenges's comments when user publishes comment
-    AUTOSUBSCRIBE_TO_PREQUEL            = 256  # Subscribe to notifications when someone prequels your story
+    AUTOSUBSCRIBE_ON_PROMPT_COMMENT        = 32  # Subscribe to prompt's comments when user publishes comment
+    AUTOSUBSCRIBE_ON_CHALLENGE             = 64  # Subscribe to challenge's comments when user publishes a blog
+    AUTOSUBSCRIBE_ON_CHALLENGE_COMMENT     = 128  # Subscribe to challenges's comments when user publishes comment
+    AUTOSUBSCRIBE_TO_PREQUEL               = 256  # Subscribe to notifications when someone prequels your story
     AUTOSUBSCRIBE_TO_SEQUEL                = 512  # Subscribe to notifications when someone sequels your story
-    AUTOSUBSCRIBE_TO_CHALLENGE_ENTRY    = 1024  # Subscribe to notifications when someone enters a story in your challenge
+    AUTOSUBSCRIBE_TO_CHALLENGE_ENTRY       = 1024  # Subscribe to notifications when someone enters a story in your challenge
 
     def __unicode__(self):
         return unicode(self.pen_name)

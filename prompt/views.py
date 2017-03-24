@@ -5,7 +5,7 @@ from comment.views import *
 # -----------------------------------------------------------------------------
 def get_popular_prompts(page_num=1, page_size=10):
     db = getattr(settings, 'DB', 'mysql')
-    if db == 'mysql':
+    if (db == 'mysql'):
         return Prompt.objects.raw(
             "SELECT p.id as id, " +
             "SUM(1/(TIMESTAMPDIFF(day, l.ctime, NOW())+1)) AS score " +
@@ -15,7 +15,7 @@ def get_popular_prompts(page_num=1, page_size=10):
             "AND l.log_type = " + str(StoryLog.VIEW) + " " +
             "GROUP BY l.prompt_id ORDER BY score DESC LIMIT " +
             str((page_num - 1) * page_size) + "," + str(page_size))
-    elif db == 'postgres':
+    elif (db == 'postgres'):
         return Prompt.objects.raw(
             "SELECT p.id as id, " +
             "SUM(1/(date_part('day', NOW() - l.ctime)+1)) AS score " +
@@ -62,17 +62,17 @@ def get_old_prompts(page_size=10):
 def browse_prompts(request, dataset=0):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
     page_num = safe_int(request.GET.get('page_num', 1))
 
-    if dataset == 1:
+    if (dataset == 1):
         prompts = get_active_prompts(page_num, PAGE_BROWSE)
         num_prompts = get_num_active_prompts()
         label = u'Active prompts'
         url = u'/prompts/active/'
-    elif dataset == 2:
+    elif (dataset == 2):
         prompts = get_popular_prompts(page_num, PAGE_BROWSE)
         num_prompts = Prompt.objects.all().count()
         label = u'Popular prompts'
@@ -84,14 +84,15 @@ def browse_prompts(request, dataset=0):
         url = u'/prompts/recent/'
 
     # Build context and render page
-    context = {'profile': profile,
-               'prompts': prompts,
-               'page_title': u'Prompts, page {}'.format(page_num),
-               'page_url': url,
-               'pages': bs_pager(page_num, PAGE_BROWSE, num_prompts),
-               'user_dashboard': 1,
-               'label': label,
+    context = {'profile'         : profile,
+               'prompts'         : prompts,
+               'page_title'      : u'Prompts, page {}'.format(page_num),
+               'page_url'        : url,
+               'pages'           : bs_pager(page_num, PAGE_BROWSE, num_prompts),
+               'user_dashboard'  : 1,
+               'label'           : label,
                }
+
     return render(request, 'prompts/prompts_recent.html', context)
 
 
@@ -109,29 +110,29 @@ def popular_prompts(request):
 def prompts(request):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
     # Get featured prompt
     featured_id = Misc.objects.filter(key='featured_prompt')
     featured = None
-    if featured_id:
+    if (featured_id):
         featured_query = Prompt.objects.filter(id=featured_id[0].i_val)
-        if featured_query:
+        if (featured_query):
             featured = featured_query[0]
 
     # Build context and render page
-    context = {'profile': profile,
-               'prompts': prompts,
-               'featured': featured,
-               'popular': get_popular_prompts(1, 4),
-               'active': get_active_prompts(1, 10),
-               'recent': get_recent_prompts(1, 10),
-               'old': get_old_prompts(10),
-               'page_title': u'Prompts',
-               'prompt_button': (profile is not None),
-               'user_dashboard': (profile is not None),
-               'page_url': u'/prompts/',
+    context = {'profile'         : profile,
+               'prompts'         : prompts,
+               'featured'        : featured,
+               'popular'         : get_popular_prompts(1, 4),
+               'active'          : get_active_prompts(1, 10),
+               'recent'          : get_recent_prompts(1, 10),
+               'old'             : get_old_prompts(10),
+               'page_title'      : u'Prompts',
+               'prompt_button'   : (profile is not None),
+               'user_dashboard'  : (profile is not None),
+               'page_url'        : u'/prompts/',
                }
 
     return render(request, 'prompts/prompts.html', context)
@@ -144,13 +145,12 @@ def prompt_view(request, prompt_id):
 
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
         # Get stories inspired by prompt
     page_num = safe_int(request.GET.get('page_num', 1))
-    stories = prompt.story_set.exclude(draft=True).order_by('ctime')[
-              (page_num - 1) * PAGE_STORIES:page_num * PAGE_STORIES]
+    stories = prompt.story_set.exclude(draft=True).order_by('ctime')[(page_num - 1) * PAGE_STORIES:page_num * PAGE_STORIES]
     num_stories = prompt.story_set.exclude(draft=True).count()
 
     # Get comments
@@ -161,7 +161,7 @@ def prompt_view(request, prompt_id):
     owner = ((profile is not None) and (profile == prompt.user))
 
     # Log view
-    if profile:
+    if (profile):
         log = StoryLog(
             user=profile,
             prompt=prompt,
@@ -172,27 +172,27 @@ def prompt_view(request, prompt_id):
         # Suppress challenge if marked as mature and either the user is not logged in
         # or the user has not enabled viewing of mature challenges
     suppressed = False
-    if prompt.mature:
-        if (not profile) or ((prompt.user != profile) and (not profile.mature)):
+    if (prompt.mature):
+        if ((not profile) or ((prompt.user != profile) and (not profile.mature))):
             suppressed = True
 
             # Is user subscribed?
     subscribed = False
-    if profile and (Subscription.objects.filter(prompt=prompt, user=profile).count() > 0):
+    if (profile and (Subscription.objects.filter(prompt=prompt, user=profile).count() > 0)):
         subscribed = True
 
         # Build context and render page
-    context = {'profile': profile,
-               'prompt': prompt,
-               'stories': stories,
-               'comments': comments,
-               'owner': owner,
-               'subscribed': subscribed,
-               'page_title': u'Prompt ' + prompt.title,
-               'prompt_sidepanel': 1,
-               'page_url': u'/prompts/' + unicode(prompt.id) + u'/',
-               'pages': bs_pager(page_num, PAGE_STORIES, num_stories),
-               'suppressed': suppressed,
+    context = {'profile'           : profile,
+               'prompt'            : prompt,
+               'stories'           : stories,
+               'comments'          : comments,
+               'owner'             : owner,
+               'subscribed'        : subscribed,
+               'page_title'        : u'Prompt ' + prompt.title,
+               'prompt_sidepanel'  : 1,
+               'page_url'          : u'/prompts/' + unicode(prompt.id) + u'/',
+               'pages'             : bs_pager(page_num, PAGE_STORIES, num_stories),
+               'suppressed'        : suppressed,
                }
 
     return render(request, 'prompts/prompt.html', context)
@@ -203,19 +203,19 @@ def prompt_view(request, prompt_id):
 def new_prompt(request):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
     # Create a blank prompt to give the template some defaults
     prompt = Prompt()
 
     # Build context and render page
-    context = {'profile': profile,
-               'prompt': prompt,
-               'page_title': u'Write new prompt',
-               'length_limit': 256,
-               'length_min': 30,
-               'user_dashboard': 1,
+    context = {'profile'         : profile,
+               'prompt'          : prompt,
+               'page_title'      : u'Write new prompt',
+               'length_limit'    : 256,
+               'length_min'      : 30,
+               'user_dashboard'  : 1,
                }
 
     return render(request, 'prompts/edit_prompt.html', context)
@@ -226,23 +226,23 @@ def new_prompt(request):
 def edit_prompt(request, prompt_id):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
     # Get prompt
     prompt = get_object_or_404(Prompt, pk=prompt_id)
 
     # User can only edit their own stories
-    if prompt.user != profile:
+    if (prompt.user != profile):
         raise Http404
 
     # Build context and render page
-    context = {'profile': profile,
-               'prompt': prompt,
-               'page_title': u'Edit prompt ' + prompt.title,
-               'length_limit': 256,
-               'length_min': 30,
-               'user_dashboard': 1,
+    context = {'profile'         : profile,
+               'prompt'          : prompt,
+               'page_title'      : u'Edit prompt ' + prompt.title,
+               'length_limit'    : 256,
+               'length_min'      : 30,
+               'user_dashboard'  : 1,
                }
 
     return render(request, 'prompts/edit_prompt.html', context)
@@ -254,7 +254,7 @@ def edit_prompt(request, prompt_id):
 def submit_prompt(request):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
     # Get bits and bobs
@@ -262,12 +262,12 @@ def submit_prompt(request):
     prompt = get_foo(request.POST, Prompt, 'prid')
     new_prompt = (prompt is None)
 
-    if not profile.email_authenticated():
+    if (not profile.email_authenticated()):
         errors.append(u'You must have authenticated your e-mail address before posting a prompt')
     else:
         # Get prompt object, either existing or new
         # new_prompt = False
-        if prompt is None:
+        if (prompt is None):
             prompt = Prompt(user=profile)
             # new_prompt = True
 
@@ -280,33 +280,33 @@ def submit_prompt(request):
         prompt.body = re_crlf.sub(u"\n", prompt.body)
 
         # Check for submission errors
-        if len(prompt.title) < 1:
+        if (len(prompt.title) < 1):
             errors.append(u'Prompt title must be at least 1 character long')
 
         l = len(prompt.body)
-        if l < 30:
+        if (l < 30):
             errors.append(u'Prompt body must be at least 30 characters long')
 
-        if l > 256:
+        if (l > 256):
             errors.append(u'Prompt is over 256 characters (currently ' + unicode(l) + u')')
 
     # If there have been errors, re-display the page
-    if errors:
+    if (errors):
         # Build context and render page
-        context = {'profile': profile,
-                   'prompt': prompt,
-                   'length_limit': 256,
-                   'length_min': 30,
-                   'page_title': u'Edit prompt ' + prompt.title,
-                   'user_dashboard': 1,
-                   'error_title': 'Prompt submission unsuccessful',
-                   'error_messages': errors,
+        context = {'profile'         : profile,
+                   'prompt'          : prompt,
+                   'length_limit'    : 256,
+                   'length_min'      : 30,
+                   'page_title'      : u'Edit prompt ' + prompt.title,
+                   'user_dashboard'  : 1,
+                   'error_title'     : 'Prompt submission unsuccessful',
+                   'error_messages'  : errors,
                    }
 
         return render(request, 'prompts/edit_prompt.html', context)
 
     # Is the prompt new?
-    if new_prompt is None:
+    if (new_prompt is None):
         prompt.ctime = timezone.now()
 
     # Set modification time
@@ -316,13 +316,13 @@ def submit_prompt(request):
     prompt.save()
 
     # Auto-subscribe to e-mail notifications according to user's preferences
-    if new_prompt:
-        if profile.email_flags & Profile.AUTOSUBSCRIBE_ON_PROMPT:
+    if (new_prompt):
+        if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_PROMPT):
             Subscription.objects.get_or_create(user=profile, prompt=prompt)
 
     # Log entry
     log_type = StoryLog.PROMPT
-    if not new_prompt:
+    if (not new_prompt):
         log_type = StoryLog.PROMPT_MOD
     log = StoryLog(
         user=profile,
@@ -340,21 +340,21 @@ def prompt_subscribe(request, prompt_id, error_title='', error_messages=None):
     prompt = get_object_or_404(Prompt, pk=prompt_id)
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
-    if profile is None:
+    if (profile is None):
         raise Http404
 
     Subscription.objects.get_or_create(user=profile, prompt=prompt)
 
-    context = {'thing': prompt,
-               'thing_type': u'prompt',
-               'thing_url': reverse('prompt', args=[prompt.id]),
-               'page_title': u'Subscribe prompt ' + prompt.title,
-               'error_title': error_title,
-               'error_messages': error_messages,
-               'user_dashboard': True,
-               'profile': profile,
+    context = {'thing'           : prompt,
+               'thing_type'      : u'prompt',
+               'thing_url'       : reverse('prompt', args=[prompt.id]),
+               'page_title'      : u'Subscribe prompt ' + prompt.title,
+               'error_title'     : error_title,
+               'error_messages'  : error_messages,
+               'user_dashboard'  : True,
+               'profile'         : profile,
                }
 
     return render(request, 'castle/subscribed.html', context)
@@ -366,21 +366,21 @@ def prompt_unsubscribe(request, prompt_id, error_title='', error_messages=None):
     prompt = get_object_or_404(Prompt, pk=prompt_id)
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
-    if profile is None:
+    if (profile is None):
         raise Http404
 
     Subscription.objects.filter(user=profile, prompt=prompt).delete()
 
-    context = {'thing': prompt,
-               'thing_type': u'prompt',
-               'thing_url': reverse('prompt', args=[prompt.id]),
-               'page_title': u'Unsubscribe prompt ' + prompt.title,
-               'error_title': error_title,
-               'error_messages': error_messages,
-               'user_dashboard': True,
-               'profile': profile,
+    context = {'thing'           : prompt,
+               'thing_type'      : u'prompt',
+               'thing_url'       : reverse('prompt', args=[prompt.id]),
+               'page_title'      : u'Unsubscribe prompt ' + prompt.title,
+               'error_title'     : error_title,
+               'error_messages'  : error_messages,
+               'user_dashboard'  : True,
+               'profile'         : profile,
                }
 
     return render(request, 'castle/unsubscribed.html', context)

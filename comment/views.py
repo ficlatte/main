@@ -10,20 +10,20 @@ from castle.views import *
 def submit_comment(request):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
-    if not profile:
+    if (not profile):
         raise Http404
 
     # Get bits and bobs
     errors = []
     old_rating = None
-    blog = get_foo(request.POST, Blog, 'bid')
-    story = get_foo(request.POST, Story, 'sid')
-    prompt = get_foo(request.POST, Prompt, 'pid')
-    challenge = get_foo(request.POST, Challenge, 'chid')
+    blog       = get_foo(request.POST, Blog, 'bid')
+    story      = get_foo(request.POST, Story, 'sid')
+    prompt     = get_foo(request.POST, Prompt, 'pid')
+    challenge  = get_foo(request.POST, Challenge, 'chid')
 
-    if story:
+    if (story):
         try:
             r = Rating.objects.get(user=profile, story=story)
             old_rating = r.rating
@@ -31,18 +31,18 @@ def submit_comment(request):
             old_rating = None
 
     rating = request.POST.get('rating', None)
-    if rating is not None:
+    if (rating is not None):
         rating = int(rating)
 
-    if not profile.email_authenticated():
+    if (not profile.email_authenticated()):
         errors.append(u'You must have authenticated your e-mail address before posting a comment')
 
     # Create comment object
-    comment = Comment(user=profile,
-                      blog=blog,
-                      story=story,
-                      prompt=prompt,
-                      challenge=challenge)
+    comment = Comment(user      = profile,
+                      blog      = blog,
+                      story     = story,
+                      prompt    = prompt,
+                      challenge = challenge)
 
     # Populate comment object with data from submitted form
     comment.body = request.POST.get('body', '')
@@ -52,23 +52,23 @@ def submit_comment(request):
 
     # Check for submission errors
     l = len(comment.body)
-    if (l < 1) and (rating is None):
+    if ((l < 1) and (rating is None)):
         # Empty comments are allowed if the user is making a rating
         errors.append(u'Comment body must be at least 1 character long')
 
-    if l > 1024:
+    if (l > 1024):
         errors.append(u'Comment is over 1024 characters (currently ' + unicode(l) + u')')
 
     # If there have been errors, re-display the page
-    if errors:
+    if (errors):
         # Build context and render page
-        if blog:
+        if (blog):
             from blog.views import blog_view
             return blog_view(request, blog.id, comment.body, u'Comment submission failed', errors)
-        elif story:
+        elif (story):
             from story.views import story_view
             return story_view(request, story.id, comment.body, rating, u'Comment submission failed', errors)
-        elif prompt:
+        elif (prompt):
             from prompt.views import prompt_view
             return prompt_view(request, prompt.id, comment.body, u'Comment submission failed', errors)
         else:
@@ -79,14 +79,14 @@ def submit_comment(request):
     comment.mtime = timezone.now()
 
     # No problems, update the database and redirect
-    if l > 0:
+    if (l > 0):
         comment.save()
 
     # Update rating, if applicable
-    if story:
-        if (story is not None) and (rating is not None):
+    if (story):
+        if ((story is not None) and (rating is not None)):
             rating_set = Rating.objects.filter(story=story, user=profile)
-            if rating_set:
+            if (rating_set):
                 rating_obj = rating_set[0]
             else:
                 rating_obj = Rating(user=profile, story=story)
@@ -95,9 +95,9 @@ def submit_comment(request):
                 rating_obj.save()
 
     # Make log entries but only for story or challenge comments
-    if story:
+    if (story):
         # If comment body is longer than 0, log that comment has been made
-        if l > 0:
+        if (l > 0):
             log = StoryLog(
                 user=profile,
                 story=story,
@@ -107,16 +107,16 @@ def submit_comment(request):
             log.save()
         # If there was no previous rating and there is a rating,
         # log that a rating has been made
-        if (rating is not None) and (old_rating is None):
+        if ((rating is not None) and (old_rating is None)):
             log = StoryLog(
                 user=profile,
                 story=story,
                 log_type=StoryLog.RATE
             )
             log.save()
-    elif prompt:
+    elif (prompt):
         # If comment body is longer than 0, log that comment has been made
-        if l > 0:
+        if (l > 0):
             log = StoryLog(
                 user=profile,
                 prompt=prompt,
@@ -124,9 +124,9 @@ def submit_comment(request):
                 log_type=StoryLog.COMMENT
             )
             log.save()
-    elif challenge:
+    elif (challenge):
         # If comment body is longer than 0, log that comment has been made
-        if l > 0:
+        if (l > 0):
             log = StoryLog(
                 user=profile,
                 challenge=challenge,
@@ -139,27 +139,27 @@ def submit_comment(request):
     send_notification_email_comment(comment)
 
     # Auto-subscribe to e-mail notifications according to user's preferences
-    if profile:
-        if blog:
-            if profile.email_flags & Profile.AUTOSUBSCRIBE_ON_BLOG_COMMENT:
+    if (profile):
+        if (blog):
+            if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_BLOG_COMMENT):
                 Subscription.objects.get_or_create(user=profile, blog=blog)
-        elif story:
-            if profile.email_flags & Profile.AUTOSUBSCRIBE_ON_STORY_COMMENT:
+        elif (story):
+            if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_STORY_COMMENT):
                 Subscription.objects.get_or_create(user=profile, story=story)
-        elif prompt:
-            if profile.email_flags & Profile.AUTOSUBSCRIBE_ON_PROMPT_COMMENT:
+        elif (prompt):
+            if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_PROMPT_COMMENT):
                 Subscription.objects.get_or_create(user=profile, prompt=prompt)
-        elif challenge:
-            if profile.email_flags & Profile.AUTOSUBSCRIBE_ON_CHALLENGE_COMMENT:
+        elif (challenge):
+            if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_CHALLENGE_COMMENT):
                 Subscription.objects.get_or_create(user=profile, challenge=challenge)
 
-    if blog:
+    if (blog):
         return HttpResponseRedirect(reverse('blog', args=(blog.id,)))
-    elif story:
+    elif (story):
         return HttpResponseRedirect(reverse('story', args=(story.id,)))
-    elif prompt:
+    elif (prompt):
         return HttpResponseRedirect(reverse('prompt', args=(prompt.id,)))
-    elif challenge:
+    elif (challenge):
         return HttpResponseRedirect(reverse('challenge', args=(challenge.id,)))
 
 # -----------------------------------------------------------------------------

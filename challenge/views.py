@@ -8,7 +8,7 @@ from .forms import ChallengeDateForm
 # -----------------------------------------------------------------------------
 def get_popular_challenges(page_num=1, page_size=10):
     db = getattr(settings, 'DB', 'mysql')
-    if db == 'mysql':
+    if (db == 'mysql'):
         return Challenge.objects.raw(
             "SELECT c.id as id, " +
             "SUM(1/(TIMESTAMPDIFF(day, l.ctime, NOW())+1)) AS score " +
@@ -18,7 +18,7 @@ def get_popular_challenges(page_num=1, page_size=10):
             "AND l.log_type = " + str(StoryLog.VIEW) + " " +
             "GROUP BY l.challenge_id ORDER BY score DESC LIMIT " +
             str((page_num - 1) * page_size) + "," + str(page_size))
-    elif db == 'postgres':
+    elif (db == 'postgres'):
         return Challenge.objects.raw(
             "SELECT c.id as id, " +
             "SUM(1/(date_part('day', NOW() - l.ctime)+1)) AS score " +
@@ -54,8 +54,7 @@ def get_recent_challenges(page_num=1, page_size=10):
 def get_recent_winners(page_num=1, page_size=10):
     first = (page_num - 1) * page_size
     last = first + page_size
-    return Story.objects.filter(challenge__winner_id=F('id'), challenge__winner_id__isnull=False).order_by('-ctime')[
-           first:last]
+    return Story.objects.filter(challenge__winner_id=F('id'), challenge__winner_id__isnull=False).order_by('-ctime')[first:last]
 
 
 # -----------------------------------------------------------------------------
@@ -64,17 +63,17 @@ def get_recent_winners(page_num=1, page_size=10):
 def browse_challenges(request, dataset=0):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
     page_num = safe_int(request.GET.get('page_num', 1))
 
-    if dataset == 1:
+    if (dataset == 1):
         challenges = get_active_challenges(page_num, PAGE_BROWSE)
         num_challenges = get_num_active_challenges()
         label = u'Active challenges'
         url = u'/challenges/active/'
-    elif dataset == 2:
+    elif (dataset == 2):
         challenges = get_popular_challenges(page_num, PAGE_BROWSE)
         num_challenges = Challenge.objects.all().count()
         label = u'Popular challenges'
@@ -86,14 +85,15 @@ def browse_challenges(request, dataset=0):
         url = u'/challenges/recent/'
 
     # Build context and render page
-    context = {'profile': profile,
-               'challenges': challenges,
-               'page_title': u'Challenges, page {}'.format(page_num),
-               'page_url': url,
-               'pages': bs_pager(page_num, PAGE_BROWSE, num_challenges),
-               'user_dashboard': 1,
-               'label': label,
+    context = {'profile'         : profile,
+               'challenges'      : challenges,
+               'page_title'      : u'Challenges, page {}'.format(page_num),
+               'page_url'        : url,
+               'pages'           : bs_pager(page_num, PAGE_BROWSE, num_challenges),
+               'user_dashboard'  : 1,
+               'label'           : label,
                }
+
     return render(request, 'challenges/challenges_recent.html', context)
 
 
@@ -111,29 +111,29 @@ def popular_challenges(request):
 def challenges(request):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
     # Get featured challenge
     featured_id = Misc.objects.filter(key='featured_challenge')
     featured = None
-    if featured_id:
+    if (featured_id):
         featured_query = Challenge.objects.filter(id=featured_id[0].i_val)
-        if featured_query:
+        if (featured_query):
             featured = featured_query[0]
 
     # Build context and render page
-    context = {'profile': profile,
-               'challenges': challenges,
-               'featured': featured,
-               'popular': get_popular_challenges(1, 4),
-               'active': get_active_challenges(1, 10),
-               'recent': get_recent_challenges(1, 10),
-               'recent_winners': get_recent_winners(1, 10),
-               'page_title': u'Challenges',
-               'challenge_button': (profile is not None),
-               'user_dashboard': (profile is not None),
-               'page_url': u'/challenges/',
+    context = {'profile'           : profile,
+               'challenges'        : challenges,
+               'featured'          : featured,
+               'popular'           : get_popular_challenges(1, 4),
+               'active'            : get_active_challenges(1, 10),
+               'recent'            : get_recent_challenges(1, 10),
+               'recent_winners'    : get_recent_winners(1, 10),
+               'page_title'        : u'Challenges',
+               'challenge_button'  : (profile is not None),
+               'user_dashboard'    : (profile is not None),
+               'page_url'          : u'/challenges/',
                }
 
     return render(request, 'challenges/challenges.html', context)
@@ -146,13 +146,12 @@ def challenge_view(request, challenge_id, comment_text=None, error_title='', err
 
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
         # Get stories inspired by challenge
     page_num = safe_int(request.GET.get('page_num', 1))
-    stories = challenge.story_set.exclude(draft=True).order_by('ctime')[
-              (page_num - 1) * PAGE_STORIES:page_num * PAGE_STORIES]
+    stories = challenge.story_set.exclude(draft=True).order_by('ctime')[(page_num - 1) * PAGE_STORIES:page_num * PAGE_STORIES]
     num_stories = challenge.story_set.exclude(draft=True).count()
 
     # Get list of participants
@@ -167,7 +166,7 @@ def challenge_view(request, challenge_id, comment_text=None, error_title='', err
     owner = ((profile is not None) and (profile == challenge.user))
 
     # Log view
-    if profile:
+    if (profile):
         log = StoryLog(
             user=profile,
             challenge=challenge,
@@ -178,36 +177,36 @@ def challenge_view(request, challenge_id, comment_text=None, error_title='', err
         # Suppress challenge if marked as mature and either the user is not logged in
         # or the user has not enabled viewing of mature challenges
     suppressed = False
-    if challenge.mature:
-        if (not profile) or ((challenge.user != profile) and (not profile.mature)):
+    if (challenge.mature):
+        if ((not profile) or ((challenge.user != profile) and (not profile.mature))):
             suppressed = True
 
             # Is user subscribed?
     subscribed = False
-    if profile and (Subscription.objects.filter(challenge=challenge, user=profile).count() > 0):
+    if (profile and (Subscription.objects.filter(challenge=challenge, user=profile).count() > 0)):
         subscribed = True
 
     entry_subscribed = False
-    if profile and (Subscription.objects.filter(ch_entry=challenge, user=profile).count() > 0):
+    if (profile and (Subscription.objects.filter(ch_entry=challenge, user=profile).count() > 0)):
         entry_subscribed = True
 
         # Build context and render page
-    context = {'profile': profile,
-               'challenge': challenge,
-               'stories': stories,
-               'owner': owner,
-               'subscribed': subscribed,
-               'entry_subscribed': entry_subscribed,
-               'participants': participants,
-               'comments': comments,
-               'page_title': u'Challenge ' + challenge.title,
-               'challenge_sidepanel': 1,
-               'page_url': u'/challenges/' + unicode(challenge.id) + u'/',
-               'pages': bs_pager(page_num, PAGE_STORIES, num_stories),
-               'comment_text': comment_text,
-               'suppressed': suppressed,
-               'error_title': error_title,
-               'error_messages': error_messages,
+    context = {'profile'              : profile,
+               'challenge'            : challenge,
+               'stories'              : stories,
+               'owner'                : owner,
+               'subscribed'           : subscribed,
+               'entry_subscribed'     : entry_subscribed,
+               'participants'         : participants,
+               'comments'             : comments,
+               'page_title'           : u'Challenge ' + challenge.title,
+               'challenge_sidepanel'  : 1,
+               'page_url'             : u'/challenges/' + unicode(challenge.id) + u'/',
+               'pages'                : bs_pager(page_num, PAGE_STORIES, num_stories),
+               'comment_text'         : comment_text,
+               'suppressed'           : suppressed,
+               'error_title'          : error_title,
+               'error_messages'       : error_messages,
                }
 
     return render(request, 'challenges/challenge.html', context)
@@ -218,12 +217,12 @@ def challenge_view(request, challenge_id, comment_text=None, error_title='', err
 def new_challenge(request):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
-    if request.method == "POST":
+    if (request.method == "POST"):
         form = ChallengeDateForm(request.POST, instance=post)
-        if form.is_valid():
+        if (form.is_valid()):
             post = form.save(commit=False)
             post.save()
             return redirect('challenge', pk=post.pk)
@@ -231,16 +230,16 @@ def new_challenge(request):
         form = ChallengeDateForm()
 
         # Build context and render page
-    context = {'profile': profile,
-               'challenge': Challenge(),  # Create blank challenge for default purposes
-               'page_title': u'Create new challenge',
-               'form': form,
-               'stime': timezone.now,
-               'etime': timezone.now,
-               'tags': u'',
-               'length_limit': 1024,
-               'length_min': 30,
-               'user_dashboard': 1,
+    context = {'profile'         : profile,
+               'challenge'       : Challenge(),  # Create blank challenge for default purposes
+               'page_title'      : u'Create new challenge',
+               'form'            : form,
+               'stime'           : timezone.now,
+               'etime'           : timezone.now,
+               'tags'            : u'',
+               'length_limit'    : 1024,
+               'length_min'      : 30,
+               'user_dashboard'  : 1,
                }
 
     return render(request, 'challenges/edit_challenge.html', context)
@@ -254,22 +253,22 @@ def edit_challenge(request, challenge_id):
 
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
     # User can only edit their own challenges
-    if challenge.user != profile:
+    if (challenge.user != profile):
         raise Http404
 
     # Build context and render page
-    context = {'profile': profile,
-               'challenge': challenge,
-               'page_title': u'Edit challenge ' + challenge.title,
-               'stime': timezone.now,
-               'etime': timezone.now,
-               'length_limit': 1024,
-               'length_min': 30,
-               'user_dashboard': 1,
+    context = {'profile'         : profile,
+               'challenge'       : challenge,
+               'page_title'      : u'Edit challenge ' + challenge.title,
+               'stime'           : timezone.now,
+               'etime'           : timezone.now,
+               'length_limit'    : 1024,
+               'length_min'      : 30,
+               'user_dashboard'  : 1,
                }
 
     return render(request, 'challenges/edit_challenge.html', context)
@@ -281,7 +280,7 @@ def edit_challenge(request, challenge_id):
 def submit_challenge(request):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
     # Get bits and bobs
@@ -291,12 +290,12 @@ def submit_challenge(request):
 
     nowdate = datetime.now().strftime('%Y-%m-%d')
 
-    if not profile.email_authenticated():
+    if (not profile.email_authenticated()):
         errors.append(u'You must have authenticated your e-mail address before creating a challenge')
     else:
         # Get challenge object, either existing or new
         # new_challenge = False
-        if challenge is None:
+        if (challenge is None):
             challenge = Challenge(user=profile)
             # new_challenge = True
 
@@ -311,39 +310,39 @@ def submit_challenge(request):
         challenge.body = re_crlf.sub(u"\n", challenge.body)
 
         # Check for submission errors
-        if len(challenge.title) < 1:
+        if (len(challenge.title) < 1):
             errors.append(u'Challenge title must be at least 1 character long')
 
         l = len(challenge.body)
-        if l < 30:
+        if (l < 30):
             errors.append(u'Challenge body must be at least 30 characters long')
 
-        if l > 1024:
+        if (l > 1024):
             errors.append(u'Challenge is over 1024 characters (currently ' + unicode(l) + u')')
 
-        if challenge.stime < nowdate:
+        if (challenge.stime < nowdate):
             errors.append(u'Challenge start time cannot be set in the past')
 
-        if challenge.etime < challenge.stime:
+        if (challenge.etime < challenge.stime):
             errors.append(u'Challenge end time cannot be before its start time')
 
     # If there have been errors, re-display the page
-    if errors:
+    if (errors):
         # Build context and render page
-        context = {'profile': profile,
-                   'challenge': challenge,
-                   'length_limit': 1024,
-                   'length_min': 30,
-                   'page_title': u'Edit challenge ' + challenge.title,
-                   'user_dashboard': 1,
-                   'error_title': 'Challenge submission unsuccessful',
-                   'error_messages': errors,
+        context = {'profile'         : profile,
+                   'challenge'       : challenge,
+                   'length_limit'    : 1024,
+                   'length_min'      : 30,
+                   'page_title'      : u'Edit challenge ' + challenge.title,
+                   'user_dashboard'  : 1,
+                   'error_title'     : 'Challenge submission unsuccessful',
+                   'error_messages'  : errors,
                    }
 
         return render(request, 'challenges/edit_challenge.html', context)
 
     # Is the prompt new?
-    if new_challenge is None:
+    if (new_challenge is None):
         challenge.ctime = timezone.now()
 
     # Set modification time
@@ -353,15 +352,15 @@ def submit_challenge(request):
     challenge.save()
 
     # Auto-subscribe to e-mail notifications according to user's preferences
-    if new_challenge:
-        if profile.email_flags & Profile.AUTOSUBSCRIBE_ON_CHALLENGE:
+    if (new_challenge):
+        if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_CHALLENGE):
             Subscription.objects.get_or_create(user=profile, challenge=challenge)
-        if profile.email_flags & Profile.AUTOSUBSCRIBE_TO_CHALLENGE_ENTRY:
+        if (profile.email_flags & Profile.AUTOSUBSCRIBE_TO_CHALLENGE_ENTRY):
             Subscription.objects.get_or_create(user=profile, ch_entry=challenge)
 
     # Log entry
     log_type = StoryLog.CHALLENGE
-    if not new_challenge:
+    if (not new_challenge):
         log_type = StoryLog.CHALLENGE_MOD
     log = StoryLog(
         user=profile,
@@ -382,11 +381,11 @@ def challenge_winner(request, challenge_id, story_id):
 
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
     # Only challenge's author can select a winner
-    if challenge.user_id != profile.id:
+    if (challenge.user_id != profile.id):
         raise Http404
     else:
         challenge.winner_id = story_id
@@ -421,21 +420,21 @@ def challenge_subscribe(request, challenge_id, error_title='', error_messages=No
     challenge = get_object_or_404(Challenge, pk=challenge_id)
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
-    if profile is None:
+    if (profile is None):
         raise Http404
 
     Subscription.objects.get_or_create(user=profile, ch_entry=challenge)
 
-    context = {'thing': challenge,
-               'thing_type': u'challenge',
-               'thing_url': reverse('challenge', args=[challenge.id]),
-               'page_title': u'Subscribe challenge ' + challenge.title,
-               'error_title': error_title,
-               'error_messages': error_messages,
-               'user_dashboard': True,
-               'profile': profile,
+    context = {'thing'           : challenge,
+               'thing_type'      : u'challenge',
+               'thing_url'       : reverse('challenge', args=[challenge.id]),
+               'page_title'      : u'Subscribe challenge ' + challenge.title,
+               'error_title'     : error_title,
+               'error_messages'  : error_messages,
+               'user_dashboard'  : True,
+               'profile'         : profile,
                }
 
     return render(request, 'castle/subscribed.html', context)
@@ -447,21 +446,21 @@ def challenge_unsubscribe(request, challenge_id, error_title='', error_messages=
     challenge = get_object_or_404(Challenge, pk=challenge_id)
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
-    if profile is None:
+    if (profile is None):
         raise Http404
 
     Subscription.objects.filter(user=profile, challenge=challenge).delete()
 
-    context = {'thing': challenge,
-               'thing_type': u'challenge',
-               'thing_url': reverse('challenge', args=[challenge.id]),
-               'page_title': u'Unsubscribe challenge ' + challenge.title,
-               'error_title': error_title,
-               'error_messages': error_messages,
-               'user_dashboard': True,
-               'profile': profile,
+    context = {'thing'           : challenge,
+               'thing_type'      : u'challenge',
+               'thing_url'       : reverse('challenge', args=[challenge.id]),
+               'page_title'      : u'Unsubscribe challenge ' + challenge.title,
+               'error_title'     : error_title,
+               'error_messages'  : error_messages,
+               'user_dashboard'  : True,
+               'profile'         : profile,
                }
 
     return render(request, 'castle/unsubscribed.html', context)
@@ -473,21 +472,21 @@ def challenge_entry_subscribe(request, challenge_id, error_title='', error_messa
     challenge = get_object_or_404(Challenge, pk=challenge_id)
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
-    if profile is None:
+    if (profile is None):
         raise Http404
 
     Subscription.objects.get_or_create(user=profile, ch_entry=challenge)
 
-    context = {'thing': challenge,
-               'thing_type': u'challenge entry',
-               'thing_url': reverse('challenge', args=[challenge.id]),
-               'page_title': u'Subscribe to entries on challenge ' + challenge.title,
-               'error_title': error_title,
-               'error_messages': error_messages,
-               'user_dashboard': True,
-               'profile': profile,
+    context = {'thing'           : challenge,
+               'thing_type'      : u'challenge entry',
+               'thing_url'       : reverse('challenge', args=[challenge.id]),
+               'page_title'      : u'Subscribe to entries on challenge ' + challenge.title,
+               'error_title'     : error_title,
+               'error_messages'  : error_messages,
+               'user_dashboard'  : True,
+               'profile'         : profile,
                }
 
     return render(request, 'castle/subscribed.html', context)
@@ -499,21 +498,21 @@ def challenge_entry_unsubscribe(request, challenge_id, error_title='', error_mes
     challenge = get_object_or_404(Challenge, pk=challenge_id)
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
-    if profile is None:
+    if (profile is None):
         raise Http404
 
     Subscription.objects.filter(user=profile, ch_entry=challenge).delete()
 
-    context = {'thing': challenge,
-               'thing_type': u'challenge entry',
-               'thing_url': reverse('challenge', args=[challenge.id]),
-               'page_title': u'Unsubscribe to entries on challenge ' + challenge.title,
-               'error_title': error_title,
-               'error_messages': error_messages,
-               'user_dashboard': True,
-               'profile': profile,
+    context = {'thing'           : challenge,
+               'thing_type'      : u'challenge entry',
+               'thing_url'       : reverse('challenge', args=[challenge.id]),
+               'page_title'      : u'Unsubscribe to entries on challenge ' + challenge.title,
+               'error_title'     : error_title,
+               'error_messages'  : error_messages,
+               'user_dashboard'  : True,
+               'profile'         : profile,
                }
 
     return render(request, 'castle/unsubscribed.html', context)

@@ -121,13 +121,6 @@ Copyright (C) 2015 Paul Robertson
               {{comment.body|encode_story}}
               <ul class="list-inline">
                 <li class="posted">#{{comment.id}} Posted <abbr class="dtposted" title="{{comment.ctime|date:'Y-m-d'}}">{{comment.ctime|age}}</abbr></li>
-                <li class="comment-like">
-					{% if not like_flag %}
-						<a href="{% url 'like_comment' comment.id %}">Like</a> <img src="{% static 'img/coffee-mug-blue.png' %}" height="15px"> {{ comment|num_comment_likes }}
-					{% elif like_flag %}
-						<a href="{% url 'unlike_comment' comment.id %}">Unlike</a> <img src="{% static 'img/coffee-mug-blue.png' %}" height="15px"> {{ comment|num_comment_likes }}
-					{% endif %}
-				</li>
                 {% if comment.get_rating %}
                 <li><span class="glyphicon glyphicon-pencil"></span> <span>{{comment.get_rating}}</span> out of <span>5</span></li>
                 {% endif %}

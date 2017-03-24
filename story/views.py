@@ -9,15 +9,15 @@ from comment.views import *
 def home(request):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
     # Get featured story
     featured_id = Misc.objects.filter(key='featured')
     featured = None
-    if featured_id:
+    if (featured_id):
         featured_query = Story.objects.filter(id=featured_id[0].i_val)
-        if featured_query:
+        if (featured_query):
             featured = featured_query[0]
 
     # Get latest challenge
@@ -29,8 +29,8 @@ def home(request):
     # Suppress story if marked as mature and either the user is not logged in
     # or the user has not enabled viewing of mature stories
     suppressed = False
-    if featured.mature:
-        if (not profile) or ((featured.user != profile) and (not profile.mature)):
+    if (featured.mature):
+        if ((not profile) or ((featured.user != profile) and (not profile.mature))):
             suppressed = True
 
     # Get latest blog
@@ -40,27 +40,28 @@ def home(request):
         blog = None
 
     # Build context and render page
-    context = {'profile': profile,
-               'blog_latest': blog,
-               'featured': featured,
-               'challenge': challenge,
-               'prompt': prompt,
-               'popular': get_popular_stories(1, 4),
-               'active': get_active_stories(1, 10),
-               'recent': get_recent_stories(1, 10),
-               'old': get_old_stories(10),
-               'random': get_random_story(),
-               'activity_log': get_activity_log(profile, 10),
-               'user_dashboard': 1,
-               'suppressed': suppressed,
+    context = {'profile'         : profile,
+               'blog_latest'     : blog,
+               'featured'        : featured,
+               'challenge'       : challenge,
+               'prompt'          : prompt,
+               'popular'         : get_popular_stories(1, 4),
+               'active'          : get_active_stories(1, 10),
+               'recent'          : get_recent_stories(1, 10),
+               'old'             : get_old_stories(10),
+               'random'          : get_random_story(),
+               'activity_log'    : get_activity_log(profile, 10),
+               'user_dashboard'  : 1,
+               'suppressed'      : suppressed,
                }
+
     return render(request, 'stories/index.html', context)
 
 
 # -----------------------------------------------------------------------------
 def get_popular_stories(page_num=1, page_size=10):
     db = getattr(settings, 'DB', 'mysql')
-    if db == 'mysql':
+    if (db == 'mysql'):
         return Story.objects.raw(
             "SELECT s.id as id, " +
             "SUM(1/(TIMESTAMPDIFF(day, l.ctime, NOW())+1)) AS score " +
@@ -71,7 +72,7 @@ def get_popular_stories(page_num=1, page_size=10):
             "AND ((s.draft IS NULL) OR (NOT s.draft)) " +
             "GROUP BY l.story_id ORDER BY score DESC LIMIT " +
             str((page_num - 1) * page_size) + "," + str(page_size))
-    elif db == 'postgres':
+    elif (db == 'postgres'):
         return Story.objects.raw(
             "SELECT s.id as id, " +
             "SUM(1/(date_part('day', NOW() - l.ctime)+1)) AS score " +
@@ -125,7 +126,7 @@ def get_random_story(page_size=10):
 # -----------------------------------------------------------------------------
 def get_tagged_stories(tag_name, page_num=1, page_size=10):
     num = Tag.objects.filter(tag=tag_name.upper()).count()
-    if num == 0:
+    if (num == 0):
         return 0, None
 
     first = (page_num - 1) * page_size
@@ -149,7 +150,7 @@ def get_num_tags():
 
 # -----------------------------------------------------------------------------
 def get_activity_log(profile, entries):
-    if profile is None:
+    if (profile is None):
         return None
     log_entries = StoryLog.objects.exclude(log_type=StoryLog.VIEW).exclude(log_type=StoryLog.RATE).filter(
         Q(user=profile) | Q(story__user=profile)).order_by('-ctime')[:entries]
@@ -165,7 +166,7 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
 
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
     # Is logged-in user the author?
@@ -175,17 +176,17 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
     # Is logged-in user the challenge owner?
     challenge = story.challenge
     ch_owner = None
-    if story.challenge:
+    if (story.challenge):
         ch_owner = ((profile is not None) and (profile == story.challenge.user))
 
     # Collect prequels and sequels
     prequels = []
-    if story.sequel_to:
+    if (story.sequel_to):
         prequels.append(story.sequel_to)
     prequels.extend(story.prequels.filter(Q(draft=False) | Q(user=profile)))
 
     sequels = []
-    if story.prequel_to:
+    if (story.prequel_to):
         sequels.append(story.prequel_to)
     sequels.extend(story.sequels.filter(Q(draft=False) | Q(user=profile)))
 
@@ -198,7 +199,7 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
     comments = story.comment_set.all().order_by('ctime')[(page_num - 1) * PAGE_COMMENTS:page_num * PAGE_COMMENTS]
 
     # Log view
-    if profile:
+    if (profile):
         log = StoryLog(
             user=profile,
             story=story,
@@ -219,49 +220,49 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
     # Suppress story if marked as mature and either the user is not logged in
     # or the user has not enabled viewing of mature stories
     suppressed = False
-    if story.mature:
-        if (not profile) or ((story.user != profile) and (not profile.mature)):
+    if (story.mature):
+        if ((not profile) or ((story.user != profile) and (not profile.mature))):
             suppressed = True
 
     # Is user subscribed?
     subscribed = False
-    if profile and (Subscription.objects.filter(story=story, user=profile).count() > 0):
+    if (profile and (Subscription.objects.filter(story=story, user=profile).count() > 0)):
         subscribed = True
 
     prequel_subscribed = False
-    if profile and (Subscription.objects.filter(prequel_to=story, user=profile).count() > 0):
+    if (profile and (Subscription.objects.filter(prequel_to=story, user=profile).count() > 0)):
         prequel_subscribed = True
 
     sequel_subscribed = False
-    if profile and (Subscription.objects.filter(sequel_to=story, user=profile).count() > 0):
+    if (profile and (Subscription.objects.filter(sequel_to=story, user=profile).count() > 0)):
         sequel_subscribed = True
 
     # Build context and render page
-    context = {'profile': profile,
-               'author': story.user,
-               'story': story,
-               'prequels': prequels,
-               'sequels': sequels,
-               'rating_str': rating_str,
-               'rating_num': rating,
-               'comments': comments,
-               'subscribed': subscribed,
-               'prequel_subscribed': prequel_subscribed,
-               'sequel_subscribed': sequel_subscribed,
-               'page_title': story.title,
-               'page_url': u'/stories/' + unicode(story_id) + u'/',
-               'pages': bs_pager(page_num, PAGE_COMMENTS, story.comment_set.count()),
-               'story_sidepanel': 1,
-               'owner': owner,
-               'challenge': challenge,
-               'ch_owner': ch_owner,
-               'viewed': viewed,
-               'rated': rated,
-               'comment_text': comment_text,  # in case of failed comment submission
-               'user_rating': user_rating,
-               'suppressed': suppressed,
-               'error_title': error_title,
-               'error_messages': error_messages,
+    context = {'profile'             : profile,
+               'author'              : story.user,
+               'story'               : story,
+               'prequels'            : prequels,
+               'sequels'             : sequels,
+               'rating_str'          : rating_str,
+               'rating_num'          : rating,
+               'comments'            : comments,
+               'subscribed'          : subscribed,
+               'prequel_subscribed'  : prequel_subscribed,
+               'sequel_subscribed'   : sequel_subscribed,
+               'page_title'          : story.title,
+               'page_url'            : u'/stories/' + unicode(story_id) + u'/',
+               'pages'               : bs_pager(page_num, PAGE_COMMENTS, story.comment_set.count()),
+               'story_sidepanel'     : 1,
+               'owner'               : owner,
+               'challenge'           : challenge,
+               'ch_owner'            : ch_owner,
+               'viewed'              : viewed,
+               'rated'               : rated,
+               'comment_text'        : comment_text,  # in case of failed comment submission
+               'user_rating'         : user_rating,
+               'suppressed'          : suppressed,
+               'error_title'         : error_title,
+               'error_messages'      : error_messages,
                }
 
     return render(request, 'stories/story.html', context)
@@ -272,7 +273,7 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
 def new_story(request):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
     # Get prequel, sequel and prompt data from the GET request
@@ -290,13 +291,13 @@ def new_story(request):
                   )
 
     # Build context and render page
-    context = {'profile': profile,
-               'story': story,
-               'page_title': u'Write new story',
-               'tags': u'',
-               'length_limit': 1024,
-               'length_min': 60,
-               'user_dashboard': 1,
+    context = {'profile'         : profile,
+               'story'           : story,
+               'page_title'      : u'Write new story',
+               'tags'            : u'',
+               'length_limit'    : 1024,
+               'length_min'      : 60,
+               'user_dashboard'  : 1,
                }
 
     return render(request, 'stories/edit_story.html', context)
@@ -307,27 +308,27 @@ def new_story(request):
 def edit_story(request, story_id):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
     # Get story
     story = get_object_or_404(Story, pk=story_id)
 
     # User can only edit their own stories
-    if story.user != profile:
+    if (story.user != profile):
         raise Http404
 
     # Get tags
     tags = ", ".join(story.tag_set.values_list('tag', flat=True))
 
     # Build context and render page
-    context = {'profile': profile,
-               'story': story,
-               'page_title': u'Edit story ' + story.title,
-               'tags': tags,
-               'length_limit': 1024,
-               'length_min': 60,
-               'user_dashboard': 1,
+    context = {'profile'         : profile,
+               'story'           : story,
+               'page_title'      : u'Edit story ' + story.title,
+               'tags'            : tags,
+               'length_limit'    : 1024,
+               'length_min'      : 60,
+               'user_dashboard'  : 1,
                }
 
     return render(request, 'stories/edit_story.html', context)
@@ -338,14 +339,14 @@ def edit_story(request, story_id):
 def delete_story(request, story_id):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
     # Get story
     story = get_object_or_404(Story, pk=story_id)
 
     # Only story's author can delete a story
-    if story.user != profile:
+    if (story.user != profile):
         raise Http404
 
     # Do deletion
@@ -364,7 +365,7 @@ def delete_story(request, story_id):
 def submit_story(request):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
     # Has the author's email been confirmed?
@@ -381,14 +382,14 @@ def submit_story(request):
     ptext = request.POST.get('prompt_text', None)
     new_story = (story is None)
     was_draft = False
-    if not new_story:  # Remember if the story was draft
+    if (not new_story):  # Remember if the story was draft
         was_draft = story.draft
 
-    if not profile.email_authenticated():
+    if (not profile.email_authenticated()):
         errors.append(u'You must have authenticated your e-mail address before posting a story')
 
     # Get story object, either existing or new
-    if story is None:
+    if (story is None):
         story = Story(user=profile,
                       prequel_to=prequel_to,
                       sequel_to=sequel_to,
@@ -402,45 +403,45 @@ def submit_story(request):
     story.mature = request.POST.get('is_mature', False)
     story.draft = request.POST.get('is_draft', False)
     story.prompt_text = ptext
-    if challenge:
+    if (challenge):
         story.challenge_id = challenge.id
 
     # Condense all end-of-line markers into \n
     story.body = re_crlf.sub(u"\n", story.body)
 
     # Check for submission errors
-    if len(story.title) < 1:
+    if (len(story.title) < 1):
         errors.append(u'Story title must be at least 1 character long')
 
     l = len(story.body)
-    if (not story.draft) and (l < 60):
+    if ((not story.draft) and (l < 60)):
         errors.append(u'Story body must be at least 60 characters long')
 
-    if (not story.draft) and (l > 1024):
+    if ((not story.draft) and (l > 1024)):
         errors.append(u'Story is over 1024 characters (currently ' + unicode(l) + u')')
 
-    if story.draft and (l > 1536):
+    if (story.draft and (l > 1536)):
         errors.append(u'Draft is over 1536 characters (currently ' + unicode(l) + u')')
 
     # If there have been errors, re-display the page
-    if errors:
+    if (errors):
         # Build context and render page
-        context = {'profile': profile,
-                   'story': story,
-                   'page_title': u'Edit story ' + story.title,
-                   'tags': tags,
-                   'length_limit': 1024,
-                   'length_min': 60,
-                   'email_conf': email_conf,
-                   'user_dashboard': 1,
-                   'error_title': 'Story submission unsuccessful',
-                   'error_messages': errors,
+        context = {'profile'         : profile,
+                   'story'           : story,
+                   'page_title'      : u'Edit story ' + story.title,
+                   'tags'            : tags,
+                   'length_limit'    : 1024,
+                   'length_min'      : 60,
+                   'email_conf'      : email_conf,
+                   'user_dashboard'  : 1,
+                   'error_title'     : 'Story submission unsuccessful',
+                   'error_messages'  : errors,
                    }
 
         return render(request, 'stories/edit_story.html', context)
 
     # Is the story being published?
-    if not story.draft and (was_draft or new_story):
+    if (not story.draft and (was_draft or new_story)):
         # Set the publish time and send notifications to subscribed users of the prequel/sequel (if applicable)
         story.ptime = timezone.now()
 
@@ -455,39 +456,39 @@ def submit_story(request):
     tag_list = r.split(tags.upper())
     td = {}
 
-    if not new_story:
+    if (not new_story):
         # Remove old tags on current story before laying the new ones down
         story.tag_set.all().delete()
     for t in tag_list:
-        if len(t) > 1:
-            if t not in td:  # Strip out duplicates using dict 'td'
+        if (len(t) > 1):
+            if (t not in td):  # Strip out duplicates using dict 'td'
                 td[t] = 1
                 tag_object = Tag(story=story, tag=t)
                 tag_object.save()
 
     # Auto-subscribe to e-mail notifications according to user's preferences
-    if new_story:
-        if profile.email_flags & Profile.AUTOSUBSCRIBE_ON_STORY:
+    if (new_story):
+        if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_STORY):
             Subscription.objects.get_or_create(user=profile, story=story)
-        if profile.email_flags & Profile.AUTOSUBSCRIBE_TO_PREQUEL:
+        if (profile.email_flags & Profile.AUTOSUBSCRIBE_TO_PREQUEL):
             Subscription.objects.get_or_create(user=profile, prequel_to=story)
-        if profile.email_flags & Profile.AUTOSUBSCRIBE_TO_SEQUEL:
+        if (profile.email_flags & Profile.AUTOSUBSCRIBE_TO_SEQUEL):
             Subscription.objects.get_or_create(user=profile, sequel_to=story)
 
     # Make log entry
     log_type = StoryLog.WRITE
     quel = None
-    if sequel_to:
+    if (sequel_to):
         log_type = StoryLog.SEQUEL
         quel = sequel_to
-    elif prequel_to:
+    elif (prequel_to):
         log_type = StoryLog.PREQUEL
         quel = prequel_to
-    elif challenge:
+    elif (challenge):
         log_type = StoryLog.CHALLENGE_ENT
         challenge = challenge
 
-    if not new_story:
+    if (not new_story):
         log_type = StoryLog.STORY_MOD
 
     log = StoryLog(
@@ -500,11 +501,11 @@ def submit_story(request):
     )
     log.save()
 
-    if prequel_to:
+    if (prequel_to):
         send_notification_email_story(story, prequel_to, 1)
-    elif sequel_to:
+    elif (sequel_to):
         send_notification_email_story(story, sequel_to, 2)
-    elif challenge:
+    elif (challenge):
         send_notification_email_challenge_story(story, challenge)
 
     return HttpResponseRedirect(reverse('story', args=(story.id,)))
@@ -514,17 +515,17 @@ def submit_story(request):
 def browse_stories(request, dataset=0):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
     page_num = safe_int(request.GET.get('page_num', 1))
 
-    if dataset == 1:
+    if (dataset == 1):
         stories = get_active_stories(page_num, PAGE_BROWSE)
         num_stories = get_num_active_stories()
         label = u'Active stories'
         url = u'/stories/active/'
-    elif dataset == 2:
+    elif (dataset == 2):
         stories = get_popular_stories(page_num, PAGE_BROWSE)
         num_stories = Story.objects.exclude(draft=True).count()
         label = u'Popular stories'
@@ -536,14 +537,15 @@ def browse_stories(request, dataset=0):
         url = u'/stories/'
 
     # Build context and render page
-    context = {'profile': profile,
-               'stories': stories,
-               'page_title': u'Stories, page {}'.format(page_num),
-               'page_url': url,
-               'pages': bs_pager(page_num, PAGE_BROWSE, num_stories),
-               'user_dashboard': 1,
-               'label': label,
+    context = {'profile'         : profile,
+               'stories'         : stories,
+               'page_title'      : u'Stories, page {}'.format(page_num),
+               'page_url'        : url,
+               'pages'           : bs_pager(page_num, PAGE_BROWSE, num_stories),
+               'user_dashboard'  : 1,
+               'label'           : label,
                }
+
     return render(request, 'stories/browse.html', context)
 
 
@@ -563,21 +565,21 @@ def story_subscribe(request, story_id, error_title='', error_messages=None):
     story = get_object_or_404(Story, pk=story_id)
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
-    if profile is None:
+    if (profile is None):
         raise Http404
 
     Subscription.objects.get_or_create(user=profile, story=story)
 
-    context = {'thing': story,
-               'thing_type': u'story',
-               'thing_url': reverse('story', args=[story.id]),
-               'page_title': u'Subscribe story ' + story.title,
-               'error_title': error_title,
-               'error_messages': error_messages,
-               'user_dashboard': True,
-               'profile': profile,
+    context = {'thing'           : story,
+               'thing_type'      : u'story',
+               'thing_url'       : reverse('story', args=[story.id]),
+               'page_title'      : u'Subscribe story ' + story.title,
+               'error_title'     : error_title,
+               'error_messages'  : error_messages,
+               'user_dashboard'  : True,
+               'profile'         : profile,
                }
 
     return render(request, 'castle/subscribed.html', context)
@@ -589,21 +591,21 @@ def story_unsubscribe(request, story_id, error_title='', error_messages=None):
     story = get_object_or_404(Story, pk=story_id)
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
-    if profile is None:
+    if (profile is None):
         raise Http404
 
     Subscription.objects.filter(user=profile, story=story).delete()
 
-    context = {'thing': story,
-               'thing_type': u'story',
-               'thing_url': reverse('story', args=[story.id]),
-               'page_title': u'Unsubscribe story ' + story.title,
-               'error_title': error_title,
-               'error_messages': error_messages,
-               'user_dashboard': True,
-               'profile': profile,
+    context = {'thing'           : story,
+               'thing_type'      : u'story',
+               'thing_url'       : reverse('story', args=[story.id]),
+               'page_title'      : u'Unsubscribe story ' + story.title,
+               'error_title'     : error_title,
+               'error_messages'  : error_messages,
+               'user_dashboard'  : True,
+               'profile'         : profile,
                }
 
     return render(request, 'castle/unsubscribed.html', context)
@@ -615,21 +617,21 @@ def prequel_subscribe(request, story_id, error_title='', error_messages=None):
     story = get_object_or_404(Story, pk=story_id)
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
-    if profile is None:
+    if (profile is None):
         raise Http404
 
     Subscription.objects.get_or_create(user=profile, prequel_to=story)
 
-    context = {'thing': story,
-               'thing_type': u'prequel',
-               'thing_url': reverse('story', args=[story.id]),
-               'page_title': u'Subscribe to prequels on story ' + story.title,
-               'error_title': error_title,
-               'error_messages': error_messages,
-               'user_dashboard': True,
-               'profile': profile,
+    context = {'thing'           : story,
+               'thing_type'      : u'prequel',
+               'thing_url'       : reverse('story', args=[story.id]),
+               'page_title'      : u'Subscribe to prequels on story ' + story.title,
+               'error_title'     : error_title,
+               'error_messages'  : error_messages,
+               'user_dashboard'  : True,
+               'profile'         : profile,
                }
 
     return render(request, 'castle/subscribed.html', context)
@@ -641,21 +643,21 @@ def prequel_unsubscribe(request, story_id, error_title='', error_messages=None):
     story = get_object_or_404(Story, pk=story_id)
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
-    if profile is None:
+    if (profile is None):
         raise Http404
 
     Subscription.objects.filter(user=profile, prequel_to=story).delete()
 
-    context = {'thing': story,
-               'thing_type': u'prequel',
-               'thing_url': reverse('story', args=[story.id]),
-               'page_title': u'Unsubscribe to prequels on story ' + story.title,
-               'error_title': error_title,
-               'error_messages': error_messages,
-               'user_dashboard': True,
-               'profile': profile,
+    context = {'thing'           : story,
+               'thing_type'      : u'prequel',
+               'thing_url'       : reverse('story', args=[story.id]),
+               'page_title'      : u'Unsubscribe to prequels on story ' + story.title,
+               'error_title'     : error_title,
+               'error_messages'  : error_messages,
+               'user_dashboard'  : True,
+               'profile'         : profile,
                }
 
     return render(request, 'castle/unsubscribed.html', context)
@@ -667,21 +669,21 @@ def sequel_subscribe(request, story_id, error_title='', error_messages=None):
     story = get_object_or_404(Story, pk=story_id)
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
-    if profile is None:
+    if (profile is None):
         raise Http404
 
     Subscription.objects.get_or_create(user=profile, sequel_to=story)
 
-    context = {'thing': story,
-               'thing_type': u'sequel',
-               'thing_url': reverse('story', args=[story.id]),
-               'page_title': u'Subscribe to sequels on story ' + story.title,
-               'error_title': error_title,
-               'error_messages': error_messages,
-               'user_dashboard': True,
-               'profile': profile,
+    context = {'thing'           : story,
+               'thing_type'      : u'sequel',
+               'thing_url'       : reverse('story', args=[story.id]),
+               'page_title'      : u'Subscribe to sequels on story ' + story.title,
+               'error_title'     : error_title,
+               'error_messages'  : error_messages,
+               'user_dashboard'  : True,
+               'profile'         : profile,
                }
 
     return render(request, 'castle/subscribed.html', context)
@@ -693,21 +695,21 @@ def sequel_unsubscribe(request, story_id, error_title='', error_messages=None):
     story = get_object_or_404(Story, pk=story_id)
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
-    if profile is None:
+    if (profile is None):
         raise Http404
 
     Subscription.objects.filter(user=profile, sequel_to=story).delete()
 
-    context = {'thing': story,
-               'thing_type': u'sequel',
-               'thing_url': reverse('story', args=[story.id]),
-               'page_title': u'Unsubscribe to sequels on story ' + story.title,
-               'error_title': error_title,
-               'error_messages': error_messages,
-               'user_dashboard': True,
-               'profile': profile,
+    context = {'thing'           : story,
+               'thing_type'      : u'sequel',
+               'thing_url'       : reverse('story', args=[story.id]),
+               'page_title'      : u'Unsubscribe to sequels on story ' + story.title,
+               'error_title'     : error_title,
+               'error_messages'  : error_messages,
+               'user_dashboard'  : True,
+               'profile'         : profile,
                }
 
     return render(request, 'castle/unsubscribed.html', context)
@@ -717,7 +719,7 @@ def sequel_unsubscribe(request, story_id, error_title='', error_messages=None):
 def tags(request, tag_name):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
     page_num = safe_int(request.GET.get('page_num', 1))
@@ -725,7 +727,7 @@ def tags(request, tag_name):
     # Find stories with this tag name (forced to upper case)
     tag_name = tag_name.upper()
     (num_stories, stories) = get_tagged_stories(tag_name, page_num, PAGE_BROWSE)
-    if num_stories == 0:
+    if (num_stories == 0):
         # No stories found, give the user
         return tags_null(request, u'No stories tagged ' + tag_name)
 
@@ -733,13 +735,13 @@ def tags(request, tag_name):
     url = u'/tags/' + urlquote(tag_name) + u'/'
 
     # Build context and render page
-    context = {'profile': profile,
-               'stories': stories,
-               'page_title': u'Tag ' + tag_name,
-               'page_url': url,
-               'pages': bs_pager(page_num, PAGE_BROWSE, num_stories),
-               'user_dashboard': 1,
-               'label': label,
+    context = {'profile'         : profile,
+               'stories'         : stories,
+               'page_title'      : u'Tag ' + tag_name,
+               'page_url'        : url,
+               'pages'           : bs_pager(page_num, PAGE_BROWSE, num_stories),
+               'user_dashboard'  : 1,
+               'label'           : label,
                }
     return render(request, 'stories/browse.html', context)
 
@@ -748,7 +750,7 @@ def tags(request, tag_name):
 def tags_null(request, error_msg=None):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if (request.user.is_authenticated()):
         profile = request.user.profile
 
     page_num = safe_int(request.GET.get('page_num', 1))
@@ -763,14 +765,14 @@ def tags_null(request, error_msg=None):
     error_messages = [error_msg] if error_msg else None
 
     # Build context and render page
-    context = {'profile': profile,
-               'tags': tags,
-               'page_title': u'Tag not found',
-               'page_url': url,
-               'pages': bs_pager(page_num, PAGE_ALLTAGS, num_tags),
-               'user_dashboard': 1,
-               'error_title': error_title,
-               'error_messages': error_messages,
+    context = {'profile'         : profile,
+               'tags'            : tags,
+               'page_title'      : u'Tag not found',
+               'page_url'        : url,
+               'pages'           : bs_pager(page_num, PAGE_ALLTAGS, num_tags),
+               'user_dashboard'  : 1,
+               'error_title'     : error_title,
+               'error_messages'  : error_messages,
                }
     return render(request, 'stories/all_tags.html', context)
 
