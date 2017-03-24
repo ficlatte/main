@@ -164,10 +164,8 @@ def submit_comment(request):
 
 
 # -----------------------------------------------------------------------------
-# -----------------------------------------------------------------------------
 @login_required
-def comment_view(request, story_id, comment_id):
-    story = get_object_or_404(Story, pk=story_id)
+def comment_view(request, comment_id):
     comment = get_object_or_404(Comment, pk=comment_id)
     # Get user profile
     profile = None
@@ -178,14 +176,12 @@ def comment_view(request, story_id, comment_id):
 
     like_flag = CommentLike.objects.filter(user=profile, comment_id=comment_id)
 
-    context = {'story': story,
-               'author': profile,
+    context = {'profile': profile,
                'comment': comment,
                'like_flag': like_flag,
-               'profile': profile,
                }
 
-    return render(request, 'stories/story.html', context)
+    return like_flag
 
 
 # -----------------------------------------------------------------------------

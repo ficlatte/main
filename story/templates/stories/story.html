@@ -14,7 +14,7 @@ Copyright (C) 2015 Paul Robertson
     GNU Affero General Public License for more details.
 
     You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    along with this program.  If not, see <'http://www.gnu.org/licenses/'>.
 {%endcomment%}
 {% load staticfiles %}
 {% load castle_tags %}
@@ -122,11 +122,14 @@ Copyright (C) 2015 Paul Robertson
               <ul class="list-inline">
                 <li class="posted">#{{comment.id}} Posted <abbr class="dtposted" title="{{comment.ctime|date:'Y-m-d'}}">{{comment.ctime|age}}</abbr></li>
                 <li class="comment-like">
-					{% if not like_flag %}
-						<a href="{% url 'like_comment' comment.id %}">Like</a> <img src="{% static 'img/coffee-mug-blue.png' %}" height="15px"> {{ comment|num_comment_likes }}
-					{% elif like_flag %}
+
+                    {% if comment_likes.comment_id == comment.id %}
+					{% if profile.id == comment_likes.user_id and comment.id == comment_likes.comment_id %}
+					<a href="{% url 'like_comment' comment.id %}">Like</a> <img src="{% static 'img/coffee-mug-blue.png' %}" height="15px"> {{ comment|num_comment_likes }}
+					{% else %}
 						<a href="{% url 'unlike_comment' comment.id %}">Unlike</a> <img src="{% static 'img/coffee-mug-blue.png' %}" height="15px"> {{ comment|num_comment_likes }}
 					{% endif %}
+                    {% endif %}
 				</li>
                 {% if comment.get_rating %}
                 <li><span class="glyphicon glyphicon-pencil"></span> <span>{{comment.get_rating}}</span> out of <span>5</span></li>
