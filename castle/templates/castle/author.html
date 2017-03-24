@@ -1,7 +1,7 @@
 {% extends "castle/page_with_selected_sidebar.html" %}
 {%comment%}
 This file is part of Ficlatté.
-Copyright (C) 2015 Paul Robertson
+Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of version 3 of the GNU Affero General Public
@@ -31,8 +31,7 @@ Copyright (C) 2015 Paul Robertson
                   {{author|author_social_media}}
                 </div> <!-- id="" class="col-sm-2 col-md-2" -->
                 <div class="col-sm-8 col-md-8">
-				  {{author|author_link:'h1 class="author"'}} 
-                  {% if profile and not owner %}{{author|author_msg}}{% endif %}
+                  {{author|author_link:'h1 class="author"'}} 
                   <p id="user-desc">Joined Ficlatt&eacute; in <span>{{author.ctime|date:"F Y"}}</span></p>
                   <p id="user-stats">{{author|num_stories_txt}}, {{author|num_challenges_txt}}, {{author|num_prompts_txt}}, {{author|profile_comments_txt}}, and {{author|num_friends_txt}}</p>
                   <p id="user-wins">Coffee beans earned: {{author|num_challenge_wins}} <img src="{% static 'img/badge-40.png' %}"></p>
@@ -44,23 +43,23 @@ Copyright (C) 2015 Paul Robertson
             </div> <!-- id="" class="panel-body" -->
           </div> <!-- id="" class="panel panel-success" -->
 {% block paged_content %}
-			<div class="panel panel-success">
-			<div class="panel-heading">
-				<h3 class="panel-title">{% if drafts_page %}Drafts{% elif stories_page %}Stories{% elif challenges_page %}Challenges{% elif prompts_page %}Prompts{% else %}All Stories{% endif %}</h3>
+            <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">{% if drafts_page %}Drafts{% elif stories_page %}Stories{% elif challenges_page %}Challenges{% elif prompts_page %}Prompts{% else %}All Stories{% endif %}</h3>
             </div>
             <div class="panel-body">
             <div class="list-group">
-			  {% if story_list %}
+              {% if story_list %}
               {% for story in story_list %}
               <div class="list-group-item">
                 {{story|story_link:'h4 class="entry_title browse"'}}
                 <span class="list-group-item-text browse-content">{{story.body|small_snippet}}</span>
                 <div class="story-foot">
-					{% if story.draft %}
-						<p class="list-group-item-text posted" id="story-stats">Edited <abbr class="dtposted" title="{{story.mtime|date:'Y-m-d'}}">{{story.mtime|age}}</abbr>. </p>
-					{% else %}
-						<p class="list-group-item-text posted" id="story-stats">Published <abbr class="dtposted" title="{{story.ptime|date:'Y-m-d'}}">{{story.ptime|age}}</abbr>. </p>
-					{% endif %}
+                    {% if story.draft %}
+                        <p class="list-group-item-text posted" id="story-stats">Edited <abbr class="dtposted" title="{{story.mtime|date:'Y-m-d'}}">{{story.mtime|age}}</abbr>. </p>
+                    {% else %}
+                        <p class="list-group-item-text posted" id="story-stats">Published <abbr class="dtposted" title="{{story.ptime|date:'Y-m-d'}}">{{story.ptime|age}}</abbr>. </p>
+                    {% endif %}
                 </div>
               </div> <!-- id="" class="list-group-item" -->
               {% endfor %}
@@ -69,9 +68,9 @@ Copyright (C) 2015 Paul Robertson
               <div class="list-group-item">
                 {{challenge|challenge_link:'h4 class="entry_title browse"'}}
                 <span class="list-group-item-text browse-content">{{challenge.body|small_snippet}}</span>
-				<div class="story-foot">
-					<p class="list-group-item-text posted" id="story-stats">Created <abbr class="dtposted" title="{{challenge.ctime|date:'Y-m-d'}}">{{challenge.ctime|age}}</abbr>. </p>
-				</div>
+                <div class="story-foot">
+                    <p class="list-group-item-text posted" id="story-stats">Created <abbr class="dtposted" title="{{challenge.ctime|date:'Y-m-d'}}">{{challenge.ctime|age}}</abbr>. </p>
+                </div>
               </div> <!-- id="" class="list-group-item" -->
               {% endfor %}
               {% elif prompt_list %}
@@ -80,8 +79,8 @@ Copyright (C) 2015 Paul Robertson
                 {{prompt|prompt_link:'h4 class="entry_title browse"'}}
                 <span class="list-group-item-text browse-content">{{prompt.body|small_snippet}}</span>
                 <div class="story-foot">
-					<p class="list-group-item-text posted" id="story-stats">Published <abbr class="dtposted" title="{{prompt.ctime|date:'Y-m-d'}}">{{prompt.ctime|age}}</abbr>. </p>
-				</div>
+                    <p class="list-group-item-text posted" id="story-stats">Published <abbr class="dtposted" title="{{prompt.ctime|date:'Y-m-d'}}">{{prompt.ctime|age}}</abbr>. </p>
+                </div>
               </div> <!-- id"" class="list-group-item" -->
               {% endfor %}
               {% endif %}

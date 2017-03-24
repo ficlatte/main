@@ -1,7 +1,7 @@
 {% extends "castle/page_with_selected_sidebar.html" %}
 {%comment%}
 This file is part of Ficlatté.
-Copyright (C) 2015 Paul Robertson
+Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of version 3 of the GNU Affero General Public
@@ -21,7 +21,7 @@ Copyright (C) 2015 Paul Robertson
 
 {% block primary_panel %}
 
-		<div class="well well-sm" id="whats-new">
+        <div class="well well-sm" id="whats-new">
             <h3>What&#39;s new</h3>
             <div class="row" id="featured-popular">
               <div class="col-md-8" id="featured-story">
@@ -33,10 +33,10 @@ Copyright (C) 2015 Paul Robertson
                     {% if featured %}
                     <h3>{{featured|challenge_link}}</h3>
                         {% if suppressed %}
-							<p>Story is marked as mature</p>
-						{% else %}
-							{{featured.body|big_snippet}}
-						{% endif %}
+                            <p>Story is marked as mature</p>
+                        {% else %}
+                            {{featured.body|big_snippet}}
+                        {% endif %}
                     <div class="row">
                       <div class="col-md-4">
                         {{featured.user|avatar}}
@@ -74,8 +74,8 @@ Copyright (C) 2015 Paul Robertson
             </div> <!-- id="featured-popular" class="row" -->
           </div> <!-- id="whats-new" class="well well-sm" -->
 
-		  <div id="challenge-summary">	
-			<div class="col-md-4" id="active-challenges">
+          <div id="challenge-summary">  
+            <div class="col-md-4" id="active-challenges">
               <div class="panel panel-success">
                 <div class="panel-heading">
                   <h3 class="panel-title">Active challenges</h3>

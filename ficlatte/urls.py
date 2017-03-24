@@ -1,7 +1,7 @@
 
 #coding: utf-8
 #This file is part of Ficlatté.
-#Copyright (C) 2015 Paul Robertson
+#Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of version 3 of the GNU Affero General Public
@@ -28,7 +28,7 @@ import castle.models
 
 # Define sitemaps
 sitemaps = {
-    'blog':	BlogSitemap,
+    'blog': BlogSitemap,
     'stories': StorySitemap,
     'prompts': PromptSitemap,
     'challenges': ChallengeSitemap,
@@ -121,7 +121,7 @@ urlpatterns = patterns('',
     #url(r'^(?P<template>rules\.html)$', 'castle.views.static_view', name="rules"),
     #url(r'^(?P<template>privacy\.html)$', 'castle.views.static_view', name="privacy"),
     #url(r'^(?P<template>help\.html)$', 'castle.views.static_view', name="help"),
-    url(r'^rules/$', 'castle.views.static_view', {'template_name': 'rules.html'}, name="rules"),
+    url(r'^rules(?:\.html)?/$', 'castle.views.static_view', {'template_name': 'rules.html'}, name="rules"),
     url(r'^privacy/$', 'castle.views.static_view', {'template_name': 'privacy.html'}, name="privacy"),
     url(r'^help/$', 'castle.views.static_view', {'template_name': 'help.html'}, name="help"),
 )

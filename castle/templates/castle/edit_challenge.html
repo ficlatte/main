@@ -1,7 +1,7 @@
 {% extends "castle/page_without_sidebar.html" %}
 {%comment%}
 This file is part of Ficlatté.
-Copyright (C) 2015 Paul Robertson
+Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of version 3 of the GNU Affero General Public
@@ -31,8 +31,8 @@ Copyright (C) 2015 Paul Robertson
     
 {% block primary_panel %}
           <div class="panel panel-success" id="new-challenge">
-			<div class="panel-heading">
-				<h2 class="panel-title">Create Challenge</h2>
+            <div class="panel-heading">
+                <h2 class="panel-title">Create Challenge</h2>
             </div>
             <div class="panel-body">
             <form accept-charset="utf-8" action="/challenges/submit/" class="form-horizontal" id="challenge-form" method="POST" role="form">
@@ -49,29 +49,29 @@ Copyright (C) 2015 Paul Robertson
               <div class="form-group">
                 <label class="col-sm-2 control-label" for="challenge_stime">Start Date</label>
                 <div class="col-sm-10">
-				  <div id="challenge_stime" class="input-group date">
-					<input readonly="" class="form-control" id="challenge_stime" maxlength="64" name="stime" tabindex="3" type="text" value="{{ challenge.stime|date:'Y-m-d' }}" />
-					<span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
-					<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-				</div>
-				<script type="text/javascript">
-					$("#challenge_stime").datetimepicker({minView: 2, autoclose: true, language: 'en', startView: 2, format: 'yyyy-mm-dd'}).find('input').addClass("form-control");
-				</script>
-					<input readonly="" id="initial-id_stime" name="initial-stime" type="hidden" value="2017-02-04 21:19:42+00:00" /></p>
+                  <div id="challenge_stime" class="input-group date">
+                    <input readonly="" class="form-control" id="challenge_stime" maxlength="64" name="stime" tabindex="3" type="text" value="{{ challenge.stime|date:'Y-m-d' }}" />
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                </div>
+                <script type="text/javascript">
+                    $("#challenge_stime").datetimepicker({minView: 2, autoclose: true, language: 'en', startView: 2, format: 'yyyy-mm-dd'}).find('input').addClass("form-control");
+                </script>
+                    <input readonly="" id="initial-id_stime" name="initial-stime" type="hidden" value="2017-02-04 21:19:42+00:00" /></p>
 
                 </div> <!-- id="" class="col-sm-10" -->
                 <label class="col-sm-2 control-label" for="challenge_etime">End Date</label>
                 <div class="col-sm-10">
-					<div id="challenge_etime" class="input-group date">
-					<input readonly="" class="form-control" id="challenge_etime" maxlength="64" name="etime" tabindex="3" type="text" value="{{ challenge.etime|date:'Y-m-d' }}" />
-					<span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
-					<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-				</div>
-				<script type="text/javascript">
-					$("#challenge_etime").datetimepicker({minView: 2, autoclose: true, language: 'en', startView: 2, format: 'yyyy-mm-dd'}).find('input').addClass("form-control");
-				</script>
-					<input readonly="" id="initial-id_etime" name="initial-etime" type="hidden" value="2017-02-04 21:19:42+00:00" /></p>
-					
+                    <div id="challenge_etime" class="input-group date">
+                    <input readonly="" class="form-control" id="challenge_etime" maxlength="64" name="etime" tabindex="3" type="text" value="{{ challenge.etime|date:'Y-m-d' }}" />
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                </div>
+                <script type="text/javascript">
+                    $("#challenge_etime").datetimepicker({minView: 2, autoclose: true, language: 'en', startView: 2, format: 'yyyy-mm-dd'}).find('input').addClass("form-control");
+                </script>
+                    <input readonly="" id="initial-id_etime" name="initial-etime" type="hidden" value="2017-02-04 21:19:42+00:00" /></p>
+                    
                 </div> <!-- id="" class="col-sm-10" -->
               </div> <!-- id="" class="form-group" -->
               <div class="form-group">

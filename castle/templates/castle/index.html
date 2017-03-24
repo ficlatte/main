@@ -1,7 +1,7 @@
 {% extends "castle/page_with_selected_sidebar.html" %}
 {%comment%}
 This file is part of Ficlatté.
-Copyright (C) 2015 Paul Robertson
+Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of version 3 of the GNU Affero General Public
@@ -25,17 +25,17 @@ Copyright (C) 2015 Paul Robertson
       <div class="well" id="news">
         <h2>Ficlatt&eacute; news</h2>
         <div class="panel panel-success">
-			<div class="panel-heading">
-				<h3 class="panel-title">From the blog <a href="/blog/" class="blog-link"><span class="glyphicon glyphicon-new-window"></span></a></h3>
-			</div>
-			<div class="panel-body">
+            <div class="panel-heading">
+                <h3 class="panel-title">From the blog <a href="/blog/" class="blog-link"><span class="glyphicon glyphicon-new-window"></span></a></h3>
+            </div>
+            <div class="panel-body">
         {% for blog in blog_latest %}
-			<div class="col-sm-3 col-md-3 blog-entry">
-				<h3 class="entry-title"><a href="/blog/{{blog.id}}" rel="bookmark">{{blog.title}}</a></h3>
-					<span class="blog-comments blog-meta">{{blog|num_comments}} <span class="glyphicon glyphicon-comment"> | </span>
-					<span class="posted blog-meta">{{blog.mtime|age}} | </span> 
-					<span class="vcard author blog-meta">{{blog.user|author_span}}</span>
-			</div> <!-- id="" class="col-sm-4 col-md-4 blog-entry" -->
+            <div class="col-sm-3 col-md-3 blog-entry">
+                <h3 class="entry-title"><a href="/blog/{{blog.id}}" rel="bookmark">{{blog.title}}</a></h3>
+                    <span class="blog-comments blog-meta">{{blog|num_comments}} <span class="glyphicon glyphicon-comment"> | </span>
+                    <span class="posted blog-meta">{{blog.mtime|age}} | </span> 
+                    <span class="vcard author blog-meta">{{blog.user|author_span}}</span>
+            </div> <!-- id="" class="col-sm-4 col-md-4 blog-entry" -->
         {% endfor %}
         </div>
         </div><!-- id="" class="panel panel-success" -->
@@ -49,14 +49,14 @@ Copyright (C) 2015 Paul Robertson
           <div class="well well-sm">
             <h3>User&#39;s recent activity</h3>
             <div class="panel panel-success">
-				<div class="panel-heading">
-					<h3 class="panel-title">Activity log</h3>
-				</div>
-				<ul id="user-activity-list">
-				{% for log in activity_log %}
-					<li>{{log|activity_entry}}</li>
-				{% endfor %}
-				</ul>
+                <div class="panel-heading">
+                    <h3 class="panel-title">Activity log</h3>
+                </div>
+                <ul id="user-activity-list">
+                {% for log in activity_log %}
+                    <li>{{log|activity_entry}}</li>
+                {% endfor %}
+                </ul>
             </div>
           </div> <!-- id="" class="well well-sm" -->
         {% endif %}
@@ -72,10 +72,10 @@ Copyright (C) 2015 Paul Robertson
                     {% if featured %}
                     <h3>{{featured|story_link}}</h3>
                         {% if suppressed %}
-							<p>Story is marked as mature</p>
-						{% else %}
-							{{featured.body|big_snippet}}
-						{% endif %}
+                            <p>Story is marked as mature</p>
+                        {% else %}
+                            {{featured.body|big_snippet}}
+                        {% endif %}
                     <div class="row">
                       <div class="col-md-4">
                         {{featured.user|avatar}}
@@ -116,8 +116,8 @@ Copyright (C) 2015 Paul Robertson
                     <h3 class="panel-title">Latest Challenge</h3>
                   </div> <!-- id="" class="panel-heading" -->
                   <div class="panel-body">
-					  <div class="list-group-item"
-						<h3>{{challenge|challenge_link:'h4 class="list-group-item-heading"'}}</h3>
+                      <div class="list-group-item"
+                        <h3>{{challenge|challenge_link:'h4 class="list-group-item-heading"'}}</h3>
                         {{challenge.user|author_span}}
                       </div>
                   </div> <!-- id="" class="panel-body" -->
@@ -130,10 +130,10 @@ Copyright (C) 2015 Paul Robertson
                     <h3 class="panel-title">Latest Prompt</h3>
                   </div> <!-- id="" class="panel-heading" -->
                   <div class="panel-body">
-					  <div class="list-group-item"
-						<h3>{{prompt|prompt_link:'h4 class="list-group-item-heading"'}}</h3>
+                      <div class="list-group-item"
+                        <h3>{{prompt|prompt_link:'h4 class="list-group-item-heading"'}}</h3>
                         {{prompt.user|author_span}}
-					  </div>
+                      </div>
                   </div> <!-- id="" class="panel-body" -->
                 </div> <!-- id="" class="panel panel-success" -->
               </div> <!-- id="latest-prompt" class="col-md-4" -->

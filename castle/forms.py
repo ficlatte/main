@@ -1,7 +1,7 @@
 
 #coding: utf-8
 #This file is part of Ficlatté.
-#Copyright (C) 2015 Paul Robertson
+#Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of version 3 of the GNU Affero General Public
@@ -24,15 +24,15 @@ class AvatarUploadForm(forms.Form):
     image_file = forms.FileField(label='image file')
     
 class ChallengeDateForm(forms.ModelForm):
-	
-	class Meta:
-		model = Challenge
-		fields = ('title', 'stime', 'etime', 'body',)
-		dateTimeOptions = {
-			'format': 'YYYY-MM-DD',
-			'autoclose': True
-		}
-		widgets = {
-			'stime': DateWidget(attrs={'id':"challenge_stime"}, usel10n = True, bootstrap_version=3),
-			'etime': DateWidget(attrs={'id':"challenge_etime"}, usel10n = True, bootstrap_version=3)
-		}
+    
+    class Meta:
+        model = Challenge
+        fields = ('title', 'stime', 'etime', 'body',)
+        dateTimeOptions = {
+            'format': 'YYYY-MM-DD',
+            'autoclose': True
+        }
+        widgets = {
+            'stime': DateWidget(attrs={'id':"challenge_stime"}, usel10n = True, bootstrap_version=3),
+            'etime': DateWidget(attrs={'id':"challenge_etime"}, usel10n = True, bootstrap_version=3)
+        }

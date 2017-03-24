@@ -1,7 +1,7 @@
 {% extends "castle/base_page.html" %}
 {%comment%}
 This file is part of Ficlatté.
-Copyright (C) 2015 Paul Robertson
+Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of version 3 of the GNU Affero General Public
@@ -21,30 +21,30 @@ Copyright (C) 2015 Paul Robertson
 
 {% block main_content %}
 {% if error_messages %}
-	<div class="alert alert-danger" id="errors" role="alert">
-		<h3>{{error_title}}</h3>
-		{% for err in error_messages %}<p>{{err}}</p>{% endfor %}
-	</div> <!-- id="errors" class="alert alert-danger" -->
+    <div class="alert alert-danger" id="errors" role="alert">
+        <h3>{{error_title}}</h3>
+        {% for err in error_messages %}<p>{{err}}</p>{% endfor %}
+    </div> <!-- id="errors" class="alert alert-danger" -->
 {% endif %}
-	<div id="login-form">
-		<form action="/signin/" class="form-signin" id="log-in-form" method="POST" role="form">
-			{% csrf_token %}
-			<input name="action" type="hidden" value="log in" />
-			<h2 class="form-signin-heading">Please sign in</h2>
-			<input autofocus class="form-control" id="id_username" maxlength="254" name="username" placeholder="Pen name" required type="text" />
-			<input class="form-control" name="password" id="id_password" placeholder="Password" required type="password" />
-			<button class="btn btn-lg btn-success btn-block" type="submit" value="login">Sign in</button>
-			<input type="hidden" name="next" value="{{ next }}" />
-		</form>
+    <div id="login-form">
+        <form action="/signin/" class="form-signin" id="log-in-form" method="POST" role="form">
+            {% csrf_token %}
+            <input name="action" type="hidden" value="log in" />
+            <h2 class="form-signin-heading">Please sign in</h2>
+            <input autofocus class="form-control" id="id_username" maxlength="254" name="username" placeholder="Pen name" required type="text" />
+            <input class="form-control" name="password" id="id_password" placeholder="Password" required type="password" />
+            <button class="btn btn-lg btn-success btn-block" type="submit" value="login">Sign in</button>
+            <input type="hidden" name="next" value="{{ next }}" />
+        </form>
 
-		<div class="password-reset-link">
-			<a href="{% url 'password_reset' %}">Forgot password</a>
-		</div><!-- id="" class="password-reset-link' -->
-		
-		<div class="register-link">
-			<p>Don't have an account? <a href="{% url 'register' %}">Create one!</a></p>
-		</div><!-- id="" class="register-link' -->
-		
-	</div> <!-- id="login-form" class="" -->
+        <div class="password-reset-link">
+            <a href="{% url 'password_reset' %}">Forgot password</a>
+        </div><!-- id="" class="password-reset-link' -->
+        
+        <div class="register-link">
+            <p>Don't have an account? <a href="{% url 'register' %}">Create one!</a></p>
+        </div><!-- id="" class="register-link' -->
+        
+    </div> <!-- id="login-form" class="" -->
 
 {% endblock main_content %}

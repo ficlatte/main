@@ -1,7 +1,7 @@
 
 #coding: utf-8
 #This file is part of Ficlatté.
-#Copyright (C) 2015 Paul Robertson
+#Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of version 3 of the GNU Affero General Public
@@ -72,5 +72,5 @@ class BlogAdmin(admin.ModelAdmin):
     inlines = [CommentInLine]
 
 admin.site.register(Story, StoryAdmin)
-admin.site.register(Challenge, ChallengeAdmin)	
+admin.site.register(Challenge, ChallengeAdmin)  
 admin.site.register(Blog,  BlogAdmin)

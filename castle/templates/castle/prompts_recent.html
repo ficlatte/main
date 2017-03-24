@@ -1,7 +1,7 @@
 {% extends "castle/page_without_sidebar.html" %}
 {%comment%}
 This file is part of Ficlatté.
-Copyright (C) 2015 Paul Robertson
+Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of version 3 of the GNU Affero General Public
@@ -20,7 +20,7 @@ Copyright (C) 2015 Paul Robertson
 {% load castle_tags %}
 
 {% block primary_panel %}
-		<div class="panel panel-success browse">
+        <div class="panel panel-success browse">
           <div class="panel-heading prompt-summary">
             <h3 class="panel-title">{{label}}</h3>
           </div>
@@ -29,24 +29,24 @@ Copyright (C) 2015 Paul Robertson
               <ul class="list-group">
                 {% for p in prompts %}
                 <li class="list-group-item">
-					<h3 class="entry_title">{{p|prompt_link}}</h3>
-					<div class="entry_content browse-content">
-						{% if p.mature %}
-							{% if not profile.mature and p.user != profile %}
-								<p>Prompt is marked as mature</p>
-							{% else %}
-								{{p.body|big_snippet}}
-							{% endif %}
-						{% else %}
-							{{p.body|big_snippet}}
-						{% endif %}
-					</div>
-					<div class="story-foot">
-						<span class="author">{{p.user|author_span}}</span>
-						<span class="posted">Posted <abbr class="dtposted" title="{{p.ctime|date:'Y-m-d'}}">{{p.ctime|age}}</abbr></span>
-						<span class="count">{{p|num_stories_txt}}</span>
-					</span>
-				</li>
+                    <h3 class="entry_title">{{p|prompt_link}}</h3>
+                    <div class="entry_content browse-content">
+                        {% if p.mature %}
+                            {% if not profile.mature and p.user != profile %}
+                                <p>Prompt is marked as mature</p>
+                            {% else %}
+                                {{p.body|big_snippet}}
+                            {% endif %}
+                        {% else %}
+                            {{p.body|big_snippet}}
+                        {% endif %}
+                    </div>
+                    <div class="story-foot">
+                        <span class="author">{{p.user|author_span}}</span>
+                        <span class="posted">Posted <abbr class="dtposted" title="{{p.ctime|date:'Y-m-d'}}">{{p.ctime|age}}</abbr></span>
+                        <span class="count">{{p|num_stories_txt}}</span>
+                    </span>
+                </li>
                 {% endfor %}
               </ul>
             </div> <!-- id="" class="panel-body" -->
