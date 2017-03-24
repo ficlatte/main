@@ -1,6 +1,6 @@
 #coding: utf-8
 #This file is part of Ficlatté.
-#Copyright (C) 2015 Paul Robertson
+#Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of version 3 of the GNU Affero General Public
@@ -220,18 +220,6 @@ class Comment(models.Model):
             if (r and (r[0].rating>0)):
                 return r[0].rating
         return None
-
-# Comment Likes
-class CommentLike(models.Model):
-    user		= models.ForeignKey(Profile, related_name='comment_liked')
-    comment		= models.ForeignKey(Comment, blank=True, null=True)
-	
-    def __unicode__(self):
-        return self.story.user.__unicode__() + u' likes comment by "' + self.comment.user.__unicode__() + u' with text "' + unicode(self.comment)[:30] + u'"'
-    
-    # Each user can only Like a comment once    
-    class Meta:
-        unique_together = ('user', 'comment')    
 
 # Activity log
 class StoryLog(models.Model):
