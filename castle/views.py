@@ -160,7 +160,7 @@ def get_popular_prompts(page_num=1, page_size=10):
         "SELECT p.id as id, " +
         "SUM(1/(date_part('day', NOW() - l.ctime)+1)) AS score " +
         "FROM castle_storylog AS l " +
-        "LEFT JOIN castle_prompt AS c ON p.id=l.prompt_id " +
+        "LEFT JOIN castle_prompt AS p ON p.id=l.prompt_id " +
         "WHERE l.user_id != p.user_id " +
         "AND l.log_type = " + str(StoryLog.VIEW) +" "+
         "GROUP BY p.id ORDER BY score DESC LIMIT " + str(page_size) +" "+
