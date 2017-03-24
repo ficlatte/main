@@ -43,8 +43,11 @@ function draft_button()
 
     
 {% block primary_panel %}
-          <div class="well" id="new-blog">
-            <h2>Let&#39;s blog</h2>
+          <div class="panel panel-success" id="new-blog">
+            <div class="panel-heading">
+				<div class="panel-title">Let&#39;s blog</div>
+			</div>
+			<div class="panel-body">
             <form accept-charset="utf-8" action="/blog/submit/" class="form-horizontal" id="blog-form" method="post" role="form">
               {% csrf_token %}
               <input name="bid" type="hidden" value="{{blog.id}}" />
@@ -87,5 +90,6 @@ function draft_button()
                 </div> <!-- id="" class="col-sm-offset-2 col-sm-10" -->
               </div> <!-- id="" class="form-group" -->
             </form>
+            </div>
           </div> <!-- id="new-blog" class="well" -->
 {% endblock primary_panel %}

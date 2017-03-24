@@ -1,21 +1,3 @@
-
-#coding: utf-8
-#This file is part of Ficlatté.
-#Copyright (C) 2015-2017 Paul Robertson & Jim Stitzel
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of version 3 of the GNU Affero General Public
-#    License as published by the Free Software Foundation
-#
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
@@ -73,10 +55,10 @@ def inbox(request):
 
     note_list = Note.objects.inbox_for(request.user.profile)
 
-    context = { 'profile'       : profile,
-                'author'        : author,
-                'page_title'    : u'Inbox',
-                'note_list'     : note_list,
+    context = { 'profile' 		: profile,
+                'author'		: author,
+                'page_title'	: u'Inbox',
+                'note_list'		: note_list,
               }
 
     return render(request, 'notes/inbox.html', context)
@@ -100,10 +82,10 @@ def outbox(request):
 
     note_list = Note.objects.outbox_for(request.user.profile)
 
-    context = { 'profile'       : profile,
-                'author'        : author,
-                'page_title'    : u'Outbox',
-                'note_list'     : note_list,
+    context = { 'profile' 		: profile,
+                'author'		: author,
+                'page_title'	: u'Outbox',
+                'note_list'		: note_list,
               }
 
     return render(request, 'notes/outbox.html', context)
@@ -127,10 +109,10 @@ def trash(request):
 
     note_list = Note.objects.trash_for(request.user.profile)
 
-    context = { 'profile'       : profile,
-                'author'        : author,
-                'page_title'    : u'Trash',
-                'note_list'     : note_list,
+    context = { 'profile' 		: profile,
+                'author'		: author,
+                'page_title'	: u'Trash',
+                'note_list'		: note_list,
               }
 
     return render(request, 'notes/trash.html', context)
@@ -160,10 +142,10 @@ def view(request, note_id):
         note.read_date = now
         note.save()
 
-    context = { 'profile'       : profile,
-                'author'        : author,
-                'page_title'    : u'View note',
-                'note'          : note,
+    context = {	'profile'		: profile,
+                'author'		: author,
+                'page_title'	: u'View note',
+                'note'			: note,
               }
         
     return render(request, 'notes/view.html', context)
@@ -195,11 +177,11 @@ def new_note(request):
         # Create a blank note
         note = Note()
 
-    context = { 'profile'       : profile,
-                'author'        : author,
-                'page_title'    : u'Write note',
-                'note'          : note,
-                'length_limit'  : 2048,
+    context = {	'profile'		: profile,
+                'author'		: author,
+                'page_title'	: u'Write note',
+                'note'			: note,
+                'length_limit'	: 2048,
               }
 
     return render(request, 'notes/compose.html', context)
@@ -211,39 +193,20 @@ def submit_note(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
-    
-    # Get target user's information
-    author = Profile.objects.filter(pen_name_uc = profile.pen_name.upper())
-    if (not author):
-        raise Http404()
-    author = author[0]          # Get single object from collection
-    # Get user profile
-    profile = None
-    if (request.user.is_authenticated()):
-        profile = request.user.profile
 
     # Get target user's information
     author = Profile.objects.filter(pen_name_uc = profile.pen_name.upper())
     if (not author):
         raise Http404()
     author = author[0]          # Get single object from collection
-
-    # Is logged-in user the author?
-    owner = ((profile is not None) and (profile == author))
-
-    if (not profile.email_authenticated()):
-        errors.append(u'You must have authenticated your e-mail address before writing a note.')
 
     # Get bits and bobs
-    errors      = []
-    note        = get_foo(request.POST, Note,  'nid')
-    new_note    = (note is None)
+    errors     	= []
+    note      	= get_foo(request.POST, Note,  'nid')
+    new_note	= (note is None)
 
     # Is logged-in user the author?
     owner = ((profile is not None) and (profile == author))
-    errors      = []
-    note        = get_foo(request.POST, Note,  'nid')
-    new_note    = (note is None)
 
     if (not profile.email_authenticated()):
         errors.append(u'You must have authenticated your e-mail address before writing a note.')
@@ -254,18 +217,15 @@ def submit_note(request):
                     )
 
     # Lookup user ID of recipient
-    recipient_name = request.POST.get('recipient', '')
-    try:
-        recipient = Profile.objects.get(pen_name_uc = recipient_name.upper())
-        note.recipient  = recipient
-    except ObjectDoesNotExist:
-        recipient = None
-        errors.append(u'Recipient pen name does not exist')
+    recipient = request.POST.get('recipient', '')
+    recipient_obj = Profile.objects.get(pen_name_uc = recipient.upper())
+    recipient_id = recipient_obj.user_id
 
     # Populate story object with data from submitted form
-    note.sender     = profile
-    note.subject    = request.POST.get('subject', '')
-    note.body       = request.POST.get('body', '')
+    note.sender_id		= profile.user_id
+    note.recipient_id	= recipient_id
+    note.subject		= request.POST.get('subject', '')
+    note.body			= request.POST.get('body', '')
 
     # Condense all end-of-line markers into \n
     note.body = re_crlf.sub(u"\n", note.body)
@@ -273,31 +233,18 @@ def submit_note(request):
     # Check for submission errors
     l = len(note.body)
     if (len(note.subject) < 1):
-        errors.append(u'Subject must be at least 1 character long')
+        errors.append(u'Story title must be at least 1 character long')
 
-    if (l > 1024):
-        errors.append(u'Note is over 2048 characters (currently ' + unicode(l) + u')')
-    
-    # If there have been errors, re-display the page
-    if (errors):
-    # Build context and render page
-        context = { 'profile'       : profile,
-                    'author'        : author,
-                    'note'          : note,
-                    'length_limit'  : 2048,
-                    'error_messages': errors,
-                  }
     if (l > 1024):
         errors.append(u'Note is over 2048 characters (currently ' + unicode(l) + u')')
 
     # If there have been errors, re-display the page
     if (errors):
     # Build context and render page
-        context = { 'profile'       : profile,
-                    'author'        : author,
-                    'note'          : note,
-                    'recipient_name': recipient_name,
-                    'length_limit'  : 2048,
+        context = {	'profile'		: profile,
+                    'author'		: author,
+                    'note'			: note,
+                    'length_limit'	: 2048,
                     'error_messages': errors,
                   }
 
@@ -332,7 +279,9 @@ def reply(request, note_id):
     owner = ((profile is not None) and (profile == author))
 
     parent = get_object_or_404(Note, pk=note_id)
-    reply_recipient = parent.sender
+    reply_recipient_id = parent.sender_id
+    reply_recipient_obj = Profile.objects.get(pk = reply_recipient_id)
+    reply_recipient = reply_recipient_obj.pen_name
 
     # Format subject line
     if 'Re: ' in parent.subject:
@@ -347,20 +296,18 @@ def reply(request, note_id):
     quote = '\n'.join(lines)
 
     # Populate reply fields
-    note = Note(sender      = profile,
-                recipient   = reply_recipient,
-                subject     = subject,
-                body        = quote,
+    note = Note(sender		= profile,
+                recipient	= reply_recipient_obj,
+                subject		= subject,
+                body		= quote,
                 )
 
     # Build context and render page
-    context = { 'profile'       : profile,
-                'author'        : author,
-                'page_title'    : u'Reply',
-                'note'          : note,
-                'recipient_name':reply_recipient.pen_name,
-                'is_reply'      : True,
-                'length_limit'  : 2048,
+    context = {	'profile'		: profile,
+                'author'		: author,
+                'page_title'	: u'Reply',
+                'note'			: note,
+                'length_limit'	: 2048,
               }
 
     return render(request, 'notes/compose.html', context)
@@ -397,17 +344,17 @@ def forward(request, note_id):
     quote = '\n'.join(lines)
 
     # Populate reply fields
-    note = Note(sender      = profile,
-                subject     = subject,
-                body        = quote,
+    note = Note(sender		= profile,
+                subject		= subject,
+                body		= quote,
                 )
 
     # Build context and render page
-    context = { 'profile'       : profile,
-                'author'        : author,
-                'page_title'    : u'Forward',
-                'note'          : note,
-                'length_limit'  : 2048,
+    context = {	'profile'		: profile,
+                'author'		: author,
+                'page_title'	: u'Reply',
+                'note'			: note,
+                'length_limit'	: 2048,
               }
 
     return render(request, 'notes/compose.html', context)

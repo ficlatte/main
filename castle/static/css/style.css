@@ -17,6 +17,10 @@ hr {
 }
 
 /* jumbotron */
+.navbar-inverse {
+	background-color: #333;
+}
+
 .container .jumbotron, .jumbotron {
     padding: 0;
     background-color: transparent;
@@ -533,6 +537,16 @@ li.challenge-comment ul li.posted {
 
 .challenge-sidebar {
 	margin-top: 70px;
+}
+
+/* Comments */
+
+li.comment-like {
+	padding: 0 15px;
+}
+
+li.comment-like img {
+	vertical-align: top;
 }
 
 /* Subscriptions */
