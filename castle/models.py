@@ -53,7 +53,7 @@ class Profile(models.Model):
     HAS_AVATAR = 1
     
     # Email flags
-    NUM_EMAIL_FLAGS = 10
+    NUM_EMAIL_FLAGS = 2048
     
     AUTOSUBSCRIBE_ON_STORY              = 1  # Subscribe to story's comments when user publishes a story
     AUTOSUBSCRIBE_ON_STORY_COMMENT      = 2  # Subscribe to story's comments when user publishes comment
