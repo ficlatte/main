@@ -121,7 +121,7 @@ urlpatterns = patterns('',
     #url(r'^(?P<template>rules\.html)$', 'castle.views.static_view', name="rules"),
     #url(r'^(?P<template>privacy\.html)$', 'castle.views.static_view', name="privacy"),
     #url(r'^(?P<template>help\.html)$', 'castle.views.static_view', name="help"),
-    url(r'^rules/$', 'castle.views.static_view', {'template_name': 'rules.html'}, name="rules"),
+    url(r'^rules(?:\.html)?/$', 'castle.views.static_view', {'template_name': 'rules.html'}, name="rules"),
     url(r'^privacy/$', 'castle.views.static_view', {'template_name': 'privacy.html'}, name="privacy"),
     url(r'^help/$', 'castle.views.static_view', {'template_name': 'help.html'}, name="help"),
 )
