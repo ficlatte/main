@@ -161,8 +161,8 @@ Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
     {% endif %}
     {% if story.tag_set.count > 0 or story.prompt or story.challenge or story.prequel_to or story.sequel_to %}
           <div class="panel panel-success" id="inspiration">
-             <div class="panel-heading">
             {% if story.prompt %}
+            <div class="panel-heading">
                 <h4 class="panel-title">Story prompt:</h4>
             </div>
             <div class="panel-body">
@@ -171,6 +171,7 @@ Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
             </div>
             {% endif %}
             {% if story.prompt_text %}
+            <div class="panel-heading">
                 <h4 class="panel-title">Author's prompt text:</h4>
             </div>
             <div class="panel-body">
@@ -178,6 +179,7 @@ Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
             </div>
             {% endif %}
             {% if story.challenge %}
+            <div class="panel-heading">
                 <h4 class="panel-title">Story challenge:</h4>
             </div>
             <div class="panel-body">
@@ -187,6 +189,7 @@ Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
             {% endif %}
             {% if story.prequel_to %}
             {% if story.prompt %}<hr>{% endif %}
+            <div class="panel-heading">
                 <h4 class="panel-title">Inspired by (prequel to):</h4>
             </div>
             <div class="panel-body">
@@ -200,6 +203,7 @@ Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
             {% endif %}
             {% if story.sequel_to %}
             {% if story.prompt or story.prequel_to %}<hr />{% endif %}
+            <div class="panel-heading">
                 <h4 class="panel-title">Inspired by (sequel to):</h4>
             </div>
             <div class="panel-body">
@@ -212,11 +216,12 @@ Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
             </div>
             {% endif %}
             {% if not story.prompt and not story.prequel_to and not story.sequel_to and not story.challenge %}
+            <div class="panel-heading">
                 <h4 class="panel-title">Tags:</h4>
             </div>
             {% endif %}
             {% if story.tag_set.count > 0 %}
-            {% if story.prompt or story.prequel_to or story.sequel_to %}<hr>{% endif %}
+            {% if story.prompt or story.prequel_to or story.sequel_to or story.challenge %}<hr>{% endif %}
                 <div class="tag-cloud" id="tags">
                     <p>This story&#39;s tags are</p>
                     {% for t in story.tag_set.all %}
