@@ -1,6 +1,6 @@
 from django.contrib.sitemaps import Sitemap
 from django.core.urlresolvers import reverse
-from castle.models import Blog, Story, Prompt, Tag, Profile
+from castle.models import *
 
 class StorySitemap(Sitemap):
     changefreq = "always"
