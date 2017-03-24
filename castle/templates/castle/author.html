@@ -27,14 +27,14 @@ Copyright (C) 2015 Paul Robertson
             <div class="panel-heading">
               <div class="row">
                 <div class="col-sm-2 col-md-2">
-                  {{author|avatar}}<br />
+                  {{author|avatar}}
+                  {{author|author_social_media}}
                 </div> <!-- id="" class="col-sm-2 col-md-2" -->
-                {% if not email_conf %}<div  class="email-resend-link"><a href="{% url 'resend_email_conf' %}">Resend</a> my email confirmation.</div>{% endif %}
                 <div class="col-sm-8 col-md-8">
-                  {{author|author_link:"h1"}}
-                  {{author|author_msg}}
+                  {{author|author_link:'h1 class="author"'}} 
                   <p id="user-desc">Joined Ficlatt&eacute; in <span>{{author.ctime|date:"F Y"}}</span></p>
                   <p id="user-stats">{{author|num_stories_txt}}, {{author|num_challenges_txt}}, {{author|num_prompts_txt}}, {{author|profile_comments_txt}}, and {{author|num_friends_txt}}</p>
+                  <p id="user-wins">Coffee beans earned: {{author|num_challenge_wins}} <img src="{% static 'img/badge-40.png' %}"></p>
                 </div> <!-- id="" class="col-sm-8 col-md-8" -->
               </div> <!-- id="" class="row" -->
             </div> <!-- id="" class="panel-heading" -->
@@ -43,43 +43,52 @@ Copyright (C) 2015 Paul Robertson
             </div> <!-- id="" class="panel-body" -->
           </div> <!-- id="" class="panel panel-success" -->
 {% block paged_content %}
-          <div class="well well-sm">
-            <h1>{% if drafts_page %}Drafts{% elif stories_page %}Stories{% elif challenges_page %}Challenges{% elif prompts_page %}Prompts{% endif %}</h1>
+            <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">{% if drafts_page %}Drafts{% elif stories_page %}Stories{% elif challenges_page %}Challenges{% elif prompts_page %}Prompts{% else %}All Stories{% endif %}</h3>
+            </div>
+            <div class="panel-body">
             <div class="list-group">
-			  {% if story_list %}
+              {% if story_list %}
               {% for story in story_list %}
               <div class="list-group-item">
-                {{story|story_link:'h4 class="list-group-item-heading"'}}
-                <span class="list-group-item-text">{{story.body|small_snippet}}</span>
-                {% if story.draft %}
-                <p class="list-group-item-text" id="story-stats">Edited <abbr title="{{story.mtime|date:'Y-m-d'}}">{{story.mtime|age}}</abbr>. </p>
-                {% else %}
-                <p class="list-group-item-text" id="story-stats">Published <abbr title="{{story.ptime|date:'Y-m-d'}}">{{story.ptime|age}}</abbr>. </p>
-                {% endif %}
+                {{story|story_link:'h4 class="entry_title browse"'}}
+                <span class="list-group-item-text browse-content">{{story.body|small_snippet}}</span>
+                <div class="story-foot">
+                    {% if story.draft %}
+                        <p class="list-group-item-text posted" id="story-stats">Edited <abbr class="dtposted" title="{{story.mtime|date:'Y-m-d'}}">{{story.mtime|age}}</abbr>. </p>
+                    {% else %}
+                        <p class="list-group-item-text posted" id="story-stats">Published <abbr class="dtposted" title="{{story.ptime|date:'Y-m-d'}}">{{story.ptime|age}}</abbr>. </p>
+                    {% endif %}
+                </div>
               </div> <!-- id="" class="list-group-item" -->
               {% endfor %}
               {% elif challenge_list %}
               {% for challenge in challenge_list %}
               <div class="list-group-item">
-                {{challenge|challenge_link:'h4 class="list-group-item-heading"'}}
-                <span class="list-group-item-text">{{challenge.body|small_snippet}}</span>
-                <p class="list-group-item-text" id="story-stats">Created <abbr title="{{challenge.ctime|date:'Y-m-d'}}">{{challenge.ctime|age}}</abbr>. </p>
+                {{challenge|challenge_link:'h4 class="entry_title browse"'}}
+                <span class="list-group-item-text browse-content">{{challenge.body|small_snippet}}</span>
+                <div class="story-foot">
+                    <p class="list-group-item-text posted" id="story-stats">Created <abbr class="dtposted" title="{{challenge.ctime|date:'Y-m-d'}}">{{challenge.ctime|age}}</abbr>. </p>
+                </div>
               </div> <!-- id="" class="list-group-item" -->
               {% endfor %}
               {% elif prompt_list %}
               {% for prompt in prompt_list %}
               <div class="list-group-item">
-                {{prompt|prompt_link:'h4 class="list-group-item-heading"'}}
-                <span class="list-group-item-text">{{prompt.body|small_snippet}}</span>
-                <p class="list-group-item-text" id="story-stats">Published <abbr title="{{prompt.ctime|date:'Y-m-d'}}">{{prompt.ctime|age}}</abbr>. </p>
+                {{prompt|prompt_link:'h4 class="entry_title browse"'}}
+                <span class="list-group-item-text browse-content">{{prompt.body|small_snippet}}</span>
+                <div class="story-foot">
+                    <p class="list-group-item-text posted" id="story-stats">Published <abbr class="dtposted" title="{{prompt.ctime|date:'Y-m-d'}}">{{prompt.ctime|age}}</abbr>. </p>
+                </div>
               </div> <!-- id"" class="list-group-item" -->
               {% endfor %}
               {% endif %}
             </div> <!-- id="" class="list-group" -->
 {% endblock paged_content %}
 {% block pager %}{{block.super}}{%endblock%}
-            
-          </div> <!-- id="" class="well well-sm" -->
+            </div>
+            </div>
 
 
 {% endblock primary_panel %}

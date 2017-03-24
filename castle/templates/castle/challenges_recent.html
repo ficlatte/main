@@ -1,0 +1,59 @@
+{% extends "castle/page_without_sidebar.html" %}
+{%comment%}
+This file is part of Ficlatté.
+Copyright (C) 2015 Paul Robertson
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of version 3 of the GNU Affero General Public
+    License as published by the Free Software Foundation
+    
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+{%endcomment%}
+{% load staticfiles %}
+{% load castle_tags %}
+
+{% block primary_panel %}
+        <div class="panel panel-success browse">
+          <div class="panel-heading challenge-summary">
+            <h3 class="panel-title">{{label}}</h3>
+          </div>
+{% block paged_content %}
+            <div class="panel-body">
+              <ul class="list-group">
+                {% for c in challenges %}
+                <li class="list-group-item">
+                    <h3 class="entry_title">{{c|challenge_link}}</h3>
+                        <span class="startdate">Challenge start date: <span class="cdate">{{c.stime|date:"jS F Y"}}</span></span>
+                        <span class="enddate">Challenge end date: <span class="cdate">{{c.etime|date:"jS F Y"}}</span></span>
+                        <div class="entry_content browse-content">
+                            {% if c.mature %}
+                                {% if not profile.mature and c.user != profile %}
+                                    <p>Challenge is marked as mature</p>
+                                {% else %}
+                                    {{c.body|big_snippet}}
+                                {% endif %}
+                            {% else %}
+                                {{c.body|big_snippet}}
+                            {% endif %}
+                        </div>
+                        <div class="story-foot">
+                            <span class="author">{{c.user|author_span}}</span>
+                            <span class="posted">Posted <abbr class="dtposted" title="{{c.ctime|date:'Y-m-d'}}">{{c.ctime|age}}</abbr></span>
+                            <span class="count">{{c|num_stories_txt}}</span>
+                        </div><!-- id="" class="story_foot" -->
+                </li>
+                {% endfor %}
+              </ul>
+            </div> <!-- id="" class="panel-body" -->
+{% endblock paged_content %}
+{% block pager %}{{block.super}}{%endblock%}
+          </div> <!-- id="" class="panel panel-success browse" -->
+{% endblock primary_panel %}
+

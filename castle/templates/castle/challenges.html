@@ -21,40 +21,119 @@ Copyright (C) 2015 Paul Robertson
 
 {% block primary_panel %}
 
-          <div id="challenge-summary">
-            <h3>Recent Challenges</h3>
-{% block paged_content %}
-            <div class="story_list_div">
-              <ul class="story_list">
-                {% for c in challenges %}
-                <li class="story_list_item">
-					<h3 class="entry_title">{{c|challenge_link}}</h3>
-					<ul class="story_meta">
-						<li id="startdate">Challenge start date: {{c.stime|date:"jS F Y"}}</li>
-						<li id="enddate">Challenge end date: {{c.etime|date:"jS F Y"}}</li>
-						<blockquote class="entry_content">
-							{% if c.mature %}
-								{% if not profile.mature and c.user != profile %}
-									<p>Challenge is marked as mature</p>
-								{% else %}
-									{{c.body|small_snippet}}
-								{% endif %}
-							{% else %}
-								{{c.body|small_snippet}}
-							{% endif %}
-						</blockquote>
-						<ul class="story_foot">
-							<li class="author">{{c.user|author_span}}</li>
-							<li class="posted">Posted <abbr class="published" title="{{c.ctime|date:'Y-m-d'}}">{{c.ctime|age}}</abbr></li>
-							<li class="count">{{c|num_stories_txt}}</li>
-						</ul><!-- id="" class="story_foot" -->
-					</ul><!-- id="" class="story_meta" -->
-				</li>
-                {% endfor %}
-              </ul>
-            </div> <!-- id="" class="story_list_div" -->
-{% endblock paged_content %}
-{% block pager %}{{block.super}}{%endblock%}
-          </div> <!-- id="challenge-summary" class="" -->
+        <div class="well well-sm" id="whats-new">
+            <h3>What&#39;s new</h3>
+            <div class="row" id="featured-popular">
+              <div class="col-md-8" id="featured-story">
+                <div class="panel panel-success">
+                  <div class="panel-heading">
+                    <h3 class="panel-title">Featured challenge</h3>
+                  </div> <!-- id="" class="panel-heading" -->
+                  <div class="panel-body">
+                    {% if featured %}
+                    <h3>{{featured|challenge_link}}</h3>
+                        {% if suppressed %}
+                            <p>Story is marked as mature</p>
+                        {% else %}
+                            {{featured.body|big_snippet}}
+                        {% endif %}
+                    <div class="row">
+                      <div class="col-md-4">
+                        {{featured.user|avatar}}
+                      </div> <!-- id="" class="col-md-4" -->
+                      <div class="col-md-8">
+                        <p>{{featured.user|author_span}}</p>
+                      </div> <!-- id="" class="col-md-8" -->
+                    </div> <!-- id="" class="row" -->
+                    {% endif %}
+                  </div> <!-- id="" class="panel-body" -->
+                </div> <!-- id="" class="panel panel-success" -->
+              </div> <!-- id="featured-story" class="col-md-8" -->
+              <div class="col-md-4" id="popular-stories" style="float: right;">
+                {% if popular %}
+                <div class="panel panel-success">
+                  <div class="panel-heading">
+                    <h3 class="panel-title">Popular challenges</h3>
+                  </div> <!-- id="" class="panel-heading" -->
+                  <div class="panel-body">
+                    {% if popular %}
+                    <div class="list-group">
+                      {% for challenge in popular %}
+                      <div class="list-group-item">
+                        {{challenge|challenge_link:'h5 class="list-group-item-heading"'}}
+                        {{challenge.user|author_span}}
+                      </div> <!-- id="" class="list-group-item" -->
+                      {% endfor %}
+                    </div> <!-- id="" class="list-group" -->
+                    {% endif %}
+                    <p><a class="btn btn-success" href="/challenges/popular/" role="button">More popular challenges &raquo;</a></p>
+                  </div> <!-- id="" class="panel-body" -->
+                </div> <!-- id="" class="panel panel-success" -->
+                {% endif %}
+              </div> <!-- id="popular-stories" class="col-md-4" -->
+            </div> <!-- id="featured-popular" class="row" -->
+          </div> <!-- id="whats-new" class="well well-sm" -->
+
+          <div id="challenge-summary">  
+            <div class="col-md-4" id="active-challenges">
+              <div class="panel panel-success">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Active challenges</h3>
+                </div> <!-- id="" class="panel-heading" -->
+                <div class="panel-body">
+                  {% if active %}
+                  <div class="list-group">
+                      {% for challenge in active %}
+                      <div class="list-group-item">
+                        {{challenge|challenge_link:'h5 class="list-group-item-heading"'}}
+                        {{challenge.user|author_span}}
+                      </div> <!-- id="" class="list-group-item" -->
+                      {% endfor %}
+                  </div> <!-- id="" class="list-group" -->
+                  {% endif %}
+                  <p><a class="btn btn-success" href="/challenges/active/" role="button">More active challenges &raquo;</a></p>
+                </div> <!-- id="" class="panel-body" -->
+              </div> <!-- id="" class="panel panel-success" -->
+            </div> <!-- id="active-stories" class="col-md-4" -->
+            <div class="col-md-4" id="recent-stories">
+              <div class="panel panel-success">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Recent challenges</h3>
+                </div> <!-- id="" class="panel-heading" -->
+                <div class="panel-body">
+                  {% if recent %}
+                  <div class="list-group">
+                      {% for challenge in recent %}
+                      <div class="list-group-item">
+                        {{challenge|challenge_link:'h5 class="list-group-item-heading"'}}
+                        {{challenge.user|author_span}}
+                      </div> <!-- id="" class="list-group-item" -->
+                      {% endfor %}
+                  </div> <!-- id="" class="list-group" -->
+                  {% endif %}
+                  <p><a class="btn btn-success" href="/challenges/recent/" role="button">More recent challenges &raquo;</a></p>
+                </div> <!-- id="" class="panel-body" -->
+              </div> <!-- id="" class="panel panel-success" -->
+            </div> <!-- id="recent-stories" class="col-md-4" -->
+            <div class="col-md-4" id="recent-winners">
+              <div class="panel panel-success">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Recent winners</h3>
+                </div> <!-- id="" class="panel-heading" -->
+                <div class="panel-body">
+                  {% if recent_winners %}
+                  <div class="list-group">
+                      {% for story in recent_winners %}
+                      <div class="list-group-item">
+                        {{story|story_link:'h5 class="list-group-item-heading"'}}
+                        {{story.user|author_span}}
+                      </div> <!-- id="" class="list-group-item" -->
+                      {% endfor %}
+                  </div> <!-- id="" class="list-group" -->
+                  {% endif %}
+                </div> <!-- id="" class="panel-body" -->
+              </div> <!-- id="" class="panel panel-success" -->
+            </div> <!-- id="old-stories" class="col-md-4" -->
+          </div> <!-- id="challenge-summary" -->
 
 {% endblock primary_panel %}

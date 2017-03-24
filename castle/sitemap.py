@@ -58,6 +58,20 @@ class PromptSitemap(Sitemap):
     def location(self, obj): 
         return u'/prompts/'+str(obj.id)
         
+class ChallengeSitemap(Sitemap):
+    changefreq = "daily"
+    priority = 0.4
+    protocol = "https"
+    
+    def items(self):
+        return Challenge.objects.all()
+        
+    def lastmod(self, obj):
+        return obj.mtime
+        
+    def location(self, obj): 
+        return u'/challenges/'+str(obj.id)
+        
 class TagSitemap(Sitemap):
     changefreq = "always"
     priority = 0.2

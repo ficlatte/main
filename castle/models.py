@@ -25,37 +25,47 @@ from datetime import datetime, date
 
 # Extra user data
 class Profile(models.Model):
-    user        = models.OneToOneField(User)
-    friends     = models.ManyToManyField('self', symmetrical=False, related_name='followers', blank=True)
-    pen_name    = models.CharField(max_length=64)
-    pen_name_uc = models.CharField(max_length=64, unique=True)
-    site_url    = models.URLField(max_length=254, blank=True, null=True)
-    site_name   = models.CharField(max_length=1024, blank=True, null=True)
-    biography   = models.CharField(max_length=1024)
-    mature      = models.BooleanField(default=False)
-    email_addr  = models.EmailField(max_length=254)
-    email_flags = models.IntegerField(default=0)
-    email_auth  = models.BigIntegerField(default=0)
-    email_time  = models.DateTimeField(blank=True, null=True)
-    old_auth    = models.CharField(max_length=64, blank=True, null=True)     # DEPRECATED pass sha256 val
-    old_salt    = models.CharField(max_length=16, blank=True, null=True)     # DEPRECATED pass salt
-    prefs       = models.IntegerField(default=0)
-    flags       = models.IntegerField(default=0)
-    stored      = models.ForeignKey('Story', blank=True, null=True)            # User can make a note of a story for later use
-    ctime       = models.DateTimeField(default=timezone.now)    # Creation time
-    mtime       = models.DateTimeField(default=timezone.now)    # Modification time
-    atime       = models.DateTimeField(default=timezone.now)    # Can't remember what this was supposed to be for
+    user                = models.OneToOneField(User)
+    friends             = models.ManyToManyField('self', symmetrical=False, related_name='followers', blank=True)
+    pen_name            = models.CharField(max_length=64)
+    pen_name_uc         = models.CharField(max_length=64, unique=True)
+    site_url            = models.URLField(max_length=254, blank=True, null=True)
+    site_name           = models.CharField(max_length=1024, blank=True, null=True)
+    facebook_username   = models.CharField(max_length=64, blank=True, null=True)
+    twitter_username    = models.CharField(max_length=64, blank=True, null=True)
+    wattpad_username    = models.CharField(max_length=64, blank=True, null=True)
+    biography           = models.CharField(max_length=1024)
+    mature              = models.BooleanField(default=False)
+    email_addr          = models.EmailField(max_length=254)
+    email_flags         = models.IntegerField(default=0)
+    email_auth          = models.BigIntegerField(default=0)
+    email_time          = models.DateTimeField(blank=True, null=True)
+    old_auth            = models.CharField(max_length=64, blank=True, null=True)     # DEPRECATED pass sha256 val
+    old_salt            = models.CharField(max_length=16, blank=True, null=True)     # DEPRECATED pass salt
+    prefs               = models.IntegerField(default=0)
+    flags               = models.IntegerField(default=0)
+    stored              = models.ForeignKey('Story', blank=True, null=True)            # User can make a note of a story for later use
+    ctime               = models.DateTimeField(default=timezone.now)    # Creation time
+    mtime               = models.DateTimeField(default=timezone.now)    # Modification time
+    atime               = models.DateTimeField(default=timezone.now)    # Can't remember what this was supposed to be for
 
     # Flags
     HAS_AVATAR = 1
     
     # Email flags
-    NUM_EMAIL_FLAGS = 4
+    NUM_EMAIL_FLAGS = 10
     
-    AUTOSUBSCRIBE_ON_STORY         = 1  # Subscribe to story's comments when user publishes a story
-    AUTOSUBSCRIBE_ON_STORY_COMMENT = 2  # Subscribe to story's comments when user publishes comment
-    AUTOSUBSCRIBE_ON_BLOG          = 4  # Subscribe to blog's comments when user publishes a blog
-    AUTOSUBSCRIBE_ON_BLOG_COMMENT  = 8  # Subscribe to blog's comments when user publishes comment
+    AUTOSUBSCRIBE_ON_STORY              = 1  # Subscribe to story's comments when user publishes a story
+    AUTOSUBSCRIBE_ON_STORY_COMMENT      = 2  # Subscribe to story's comments when user publishes comment
+    AUTOSUBSCRIBE_ON_BLOG               = 4  # Subscribe to blog's comments when user publishes a blog
+    AUTOSUBSCRIBE_ON_BLOG_COMMENT       = 8  # Subscribe to blog's comments when user publishes comment
+    AUTOSUBSCRIBE_ON_PROMPT             = 16  # Subscribe to prompt's comments when user publishes a blog
+    AUTOSUBSCRIBE_ON_PROMPT_COMMENT     = 32  # Subscribe to prompt's comments when user publishes comment
+    AUTOSUBSCRIBE_ON_CHALLENGE          = 64  # Subscribe to challenge's comments when user publishes a blog
+    AUTOSUBSCRIBE_ON_CHALLENGE_COMMENT  = 128  # Subscribe to challenges's comments when user publishes comment
+    AUTOSUBSCRIBE_TO_PREQUEL            = 256  # Subscribe to notifications when someone prequels your story
+    AUTOSUBSCRIBE_TO_SEQUEL             = 512  # Subscribe to notifications when someone sequels your story
+    AUTOSUBSCRIBE_TO_CHALLENGE_ENTRY    = 1024  # Subscribe to notifications when someone enters a story in your challenge
 
     def __unicode__(self):
         return unicode(self.pen_name)
@@ -78,9 +88,10 @@ class Prompt(models.Model):
     title       = models.CharField(max_length=128)
     body        = models.CharField(max_length=256)
     mature      = models.BooleanField(default=False)
-    activity    = models.FloatField(default=0.0)
+    activity    = models.FloatField(default=0.0, null=True)
     ctime       = models.DateTimeField(default=timezone.now)    # Creation time
     mtime       = models.DateTimeField(default=timezone.now)    # Modification time
+    ftime       = models.DateTimeField(blank=True, null=True)   # Featured time (first only)
 
     def __unicode__(self):
         return unicode(self.title)
@@ -91,11 +102,12 @@ class Challenge(models.Model):
     title       = models.CharField(max_length=128)
     body        = models.CharField(max_length=1024)
     mature      = models.BooleanField(default=False)
-    activity    = models.FloatField(default=0.0)
+    activity    = models.FloatField(default=0.0, null=True)
     ctime       = models.DateTimeField(default=timezone.now)    # Creation time
     mtime       = models.DateTimeField(default=timezone.now)    # Modification time
     stime       = models.DateField(default=timezone.now)        # Challenge start date
     etime       = models.DateField(default=timezone.now)        # Challenge end date
+    ftime       = models.DateTimeField(blank=True, null=True)   # Featured time (first only)
     winner      = models.ForeignKey('Story', related_name='winner', null=True)
 
     def __unicode__(self):
@@ -186,8 +198,8 @@ class Comment(models.Model):
     user        = models.ForeignKey(Profile, related_name='comments_made')       # User making the comment
     body        = models.CharField(max_length=1024)
     story       = models.ForeignKey(Story, blank=True, null=True)
-    prompt		= models.ForeignKey(Prompt, blank=True, null=True)
-    challenge	= models.ForeignKey(Challenge, blank=True, null=True)
+    prompt      = models.ForeignKey(Prompt, blank=True, null=True)
+    challenge   = models.ForeignKey(Challenge, blank=True, null=True)
     blog        = models.ForeignKey(Blog,  blank=True, null=True)
     ctime       = models.DateTimeField(default=timezone.now)
     mtime       = models.DateTimeField(default=timezone.now)    
@@ -197,6 +209,10 @@ class Comment(models.Model):
             return self.user.__unicode__() + u' comment on story "' + self.story.__unicode__() + u'" by ' + self.story.user.__unicode__() + u' with text "' + unicode(self.body)[:30] + u'"'
         if (self.blog is not None):
             return self.user.__unicode__() + u' comment on blog post "' + self.blog.__unicode__() + u'" by ' + self.blog.user.__unicode__() + u' with text "' + unicode(self.body)[:30] + u'"'
+        if (self.prompt is not None):
+            return self.user.__unicode__() + u' comment on prompt "' + self.prompt.__unicode__() + u'" by ' + self.prompt.user.__unicode__() + u' with text "' + unicode(self.body)[:30] + u'"'
+        if (self.challenge is not None):
+            return self.user.__unicode__() + u' comment on challenge "' + self.challenge.__unicode__() + u'" by ' + self.challenge.user.__unicode__() + u' with text "' + unicode(self.body)[:30] + u'"'
         return self.user.__unicode__() + u' comment on nothing at all with text "' + unicode(self.body)[:30] + u'"'
 
     def get_rating(self):
@@ -225,17 +241,17 @@ class StoryLog(models.Model):
     CHALLENGE_WON = 13 # Won a challenge
 
     LOG_OPTIONS = (
-        (WRITE,     	u'wrote'),
-        (VIEW,      	u'viewed'),
-        (RATE,      	u'rated'),
-        (COMMENT,   	u'commented on'),
-        (PREQUEL,   	u'wrote a prequel to'),
-        (SEQUEL,    	u'wrote a sequel to'),
-        (CHALLENGE, 	u'created challenge'),
-        (STORY_MOD, 	u'updated story'),
-        (PROMPT,    	u'wrote prompt'),
-        (PROMPT_MOD,	u'updated prompt'),
-        (CHALLENGE, 	u'created a challenge'),
+        (WRITE,         u'wrote'),
+        (VIEW,          u'viewed'),
+        (RATE,          u'rated'),
+        (COMMENT,       u'commented on'),
+        (PREQUEL,       u'wrote a prequel to'),
+        (SEQUEL,        u'wrote a sequel to'),
+        (CHALLENGE,     u'created challenge'),
+        (STORY_MOD,     u'updated story'),
+        (PROMPT,        u'wrote prompt'),
+        (PROMPT_MOD,    u'updated prompt'),
+        (CHALLENGE,     u'created a challenge'),
         (CHALLENGE_MOD, u'updated a challenge'),
         (CHALLENGE_ENT, u'entered a challenge'),
         (CHALLENGE_WON, u'won a challenge'),
@@ -247,7 +263,7 @@ class StoryLog(models.Model):
     comment     = models.ForeignKey(Comment, blank=True, null=True)     # ID of comment, if this log is for a comment
     quel        = models.ForeignKey(Story,   blank=True, null=True, related_name='activity_quel_set')     # ID of prequel/sequel if this log is for a prequel/sequel
     prompt      = models.ForeignKey(Prompt, blank=True, null=True)
-    challenge	= models.ForeignKey(Challenge, blank=True, null=True)
+    challenge   = models.ForeignKey(Challenge, blank=True, null=True)
     ctime       = models.DateTimeField(default=timezone.now)
     
     def get_opt(self, o):
@@ -291,6 +307,11 @@ class Subscription(models.Model):
     user        = models.ForeignKey(Profile)
     story       = models.ForeignKey(Story, blank=True, null=True, related_name='subscriptions')
     blog        = models.ForeignKey(Blog,  blank=True, null=True, related_name='subscriptions')
+    prompt      = models.ForeignKey(Prompt,  blank=True, null=True, related_name='subscriptions')
+    challenge   = models.ForeignKey(Challenge,  blank=True, null=True, related_name='subscriptions')
+    prequel_to  = models.ForeignKey(Story, blank=True, null=True, related_name='prequel_subscriptions')
+    sequel_to   = models.ForeignKey(Story, blank=True, null=True, related_name='sequel_subscriptions')
+    ch_entry    = models.ForeignKey(Challenge, blank=True, null=True, related_name='entry_subscriptions')
     
     def __unicode__(self):
         r = unicode(self.user)
@@ -298,4 +319,14 @@ class Subscription(models.Model):
             r += u' subscribed to story '+unicode(self.story)
         if (self.blog is not None):
             r += u' subscribed to blog post '+unicode(self.blog)
+        if (self.prompt is not None):
+            r += u' subscribed to prompt '+unicode(self.prompt)
+        if (self.challenge is not None):
+            r += u' subscribed to challenge '+unicode(self.challenge)
+        if (self.prequel_to is not None):
+            r += u' subscribed to prequels on '+unicode(self.story)
+        if (self.sequel_to is not None):
+            r += u' subscribed to sequels '+unicode(self.story)
+        if (self.ch_entry is not None):
+            r += u' subscribed to entries on challenge '+unicode(self.challenge)
         return r

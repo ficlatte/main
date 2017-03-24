@@ -72,5 +72,5 @@ class BlogAdmin(admin.ModelAdmin):
     inlines = [CommentInLine]
 
 admin.site.register(Story, StoryAdmin)
-admin.site.register(Challenge, ChallengeAdmin)	
+admin.site.register(Challenge, ChallengeAdmin)  
 admin.site.register(Blog,  BlogAdmin)

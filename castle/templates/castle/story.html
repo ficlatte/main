@@ -20,7 +20,7 @@ Copyright (C) 2015 Paul Robertson
 {% load castle_tags %}
 
 {% block primary_panel %}
-          {% if story.draft %}[DRAFT] {% endif %}{{story|story_link:'h1'}}
+          {{story|story_link:'h1'}}
           <div class="row">
             <div class="col-sm-2 col-md-2">
               {{author|avatar}}
@@ -32,15 +32,16 @@ Copyright (C) 2015 Paul Robertson
           </div> <!-- id="" class="row" -->
           <hr />
           <div class="content-body">
-			{% if suppressed %}
-			<span class="mature-warning">Story is marked as mature.</span> <button>Show me anyway</button><br /><br />
-			<div class="mature-content">
-				{{story.body|encode_story}}
-			</div>
-			{% else %}
-				{{story.body|encode_story}}
-			{% endif %}
+            {% if suppressed %}
+            <span class="mature-warning">Story is marked as mature.</span> <button>Show me anyway</button><br /><br />
+            <div class="mature-content">
+                {{story.body|encode_story}}
+            </div>
+            {% else %}
+                {{story.body|encode_story}}
+            {% endif %}
           </div>
+          <hr />
           <div class="row" id="prequel-and-sequel">
             <div class="col-md-6" id="prequel-group">
               <div class="panel panel-success">
@@ -58,9 +59,16 @@ Copyright (C) 2015 Paul Robertson
                     {% endfor %}
                   </div> <!-- id="" class="list-group" -->
                   {% else %}
-                  <p>No prequels yet, why not write one?</p>
+                  <p>No prequels yet. Why not write one?</p>
                   {% endif %}
                   <p><a class="btn btn-success" href="/stories/new?prequel_to={{story.id}}" role="button">&laquo; Write a prequel</a></p>
+                    {% if profile %}
+                        {% if prequel_subscribed %}
+                            <p><a href="{% url 'prequel-unsub' story.id %}">Unsubscribe to prequels</a></p>
+                        {% else %}
+                            <p><a href="{% url 'prequel-sub' story.id %}">Send me e-mail notifications of new prequels</a></p>
+                        {% endif %}
+                    {% endif %}
                 </div> <!-- id="" class="panel-body" -->
               </div> <!-- id="" class="panel panel-success" -->
             </div> <!-- id="prequel-group" class="col-md-6" -->
@@ -80,9 +88,16 @@ Copyright (C) 2015 Paul Robertson
                     {% endfor %}
                   </div> <!-- id="" class="list-group" -->
                   {% else %}
-                  <p>No sequels yet, why not write one?</p>
+                  <p>No sequels yet. Why not write one?</p>
                   {% endif %}
                   <p><a class="btn btn-success" href="/stories/new?sequel_to={{story.id}}" role="button">Write a sequel &raquo;</a></p>
+                    {% if profile %}
+                        {% if sequel_subscribed %}
+                            <p><a href="{% url 'sequel-unsub' story.id %}">Unsubscribe to sequels</a></p>
+                        {% else %}
+                            <p><a href="{% url 'sequel-sub' story.id %}">Send me e-mail notifications of new sequels</a></p>
+                        {% endif %}
+                    {% endif %}
                 </div> <!-- id="" class="panel-body" -->
               </div> <!-- id="" class="panel panel-success" -->
             </div> <!-- id="sequel-group" class="col-md-6" -->
@@ -100,7 +115,7 @@ Copyright (C) 2015 Paul Robertson
             <div class="col-md-2">
               {{comment.user|avatar}}
             </div> <!-- id="" class="col-md-2" -->
-            <div class="col-md-10">
+            <div class="col-md-10 comment-body">
               <a name="comment-{{comment.id}}" rel="self bookmark"></a>
               {{comment.user|author_link:'h4'}}
               {{comment.body|encode_story}}
