@@ -18,6 +18,7 @@ Copyright (C) 2015 Paul Robertson
 {%endcomment%}
 {% load staticfiles %}
 {% load castle_tags %}
+{% load note_tags %}
 
 {% block secondary_panel %}
 
@@ -53,10 +54,10 @@ Copyright (C) 2015 Paul Robertson
               <h3 class="panel-title">User dashboard</h3>
             </div> <!-- id="" class="panel-heading" -->
             <div class="panel-body">
-			  {% if author and not email_conf %}
-			  <p><span class="glyphicon glyphicon-envelope"></span>
-			  <a href="{% url 'resend_email_conf' %}">Resend</a> my email confirmation.</p>
-			  {% endif %}	
+              {% if author and not email_conf %}
+              <p><span class="glyphicon glyphicon-envelope"></span>
+              <a href="{% url 'resend_email_conf' %}">Resend</a> my email confirmation.</p>
+              {% endif %}   
               <p><span class="glyphicon glyphicon-user"></span>
               <a href="/authors/u/profile/">Edit profile</a></p>
               <p><span class="glyphicon glyphicon-camera"></span>
@@ -109,12 +110,14 @@ Copyright (C) 2015 Paul Robertson
               <h3 class="panel-title">{{author.pen_name}}</h3>
             </div> <!-- id="" class="panel-heading" -->
             <div class="panel-body">
-			{% if profile %}
+            {% if profile %}
               {% if is_friend %}
               <a class="btn btn-info btn-block" href="/friendship/del/{{author.id}}/" id="make-link" type="button">Un-follow {{author.pen_name}}</a>
               {% else %}
               <a class="btn btn-success btn-block" href="/friendship/add/{{author.id}}/" id="make-link" type="button">Follow {{author.pen_name}}</a>
               {% endif %}
+              <br />
+              {{author|author_msg:1}}
               <hr />
              {% endif %}
               <h4>Friends <span>{{author|num_friends}}</span></h4>
@@ -143,14 +146,14 @@ Copyright (C) 2015 Paul Robertson
   {%comment%} Story side-panel {%endcomment%}
   {%comment%}------------------------------------------------------------------{%endcomment%}
   {% if story_sidepanel %}
-	
-	{% if story.challenge and ch_owner and story.challenge.ended and not story.challenge.winner and not owner %}
-			<form accept-charset="utf-8" action="/challenges/{{story.challenge.id}}/winner/{{story.id}}/" class="form-horizontal" id="winner-select-form" method="POST" role="form">
+    
+    {% if story.challenge and ch_owner and story.challenge.ended and not story.challenge.winner and not owner %}
+            <form accept-charset="utf-8" action="/challenges/{{story.challenge.id}}/winner/{{story.id}}/" class="form-horizontal" id="winner-select-form" method="POST" role="form">
               {% csrf_token %}
               <input name="sid" type="hidden" value="{{story.id}}" />
               <input name="chid" type="hidden" value="{{story.challenge.id}}" />
-			  <button class="btn btn-success btn-block" id="winner-select" type="submit"><span class="glyphicon glyphicon-bookmark"></span> Select as winner</button>
-			</form>
+              <button class="btn btn-success btn-block" id="winner-select" type="submit"><span class="glyphicon glyphicon-bookmark"></span> Select as winner</button>
+            </form>
     {% endif %}
     {% if owner %}
           <a class="btn btn-info btn-block" href="/stories/edit/{{story.id}}/" id="edit-link" type="button"><span class="glyphicon glyphicon-pencil"></span> Edit story</a>
@@ -158,69 +161,69 @@ Copyright (C) 2015 Paul Robertson
     {% endif %}
     {% if story.tag_set.count > 0 or story.prompt or story.challenge or story.prequel_to or story.sequel_to %}
           <div class="panel panel-success" id="inspiration">
-			 <div class="panel-heading">
-			{% if story.prompt %}
-				<h4 class="panel-title">Story prompt:</h4>
-			</div>
-            <div class="panel-body">
-				{{story.prompt.body|encode_story}}
-				<p>{{story.prompt|prompt_link}} by {{story.prompt.user|author_link}}</p>
-            </div>
-			{% endif %}
-			{% if story.prompt_text %}
-				<h4 class="panel-title">Author's prompt text:</h4>
+             <div class="panel-heading">
+            {% if story.prompt %}
+                <h4 class="panel-title">Story prompt:</h4>
             </div>
             <div class="panel-body">
-				{{story.prompt_text}}
-			</div>
-			{% endif %}
-			{% if story.challenge %}
-				<h4 class="panel-title">Story challenge:</h4>
+                {{story.prompt.body|encode_story}}
+                <p>{{story.prompt|prompt_link}} by {{story.prompt.user|author_link}}</p>
+            </div>
+            {% endif %}
+            {% if story.prompt_text %}
+                <h4 class="panel-title">Author's prompt text:</h4>
             </div>
             <div class="panel-body">
-				{{story.challenge.body|big_snippet}}
-				{{story.challenge|challenge_link}} by {{story.challenge.user|author_link}}
-			</div>
-			{% endif %}
-			{% if story.prequel_to %}
+                {{story.prompt_text}}
+            </div>
+            {% endif %}
+            {% if story.challenge %}
+                <h4 class="panel-title">Story challenge:</h4>
+            </div>
+            <div class="panel-body">
+                {{story.challenge.body|big_snippet}}
+                {{story.challenge|challenge_link}} by {{story.challenge.user|author_link}}
+            </div>
+            {% endif %}
+            {% if story.prequel_to %}
             {% if story.prompt %}<hr>{% endif %}
-				<h4 class="panel-title">Inspired by (prequel to):</h4>
+                <h4 class="panel-title">Inspired by (prequel to):</h4>
             </div>
             <div class="panel-body">
-				{{story.prequel_to.body|small_snippet}}
-				<small>
-				{{story.prequel_to|story_link}}
-				<br />
-				{{story.prequel_to.user|author_span}}
-				</small>
-			</div>
-			{% endif %}
-			{% if story.sequel_to %}
+                {{story.prequel_to.body|small_snippet}}
+                <small>
+                {{story.prequel_to|story_link}}
+                <br />
+                {{story.prequel_to.user|author_span}}
+                </small>
+            </div>
+            {% endif %}
+            {% if story.sequel_to %}
             {% if story.prompt or story.prequel_to %}<hr />{% endif %}
-				<h4 class="panel-title">Inspired by (sequel to):</h4>
+                <h4 class="panel-title">Inspired by (sequel to):</h4>
             </div>
             <div class="panel-body">
-				{{story.sequel_to.body|small_snippet}}
-				<small>
-				{{story.sequel_to|story_link}}
-				<br />
-				{{story.sequel_to.user|author_span}}
-				</small>
-			</div>
-			{% endif %}
-			{% if not story.prompt and not story.prequel_to and not story.sequel_to and not story.challenge %}
-				<h4 class="panel-title">Tags:</h4>
-			</div>
-			{% endif %}
-			{% if story.tag_set.count > 0 %}
+                {{story.sequel_to.body|small_snippet}}
+                <small>
+                {{story.sequel_to|story_link}}
+                <br />
+                {{story.sequel_to.user|author_span}}
+                </small>
+            </div>
+            {% endif %}
+            {% if not story.prompt and not story.prequel_to and not story.sequel_to and not story.challenge %}
+                <h4 class="panel-title">Tags:</h4>
+            </div>
+            {% endif %}
+            {% if story.tag_set.count > 0 %}
             {% if story.prompt or story.prequel_to or story.sequel_to %}<hr>{% endif %}
-				<div class="tag-cloud" id="tags">
-					<p>This story&#39;s tags are</p>
-					{% for t in story.tag_set.all %}
-						<a class="btn btn-primary btn-xs" href="/tags/{{t.tag|iriencode}}/" rel="tag" type="button">{{t.tag}}</a>
-					{% endfor %}
-				</div> <!-- id="tags" class="tag-cloud" -->
-			{% endif %}
+                <div class="tag-cloud" id="tags">
+                    <p>This story&#39;s tags are</p>
+                    {% for t in story.tag_set.all %}
+                        <a class="btn btn-primary btn-xs" href="/tags/{{t.tag|iriencode}}/" rel="tag" type="button">{{t.tag}}</a>
+                    {% endfor %}
+                </div> <!-- id="tags" class="tag-cloud" -->
+            {% endif %}
           </div> <!-- id="inspiration" class="panel panel-success" -->
     {% endif %}
           <ul class="list-unstyled" id="story-stats">
@@ -240,13 +243,13 @@ Copyright (C) 2015 Paul Robertson
       {% endif %}
     {% endif %}
     {% if story.challenge and story == story.challenge.winner %}
-		  <hr />
-		  <div class="challenge-winner">
-		  <h4>Challenge winner!</h4>
-		  <ul class="challenge-story-winner">
-				<li>Challenge: {{story.challenge|challenge_link}}
-		  </ul>
-		  </div>
+          <hr />
+          <div class="challenge-winner">
+          <h4>Challenge winner!</h4>
+          <ul class="challenge-story-winner">
+                <li>Challenge: {{story.challenge|challenge_link}}
+          </ul>
+          </div>
     {% endif %}
           <hr />
           <p class="small" id="licence">All stories on Ficlatt&eacute; are licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license">Creative Commons Attribution-Share Alike 3.0 License</a>. <a href="http://wiki.creativecommons.org/Sharing_Creative_Works">What does this mean?</a></p>
@@ -277,7 +280,7 @@ Copyright (C) 2015 Paul Robertson
   {%comment%} Challenge side panel {%endcomment%}
   {%comment%}------------------------------------------------------------------{%endcomment%}
   {% if challenge_sidepanel and challenge %}
-		<div class="challenge-sidebar">
+        <div class="challenge-sidebar">
       {% if profile %}
           <hr />
       {% if subscribed %}
@@ -291,9 +294,9 @@ Copyright (C) 2015 Paul Robertson
           <hr />
           <h3>Participants</h3>
           {% for p in participants %}
-			{{ p|user_icon }}
-		  {% endfor %}
-		</div>
+            {{ p|user_icon }}
+          {% endfor %}
+        </div>
   {% endif %}
           
 {% endblock secondary_panel %}

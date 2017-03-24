@@ -415,13 +415,13 @@ def home(request):
     context = { 'profile'       : profile,
                 'blog_latest'   : blog,
                 'featured'      : featured,
-                'challenge'		: challenge,
-                'prompt'		: prompt,
+                'challenge'     : challenge,
+                'prompt'        : prompt,
                 'popular'       : get_popular_stories(1,4),
                 'active'        : get_active_stories(1,10),
                 'recent'        : get_recent_stories(1,10),
                 'old'           : get_old_stories(10),
-                'random'		: get_random_story(),
+                'random'        : get_random_story(),
                 'activity_log'  : get_activity_log(profile, 10),
                 'user_dashboard': 1,
                 'suppressed'    : suppressed,
@@ -474,7 +474,7 @@ def author(request, pen_name):
     # Build context and render page
     context = { 'profile'       : profile,
                 'author'        : author,
-                'owner'			: owner,
+                'owner'         : owner,
                 'story_list'    : story_list,
                 'num_prompts'   : num_prompts,
                 'prompt_list'   : prompt_list,
@@ -511,7 +511,7 @@ def drafts(request):
                 'author'        : profile,
                 'story_list'    : story_list,
                 'page_title'    : profile.pen_name,
-                'email_conf'	: email_conf,
+                'email_conf'    : email_conf,
                 'page_url'      : u'/authors/'+urlquote(profile.pen_name)+u'/',
                 'pages'         : bs_pager(page_num, PAGE_STORIES, num_stories),
                 'drafts_page'   : True,
@@ -541,7 +541,7 @@ def author_prompts(request):
                 'author'        : profile,
                 'prompt_list'   : prompt_list,
                 'page_title'    : profile.pen_name,
-                'email_conf'	: email_conf,
+                'email_conf'    : email_conf,
                 'page_url'      : u'/authors/'+urlquote(profile.pen_name)+u'/',
                 'pages'         : bs_pager(page_num, PAGE_STORIES, num_prompts),
                 'prompts_page'  : True,
@@ -571,7 +571,7 @@ def author_challenges(request):
                 'author'        : profile,
                 'challenge_list': challenge_list,
                 'page_title'    : profile.pen_name,
-                'email_conf'	: email_conf,
+                'email_conf'    : email_conf,
                 'page_url'      : u'/authors/'+urlquote(profile.pen_name)+u'/',
                 'pages'         : bs_pager(page_num, PAGE_STORIES, num_challenges),
                 'challenges_page' : True,
@@ -727,37 +727,37 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
     prequel_subscribed = False
     if ((profile) and (Subscription.objects.filter(prequel_to=story, user=profile).count()>0)):
         prequel_subscribed = True
-		
+        
     sequel_subscribed = False
     if ((profile) and (Subscription.objects.filter(sequel_to=story, user=profile).count()>0)):
         sequel_subscribed = True
 
     # Build context and render page
-    context = { 'profile'       		: profile,
-				'author'        		: story.user,
-                'story'         		: story,
-                'prequels'      		: prequels,
-                'sequels'       		: sequels,
-                'rating_str'    		: rating_str,
-                'rating_num'    		: rating,
-                'comments'      		: comments,
-                'subscribed'    		: subscribed,
-				'prequel_subscribed'	: prequel_subscribed,
-                'sequel_subscribed'		: sequel_subscribed,
-                'page_title'    		: story.title,
-                'page_url'      		: u'/stories/'+unicode(story_id)+u'/',
-                'pages'         		: bs_pager(page_num, PAGE_COMMENTS, story.comment_set.count()),
-                'story_sidepanel'		:1 ,
-                'owner'         		: owner,
-                'challenge'     		: challenge,
-                'ch_owner'      		: ch_owner,
-                'viewed'        		: viewed,
-                'rated'         		: rated,
-                'comment_text'  		: comment_text, # in case of failed comment submission
-                'user_rating'   		: user_rating,
-                'suppressed'    		: suppressed,
-                'error_title'   		: error_title,
-                'error_messages'		: error_messages,
+    context = { 'profile'               : profile,
+                'author'                : story.user,
+                'story'                 : story,
+                'prequels'              : prequels,
+                'sequels'               : sequels,
+                'rating_str'            : rating_str,
+                'rating_num'            : rating,
+                'comments'              : comments,
+                'subscribed'            : subscribed,
+                'prequel_subscribed'    : prequel_subscribed,
+                'sequel_subscribed'     : sequel_subscribed,
+                'page_title'            : story.title,
+                'page_url'              : u'/stories/'+unicode(story_id)+u'/',
+                'pages'                 : bs_pager(page_num, PAGE_COMMENTS, story.comment_set.count()),
+                'story_sidepanel'       :1 ,
+                'owner'                 : owner,
+                'challenge'             : challenge,
+                'ch_owner'              : ch_owner,
+                'viewed'                : viewed,
+                'rated'                 : rated,
+                'comment_text'          : comment_text, # in case of failed comment submission
+                'user_rating'           : user_rating,
+                'suppressed'            : suppressed,
+                'error_title'           : error_title,
+                'error_messages'        : error_messages,
                 }
 
     return render(request, 'castle/story.html', context)
@@ -895,7 +895,7 @@ def submit_story(request):
     story.draft  = request.POST.get('is_draft', False)
     story.prompt_text = ptext
     if challenge:
-		    story.challenge_id = challenge.id
+            story.challenge_id = challenge.id
 
     # Condense all end-of-line markers into \n
     story.body = re_crlf.sub(u"\n", story.body)
@@ -923,7 +923,7 @@ def submit_story(request):
                     'tags'          : tags,
                     'length_limit'  : 1024,
                     'length_min'    : 60,
-                    'email_conf'	: email_conf,
+                    'email_conf'    : email_conf,
                     'user_dashboard': 1,
                     'error_title'   : 'Story submission unsuccessful',
                     'error_messages': errors,
@@ -933,7 +933,7 @@ def submit_story(request):
 
     # Is the story being published?
     if (not story.draft and (was_draft or new_story)):
-		# Set the publish time and send notifications to subscribed users of the prequel/sequel (if applicable)
+        # Set the publish time and send notifications to subscribed users of the prequel/sequel (if applicable)
         story.ptime = timezone.now()
 
     # Set modification time
@@ -1075,7 +1075,7 @@ def browse_prompts(request, dataset=0):
 
     # Build context and render page
     context = { 'profile'       : profile,
-                'prompts'    	: prompts,
+                'prompts'       : prompts,
                 'page_title'    : u'Prompts, page {}'.format(page_num),
                 'page_url'      : url,
                 'pages'         : bs_pager(page_num, PAGE_BROWSE, num_prompts),
@@ -1110,11 +1110,11 @@ def prompts(request):
     # Build context and render page
     context = { 'profile'       : profile,
                 'prompts'       : prompts,
-                'featured'		: featured,
-                'popular'		: get_popular_prompts(1,4),
-                'active'		: get_active_prompts(1,10),
-                'recent'		: get_recent_prompts(1,10),
-                'old'			: get_old_prompts(10),
+                'featured'      : featured,
+                'popular'       : get_popular_prompts(1,4),
+                'active'        : get_active_prompts(1,10),
+                'recent'        : get_recent_prompts(1,10),
+                'old'           : get_old_prompts(10),
                 'page_title'    : u'Prompts',
                 'prompt_button' : (profile is not None),
                 'user_dashboard': (profile is not None),
@@ -1127,61 +1127,61 @@ def prompts(request):
 #-----------------------------------------------------------------------------
 def prompt_view(request, prompt_id):
     # Get prompt
-	prompt = get_object_or_404(Prompt, pk=prompt_id)
+    prompt = get_object_or_404(Prompt, pk=prompt_id)
 
     # Get user profile
-	profile = None
-	if (request.user.is_authenticated()):
-		profile = request.user.profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
 
     # Get stories inspired by prompt
-	page_num = safe_int(request.GET.get('page_num', 1))
-	stories = prompt.story_set.exclude(draft=True).order_by('ctime')[(page_num-1)*PAGE_STORIES:page_num*PAGE_STORIES]
-	num_stories = prompt.story_set.exclude(draft=True).count()
+    page_num = safe_int(request.GET.get('page_num', 1))
+    stories = prompt.story_set.exclude(draft=True).order_by('ctime')[(page_num-1)*PAGE_STORIES:page_num*PAGE_STORIES]
+    num_stories = prompt.story_set.exclude(draft=True).count()
 
     # Get comments
-	page_num = safe_int(request.GET.get('page_num', 1))
-	comments = prompt.comment_set.all().order_by('ctime')[(page_num-1)*PAGE_COMMENTS:page_num*PAGE_COMMENTS]
+    page_num = safe_int(request.GET.get('page_num', 1))
+    comments = prompt.comment_set.all().order_by('ctime')[(page_num-1)*PAGE_COMMENTS:page_num*PAGE_COMMENTS]
 
     # Prompt's owner gets an edit link
-	owner = ((profile is not None) and (profile == prompt.user))
+    owner = ((profile is not None) and (profile == prompt.user))
     
-	# Log view
-	if (profile):
-		log = StoryLog(
-			user = profile,
-			prompt = prompt,
-			log_type = StoryLog.VIEW
-			)
-		log.save()
+    # Log view
+    if (profile):
+        log = StoryLog(
+            user = profile,
+            prompt = prompt,
+            log_type = StoryLog.VIEW
+            )
+        log.save()
 
     # Suppress challenge if marked as mature and either the user is not logged in
     # or the user has not enabled viewing of mature challenges
-	suppressed = False
-	if (prompt.mature):
-		if ( (not profile) or ((prompt.user != profile) and (not profile.mature))):
-			suppressed = True
-			
+    suppressed = False
+    if (prompt.mature):
+        if ( (not profile) or ((prompt.user != profile) and (not profile.mature))):
+            suppressed = True
+            
     # Is user subscribed?
-	subscribed = False
-	if ((profile) and (Subscription.objects.filter(prompt=prompt, user=profile).count()>0)):
-		subscribed = True
+    subscribed = False
+    if ((profile) and (Subscription.objects.filter(prompt=prompt, user=profile).count()>0)):
+        subscribed = True
 
     # Build context and render page
-	context = { 'profile'       : profile,
-				'prompt'        : prompt,
-				'stories'       : stories,
-				'comments'		: comments,
-				'owner'         : owner,
-				'subscribed'	: subscribed,
-				'page_title'    : u'Prompt '+prompt.title,
-				'prompt_sidepanel' : 1,
-				'page_url'      : u'/prompts/'+unicode(prompt.id)+u'/',
-				'pages'         : bs_pager(page_num, PAGE_STORIES, num_stories),
-				'suppressed'    : suppressed,
-			   }
+    context = { 'profile'       : profile,
+                'prompt'        : prompt,
+                'stories'       : stories,
+                'comments'      : comments,
+                'owner'         : owner,
+                'subscribed'    : subscribed,
+                'page_title'    : u'Prompt '+prompt.title,
+                'prompt_sidepanel' : 1,
+                'page_url'      : u'/prompts/'+unicode(prompt.id)+u'/',
+                'pages'         : bs_pager(page_num, PAGE_STORIES, num_stories),
+                'suppressed'    : suppressed,
+               }
 
-	return render(request, 'castle/prompt.html', context)
+    return render(request, 'castle/prompt.html', context)
 
 #-----------------------------------------------------------------------------
 @login_required
@@ -1380,11 +1380,11 @@ def challenges(request):
     # Build context and render page
     context = { 'profile'           : profile,
                 'challenges'        : challenges,
-                'featured'			: featured,
-                'popular'			: get_popular_challenges(1,4),
-                'active'			: get_active_challenges(1,10),
-                'recent'			: get_recent_challenges(1,10),
-                'recent_winners'	: get_recent_winners(1,10),
+                'featured'          : featured,
+                'popular'           : get_popular_challenges(1,4),
+                'active'            : get_active_challenges(1,10),
+                'recent'            : get_recent_challenges(1,10),
+                'recent_winners'    : get_recent_winners(1,10),
                 'page_title'        : u'Challenges',
                 'challenge_button'  : (profile is not None),
                 'user_dashboard'    : (profile is not None),
@@ -1397,74 +1397,74 @@ def challenges(request):
 #-----------------------------------------------------------------------------
 def challenge_view(request, challenge_id, comment_text=None, error_title='', error_messages=None):
     # Get challenge
-	challenge = get_object_or_404(Challenge, pk=challenge_id)
+    challenge = get_object_or_404(Challenge, pk=challenge_id)
 
     # Get user profile
-	profile = None
-	if (request.user.is_authenticated()):
-		profile = request.user.profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
 
     # Get stories inspired by challenge
-	page_num = safe_int(request.GET.get('page_num', 1))
-	stories = challenge.story_set.exclude(draft=True).order_by('ctime')[(page_num-1)*PAGE_STORIES:page_num*PAGE_STORIES]
-	num_stories = challenge.story_set.exclude(draft=True).count()
+    page_num = safe_int(request.GET.get('page_num', 1))
+    stories = challenge.story_set.exclude(draft=True).order_by('ctime')[(page_num-1)*PAGE_STORIES:page_num*PAGE_STORIES]
+    num_stories = challenge.story_set.exclude(draft=True).count()
     
     # Get list of participants
-	participants_list = challenge.story_set.exclude(draft=True).values('user__pen_name').distinct()
-	participants = Profile.objects.filter(pen_name__in=participants_list)
+    participants_list = challenge.story_set.exclude(draft=True).values('user__pen_name').distinct()
+    participants = Profile.objects.filter(pen_name__in=participants_list)
 
     # Get comments
-	page_num = safe_int(request.GET.get('page_num', 1))
-	comments = challenge.comment_set.all().order_by('ctime')[(page_num-1)*PAGE_COMMENTS:page_num*PAGE_COMMENTS]
+    page_num = safe_int(request.GET.get('page_num', 1))
+    comments = challenge.comment_set.all().order_by('ctime')[(page_num-1)*PAGE_COMMENTS:page_num*PAGE_COMMENTS]
 
     # Challenge's owner gets an edit link
-	owner = ((profile is not None) and (profile == challenge.user))
+    owner = ((profile is not None) and (profile == challenge.user))
     
-	# Log view
-	if (profile):
-		log = StoryLog(
-			user = profile,
-			challenge = challenge,
-			log_type = StoryLog.VIEW
-			)
-		log.save()
+    # Log view
+    if (profile):
+        log = StoryLog(
+            user = profile,
+            challenge = challenge,
+            log_type = StoryLog.VIEW
+            )
+        log.save()
 
     # Suppress challenge if marked as mature and either the user is not logged in
     # or the user has not enabled viewing of mature challenges
-	suppressed = False
-	if (challenge.mature):
-		if ( (not profile) or ((challenge.user != profile) and (not profile.mature))):
-			suppressed = True
-			
+    suppressed = False
+    if (challenge.mature):
+        if ( (not profile) or ((challenge.user != profile) and (not profile.mature))):
+            suppressed = True
+            
     # Is user subscribed?
-	subscribed = False
-	if ((profile) and (Subscription.objects.filter(challenge=challenge, user=profile).count()>0)):
-		subscribed = True
-		
-	entry_subscribed = False
-	if ((profile) and (Subscription.objects.filter(ch_entry=challenge, user=profile).count()>0)):
-		entry_subscribed = True
+    subscribed = False
+    if ((profile) and (Subscription.objects.filter(challenge=challenge, user=profile).count()>0)):
+        subscribed = True
+        
+    entry_subscribed = False
+    if ((profile) and (Subscription.objects.filter(ch_entry=challenge, user=profile).count()>0)):
+        entry_subscribed = True
 
     # Build context and render page
-	context = { 'profile'             : profile,
-				'challenge'           : challenge,
-				'stories'             : stories,
-				'owner'               : owner,
-				'subscribed'		  : subscribed,
-				'entry_subscribed'	  : entry_subscribed,
-				'participants'		  : participants,
-				'comments'            : comments,
-				'page_title'          : u'Challenge '+challenge.title,
-				'challenge_sidepanel' : 1,
-				'page_url'            : u'/challenges/'+unicode(challenge.id)+u'/',
-				'pages'               : bs_pager(page_num, PAGE_STORIES, num_stories),
-				'comment_text'        : comment_text,
-				'suppressed'          : suppressed,
-				'error_title'         : error_title,
-				'error_messages'      : error_messages,
-			 }
+    context = { 'profile'             : profile,
+                'challenge'           : challenge,
+                'stories'             : stories,
+                'owner'               : owner,
+                'subscribed'          : subscribed,
+                'entry_subscribed'    : entry_subscribed,
+                'participants'        : participants,
+                'comments'            : comments,
+                'page_title'          : u'Challenge '+challenge.title,
+                'challenge_sidepanel' : 1,
+                'page_url'            : u'/challenges/'+unicode(challenge.id)+u'/',
+                'pages'               : bs_pager(page_num, PAGE_STORIES, num_stories),
+                'comment_text'        : comment_text,
+                'suppressed'          : suppressed,
+                'error_title'         : error_title,
+                'error_messages'      : error_messages,
+             }
 
-	return render(request, 'castle/challenge.html', context)
+    return render(request, 'castle/challenge.html', context)
 
 #-----------------------------------------------------------------------------
 @login_required
@@ -2194,7 +2194,7 @@ def submit_comment(request):
     old_rating = None
     blog       = get_foo(request.POST, Blog,  'bid')
     story      = get_foo(request.POST, Story, 'sid')
-    prompt	   = get_foo(request.POST, Prompt, 'pid')
+    prompt     = get_foo(request.POST, Prompt, 'pid')
     challenge  = get_foo(request.POST, Challenge, 'chid')
 
     if (story):
@@ -2404,19 +2404,19 @@ def submit_profile(request):
         new_registration = True
 
     # Get data from form
-    pen_name        	= request.POST.get('pen_name', '')
-    password        	= request.POST.get('password', '')
-    new_password    	= request.POST.get('new_password', '')
-    password_again  	= request.POST.get('password', '')
-    site_url        	= request.POST.get('site_url', '')
-    site_name       	= request.POST.get('site_name', '')
-    facebook_username	= request.POST.get('facebook_username', '')
-    twitter_username	= request.POST.get('twitter_username', '')
-    wattpad_username	= request.POST.get('wattpad_username', '')
-    biography       	= request.POST.get('biography', '')
-    mature          	= request.POST.get('mature', '')
-    email_addr      	= request.POST.get('email_addr', '')
-    rules           	= request.POST.get('rules', False)
+    pen_name            = request.POST.get('pen_name', '')
+    password            = request.POST.get('password', '')
+    new_password        = request.POST.get('new_password', '')
+    password_again      = request.POST.get('password', '')
+    site_url            = request.POST.get('site_url', '')
+    site_name           = request.POST.get('site_name', '')
+    facebook_username   = request.POST.get('facebook_username', '')
+    twitter_username    = request.POST.get('twitter_username', '')
+    wattpad_username    = request.POST.get('wattpad_username', '')
+    biography           = request.POST.get('biography', '')
+    mature              = request.POST.get('mature', '')
+    email_addr          = request.POST.get('email_addr', '')
+    rules               = request.POST.get('rules', False)
 
     # Update and verify profile object
     errors     = []
@@ -2816,7 +2816,7 @@ def avatar_upload(request):
         form = AvatarUploadForm()
 
     context = {
-		'profile'		: profile,
+        'profile'       : profile,
         'page_title'    : u'Upload avatar',
         'form'          : form,
         }

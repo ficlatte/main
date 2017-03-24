@@ -102,7 +102,7 @@ def num_challenges_txt(obj):
 #-----------------------------------------------------------------------------
 @register.filter
 def num_challenge_wins(obj):
-	return obj.story_set.filter(challenge__winner=F('id')).count()
+    return obj.story_set.filter(challenge__winner=F('id')).count()
    
 #-----------------------------------------------------------------------------
 @register.filter
@@ -193,23 +193,23 @@ def author_link(profile, tag=None):
 #-----------------------------------------------------------------------------
 @register.filter
 def author_social_media(profile):
-	if (profile is None):
-		return u''
-	s = ''
-	f = ''
-	t = ''
-	w = ''
-	
-	if (profile.site_url is not None):
-		s = u'<a href="'+profile.site_url+u'" alt="'+profile.site_name+u'" target="_blank"><img src="/static/img/social-media/earth.png" class="social-media-icon"></a>'
-	if (profile.facebook_username is not None):
-		f = u'<a href="http://facebook.com/'+profile.facebook_username+u'" target="_blank"><img src="/static/img/social-media/facebook.png" class="social-media-icon"></a>'
-	if (profile.twitter_username is not None):
-		t = u'<a href="http://twitter.com/'+profile.twitter_username+u'" target="_blank"><img src="/static/img/social-media/twitter.png" class="social-media-icon"></a>'
-	if (profile.wattpad_username is not None):
-		w = u'<a href="http://wattpad.com/user/'+profile.wattpad_username+u'" target="_blank"><img src="/static/img/social-media/wattpad.png" class="social-media-icon"></a>'
-		
-	return mark_safe(f + t + w + s)
+    if (profile is None):
+        return u''
+    s = ''
+    f = ''
+    t = ''
+    w = ''
+    
+    if (profile.site_url is not None):
+        s = u'<a href="'+profile.site_url+u'" alt="'+profile.site_name+u'" target="_blank"><img src="/static/img/social-media/earth.png" class="social-media-icon"></a>'
+    if (profile.facebook_username is not None):
+        f = u'<a href="http://facebook.com/'+profile.facebook_username+u'" target="_blank"><img src="/static/img/social-media/facebook.png" class="social-media-icon"></a>'
+    if (profile.twitter_username is not None):
+        t = u'<a href="http://twitter.com/'+profile.twitter_username+u'" target="_blank"><img src="/static/img/social-media/twitter.png" class="social-media-icon"></a>'
+    if (profile.wattpad_username is not None):
+        w = u'<a href="http://wattpad.com/user/'+profile.wattpad_username+u'" target="_blank"><img src="/static/img/social-media/wattpad.png" class="social-media-icon"></a>'
+        
+    return mark_safe(f + t + w + s)
 
 #-----------------------------------------------------------------------------
 @register.filter
@@ -327,12 +327,12 @@ def activity_entry(log):
         return mark_safe(author_link(log.user)+u' wrote '+story_link(log.story))
     
     elif (log.log_type == StoryLog.COMMENT):
-		if (log.story):
-			return mark_safe(author_link(log.user)+u' wrote a comment on '+story_link(log.story))
-		if (log.prompt):
-			return mark_safe(author_link(log.user)+u' wrote a comment on '+prompt_link(log.prompt))
-		else:
-			return mark_safe(author_link(log.user)+u' wrote a comment on '+challenge_link(log.challenge))
+        if (log.story):
+            return mark_safe(author_link(log.user)+u' wrote a comment on '+story_link(log.story))
+        if (log.prompt):
+            return mark_safe(author_link(log.user)+u' wrote a comment on '+prompt_link(log.prompt))
+        else:
+            return mark_safe(author_link(log.user)+u' wrote a comment on '+challenge_link(log.challenge))
         
     elif (log.log_type == StoryLog.SEQUEL):
         return mark_safe(author_link(log.user)+u' wrote a sequel, '+story_link(log.story)+u', to '+story_link(log.quel)+u' by '+author_link(log.quel.user))
@@ -378,7 +378,7 @@ def dashboard_entry(log):
     #STORY_MOD = 7  # Modified an extant story
     #PROMPT    = 8  # Created a writing prompt
     #PROMPT_MOD= 9   # Modified a writing prompt
-    #CHALLENGE	= 10 # Created a challenge
+    #CHALLENGE  = 10 # Created a challenge
     #CHALLENGE_MOD = 11 # Modified a challenge
     #CHALLENGE_ENT = 12 # Entered a challenge
     #CHALLENGE_WON = 13 # Won a challenge
@@ -391,12 +391,12 @@ def dashboard_entry(log):
         return mark_safe(author_link(log.user)+u' wrote '+story_link(log.story)+prompt_txt)
     
     elif (log.log_type == StoryLog.COMMENT):
-		if (log.story):
-			return mark_safe(author_link(log.user)+u' wrote a comment on '+story_link(log.story)+u' by '+author_link(log.story.user))
-		if (log.prompt):
-			return mark_safe(author_link(log.user)+u' wrote a comment on '+prompt_link(log.prompt))
-		else:
-			return mark_safe(author_link(log.user)+u' wrote a comment on '+challenge_link(log.challenge)+u' by '+author_link(log.challenge.user))
+        if (log.story):
+            return mark_safe(author_link(log.user)+u' wrote a comment on '+story_link(log.story)+u' by '+author_link(log.story.user))
+        if (log.prompt):
+            return mark_safe(author_link(log.user)+u' wrote a comment on '+prompt_link(log.prompt))
+        else:
+            return mark_safe(author_link(log.user)+u' wrote a comment on '+challenge_link(log.challenge)+u' by '+author_link(log.challenge.user))
         
     elif (log.log_type == StoryLog.RATE):
         return mark_safe(author_link(log.user)+u' rated '+story_link(log.story)+u' by '+author_link(log.story.user))

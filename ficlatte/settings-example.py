@@ -62,7 +62,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'APP_DIRS': True,
         'OPTIONS': {
-			'debug': DEBUG,
+            'debug': DEBUG,
             'context_processors': [
                 "django.contrib.auth.context_processors.auth",
                 "django.core.context_processors.request",

@@ -28,7 +28,7 @@ import castle.models
 
 # Define sitemaps
 sitemaps = {
-    'blog':	BlogSitemap,
+    'blog': BlogSitemap,
     'stories': StorySitemap,
     'prompts': PromptSitemap,
     'challenges': ChallengeSitemap,

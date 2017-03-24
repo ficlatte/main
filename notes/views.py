@@ -206,16 +206,16 @@ def new_note(request):
 #-----------------------------------------------------------------------------
 @login_required
 def submit_note(request):
-	# Get user profile
-	profile = None
-	if (request.user.is_authenticated()):
-		profile = request.user.profile
-	
-	# Get target user's information
-	author = Profile.objects.filter(pen_name_uc = profile.pen_name.upper())
-	if (not author):
-		raise Http404()
-	author = author[0]          # Get single object from collection
+    # Get user profile
+    profile = None
+    if (request.user.is_authenticated()):
+        profile = request.user.profile
+    
+    # Get target user's information
+    author = Profile.objects.filter(pen_name_uc = profile.pen_name.upper())
+    if (not author):
+        raise Http404()
+    author = author[0]          # Get single object from collection
     # Get user profile
     profile = None
     if (request.user.is_authenticated()):
@@ -234,18 +234,18 @@ def submit_note(request):
         errors.append(u'You must have authenticated your e-mail address before writing a note.')
 
     # Get bits and bobs
-	errors     	= []
-	note      	= get_foo(request.POST, Note,  'nid')
-	new_note	= (note is None)
-
-	# Is logged-in user the author?
-	owner = ((profile is not None) and (profile == author))
     errors      = []
     note        = get_foo(request.POST, Note,  'nid')
     new_note    = (note is None)
 
-	if (not profile.email_authenticated()):
-		errors.append(u'You must have authenticated your e-mail address before writing a note.')
+    # Is logged-in user the author?
+    owner = ((profile is not None) and (profile == author))
+    errors      = []
+    note        = get_foo(request.POST, Note,  'nid')
+    new_note    = (note is None)
+
+    if (not profile.email_authenticated()):
+        errors.append(u'You must have authenticated your e-mail address before writing a note.')
 
     # Get story object, either existing or new
     if (note is None):
@@ -274,18 +274,18 @@ def submit_note(request):
     if (len(note.subject) < 1):
         errors.append(u'Subject must be at least 1 character long')
 
-	if (l > 1024):
-		errors.append(u'Note is over 2048 characters (currently ' + unicode(l) + u')')
-	
-	# If there have been errors, re-display the page
-	if (errors):
-	# Build context and render page
-		context = {	'profile'		: profile,
-					'author'		: author,
-					'note'			: note,
-					'length_limit'	: 2048,
-					'error_messages': errors,
-				  }
+    if (l > 1024):
+        errors.append(u'Note is over 2048 characters (currently ' + unicode(l) + u')')
+    
+    # If there have been errors, re-display the page
+    if (errors):
+    # Build context and render page
+        context = { 'profile'       : profile,
+                    'author'        : author,
+                    'note'          : note,
+                    'length_limit'  : 2048,
+                    'error_messages': errors,
+                  }
     if (l > 1024):
         errors.append(u'Note is over 2048 characters (currently ' + unicode(l) + u')')
 
