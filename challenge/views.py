@@ -442,7 +442,7 @@ def challenge_subscribe(request, challenge_id, error_title='', error_messages=No
     if (profile is None):
         raise Http404
 
-    Subscription.objects.get_or_create(user=profile, ch_entry=challenge)
+    Subscription.objects.get_or_create(user=profile, challenge=challenge)
 
     context = {'thing'           : challenge,
                'thing_type'      : u'challenge',
