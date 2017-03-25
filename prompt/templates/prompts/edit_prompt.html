@@ -34,7 +34,9 @@ Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
               {% csrf_token %}
               <input name="prid" type="hidden" value="{{prompt.id}}" />
               <input name="pen_name" type="hidden" value="{{profile.pen_name}}" />
-              <p id="play-nice"><a href="/rules.html">Please play by the Ficlatt&eacute; rules</a></p>
+              <p id="play-nice"><a href="/rules/">Please play by the Ficlatt&eacute; rules</a></p>
+              <p><strong>Disclaimer:</strong> Once a prompt is published, it is permanent, so please be sure it reads
+                 the way you want before you publish it.</p>
               <div class="form-group">
                 <label class="col-sm-2 control-label" for="prompt_title">Title</label>
                 <div class="col-sm-10">

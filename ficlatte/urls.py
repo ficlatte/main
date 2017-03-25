@@ -78,4 +78,5 @@ urlpatterns = patterns('',
     url(r'^rules/$', 'castle.views.static_view', {'template_name': 'rules.html'}, name="rules"),
     url(r'^privacy/$', 'castle.views.static_view', {'template_name': 'privacy.html'}, name="privacy"),
     url(r'^help/$', 'castle.views.static_view', {'template_name': 'help.html'}, name="help"),
+    #url(r'^credits/$', 'castle.views.static_view', {'template_name': 'credits.html'}, name="credits"),
 )
