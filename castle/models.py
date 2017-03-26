@@ -24,13 +24,13 @@ from datetime import date
 
 # Extra user data
 class Profile(models.Model):
-    user                   = models.OneToOneField(User)
+    user                = models.OneToOneField(User)
     friends             = models.ManyToManyField('self', symmetrical=False, related_name='followers', blank=True)
     pen_name            = models.CharField(max_length=64)
     pen_name_uc         = models.CharField(max_length=64, unique=True)
     site_url            = models.URLField(max_length=254, blank=True, null=True)
     site_name           = models.CharField(max_length=1024, blank=True, null=True)
-    facebook_username    = models.CharField(max_length=64, blank=True, null=True)
+    facebook_username   = models.CharField(max_length=64, blank=True, null=True)
     twitter_username    = models.CharField(max_length=64, blank=True, null=True)
     wattpad_username    = models.CharField(max_length=64, blank=True, null=True)
     biography           = models.CharField(max_length=1024)
@@ -52,19 +52,19 @@ class Profile(models.Model):
     HAS_AVATAR = 1
     
     # Email flags
-    NUM_EMAIL_FLAGS = 1024
+    NUM_EMAIL_FLAGS = 11
     
     AUTOSUBSCRIBE_ON_STORY                 = 1  # Subscribe to story's comments when user publishes a story
     AUTOSUBSCRIBE_ON_STORY_COMMENT         = 2  # Subscribe to story's comments when user publishes comment
     AUTOSUBSCRIBE_ON_BLOG                  = 4  # Subscribe to blog's comments when user publishes a blog
     AUTOSUBSCRIBE_ON_BLOG_COMMENT          = 8  # Subscribe to blog's comments when user publishes comment
     AUTOSUBSCRIBE_ON_PROMPT                = 16  # Subscribe to prompt's comments when user publishes a blog
-    AUTOSUBSCRIBE_ON_PROMPT_COMMENT      = 32  # Subscribe to prompt's comments when user publishes comment
-    AUTOSUBSCRIBE_ON_CHALLENGE          = 64  # Subscribe to challenge's comments when user publishes a blog
-    AUTOSUBSCRIBE_ON_CHALLENGE_COMMENT  = 128  # Subscribe to challenges's comments when user publishes comment
-    AUTOSUBSCRIBE_TO_PREQUEL            = 256  # Subscribe to notifications when someone prequels your story
+    AUTOSUBSCRIBE_ON_PROMPT_COMMENT        = 32  # Subscribe to prompt's comments when user publishes comment
+    AUTOSUBSCRIBE_ON_CHALLENGE             = 64  # Subscribe to challenge's comments when user publishes a blog
+    AUTOSUBSCRIBE_ON_CHALLENGE_COMMENT     = 128  # Subscribe to challenges's comments when user publishes comment
+    AUTOSUBSCRIBE_TO_PREQUEL               = 256  # Subscribe to notifications when someone prequels your story
     AUTOSUBSCRIBE_TO_SEQUEL                = 512  # Subscribe to notifications when someone sequels your story
-    AUTOSUBSCRIBE_TO_CHALLENGE_ENTRY    = 1024  # Subscribe to notifications when someone enters a story in your challenge
+    AUTOSUBSCRIBE_TO_CHALLENGE_ENTRY       = 1024  # Subscribe to notifications when someone enters a story in your challenge
 
     def __unicode__(self):
         return unicode(self.pen_name)
@@ -197,8 +197,8 @@ class Comment(models.Model):
     user        = models.ForeignKey(Profile, related_name='comments_made')       # User making the comment
     body        = models.CharField(max_length=1024)
     story       = models.ForeignKey('castle.Story', blank=True, null=True)
-    prompt        = models.ForeignKey('castle.Prompt', blank=True, null=True)
-    challenge    = models.ForeignKey('castle.Challenge', blank=True, null=True)
+    prompt      = models.ForeignKey('castle.Prompt', blank=True, null=True)
+    challenge   = models.ForeignKey('castle.Challenge', blank=True, null=True)
     blog        = models.ForeignKey('castle.Blog',  blank=True, null=True)
     ctime       = models.DateTimeField(default=timezone.now)
     mtime       = models.DateTimeField(default=timezone.now)    

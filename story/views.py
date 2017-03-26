@@ -196,9 +196,6 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
     # Get comments
     page_num = safe_int(request.GET.get('page_num', 1))
     comments = story.comment_set.all().order_by('ctime')[(page_num - 1) * PAGE_COMMENTS:page_num * PAGE_COMMENTS]
-    comment_likes = []
-    for comment in comments:
-        comment_likes.append(CommentLike.objects.filter(comment_id = comment.id).order_by('comment_id'))
 
     # Log view
     if profile:
@@ -248,7 +245,7 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
                'rating_str': rating_str,
                'rating_num': rating,
                'comments': comments,
-               'comment_likes' : comment_likes,
+               #'comment_likes' : comment_likes,
                'subscribed': subscribed,
                'prequel_subscribed': prequel_subscribed,
                'sequel_subscribed': sequel_subscribed,

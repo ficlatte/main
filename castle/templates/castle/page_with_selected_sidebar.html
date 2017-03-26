@@ -158,8 +158,8 @@ Copyright (C) 2015 Paul Robertson
     {% endif %}
     {% if story.tag_set.count > 0 or story.prompt or story.challenge or story.prequel_to or story.sequel_to %}
           <div class="panel panel-success" id="inspiration">
-			 <div class="panel-heading">
 			{% if story.prompt %}
+            <div class="panel-heading">
 				<h4 class="panel-title">Story prompt:</h4>
 			</div>
             <div class="panel-body">
@@ -168,6 +168,7 @@ Copyright (C) 2015 Paul Robertson
             </div>
 			{% endif %}
 			{% if story.prompt_text %}
+            <div class="panel-heading">
 				<h4 class="panel-title">Author's prompt text:</h4>
             </div>
             <div class="panel-body">
@@ -175,6 +176,7 @@ Copyright (C) 2015 Paul Robertson
 			</div>
 			{% endif %}
 			{% if story.challenge %}
+            <div class="panel-heading">
 				<h4 class="panel-title">Story challenge:</h4>
             </div>
             <div class="panel-body">
@@ -184,6 +186,7 @@ Copyright (C) 2015 Paul Robertson
 			{% endif %}
 			{% if story.prequel_to %}
             {% if story.prompt %}<hr>{% endif %}
+            <div class="panel-heading">
 				<h4 class="panel-title">Inspired by (prequel to):</h4>
             </div>
             <div class="panel-body">
@@ -197,6 +200,7 @@ Copyright (C) 2015 Paul Robertson
 			{% endif %}
 			{% if story.sequel_to %}
             {% if story.prompt or story.prequel_to %}<hr />{% endif %}
+            <div class="panel-heading">
 				<h4 class="panel-title">Inspired by (sequel to):</h4>
             </div>
             <div class="panel-body">
@@ -209,6 +213,7 @@ Copyright (C) 2015 Paul Robertson
 			</div>
 			{% endif %}
 			{% if not story.prompt and not story.prequel_to and not story.sequel_to and not story.challenge %}
+            <div class="panel-heading">
 				<h4 class="panel-title">Tags:</h4>
 			</div>
 			{% endif %}

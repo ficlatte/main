@@ -59,6 +59,13 @@ def num_comments(obj):
 def num_comment_likes(obj):
     return obj.commentlike_set.count()
 
+#-----------------------------------------------------------------------------
+@register.filter
+def comment_like(obj, profile):
+    if obj.commentlike_set.filter(user_id=profile.id, comment_id=obj.id):
+        return mark_safe(u'<a href="/comment/' + unicode(obj.id) + u'/unlike/">Unlike</a> <img src="/static/img/coffee-mug-blue.png" height="15px">')
+    else:
+        return mark_safe(u'<a href="/comment/' + unicode(obj.id) + u'/like">Like</a> <img src="/static/img/coffee-mug-blue.png" height="15px">')
 
 # -----------------------------------------------------------------------------
 @register.filter
@@ -311,9 +318,7 @@ def story_link(story, tag=None):
         return mark_safe(u'<a href="/stories/' + unicode(story.id) + u'" class="story-link">' + t1 + escape(
             d + story.title) + u' ' + mark_safe(w) + mark_safe(m) + t2 + u'</a>')
 
-        # -----------------------------------------------------------------------------
-
-
+# -----------------------------------------------------------------------------
 @register.filter
 def prompt_link(prompt, tag=None):
     if prompt is None:
@@ -503,8 +508,6 @@ def user_icon(profile):
     else:
         which_icon = 'default.png'
 
-    return mark_safe(u'<a href="/authors/' + escape(profile.pen_name) + u'"><img alt="' + escape(
-        profile.pen_name) + u'" src="/static/img/icon/' + which_icon + u'"/></a>')
     return mark_safe(u'<a href="/authors/' + escape(profile.pen_name) + u'"><img alt="' + escape(
         profile.pen_name) + u'" class="img-rounded img-responsive" src="/static/img/icon/' + which_icon + u'" height="48" width="48"/></a>')
 

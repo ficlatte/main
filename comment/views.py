@@ -165,27 +165,6 @@ def submit_comment(request):
 
 # -----------------------------------------------------------------------------
 @login_required
-def comment_view(request, comment_id):
-    comment = get_object_or_404(Comment, pk=comment_id)
-    # Get user profile
-    profile = None
-    if request.user.is_authenticated():
-        profile = request.user.profile
-    if profile is None:
-        raise Http404
-
-    like_flag = CommentLike.objects.filter(user=profile, comment_id=comment_id)
-
-    context = {'profile': profile,
-               'comment': comment,
-               'like_flag': like_flag,
-               }
-
-    return like_flag
-
-
-# -----------------------------------------------------------------------------
-@login_required
 def like_comment(request, comment_id, error_title='', error_messages=None):
     comment = get_object_or_404(Comment, pk=comment_id)
     # Get user profile
@@ -204,7 +183,14 @@ def like_comment(request, comment_id, error_title='', error_messages=None):
                'profile': profile,
                }
 
-    return HttpResponseRedirect(reverse('comment', args=(comment.id,)))
+    if comment.blog:
+        return HttpResponseRedirect(reverse('blog', args=(comment.blog.id,)))
+    elif comment.story:
+        return HttpResponseRedirect(reverse('story', args=(comment.story.id,)))
+    elif comment.prompt:
+        return HttpResponseRedirect(reverse('prompt', args=(comment.prompt.id,)))
+    elif comment.challenge:
+        return HttpResponseRedirect(reverse('challenge', args=(comment.challenge.id,)))
 
 
 # -----------------------------------------------------------------------------
@@ -227,17 +213,13 @@ def unlike_comment(request, comment_id, error_title='', error_messages=None):
                'profile': profile,
                }
 
-    import blog
-    import story
-    import prompt
-    import challenge
-    if blog:
-        return HttpResponseRedirect(reverse('blog', args=(blog.id,)))
-    elif story:
-        return HttpResponseRedirect(reverse('story', args=(story.id,)))
-    elif prompt:
-        return HttpResponseRedirect(reverse('prompt', args=(prompt.id,)))
-    elif challenge:
-        return HttpResponseRedirect(reverse('challenge', args=(challenge.id,)))
+    if comment.blog:
+        return HttpResponseRedirect(reverse('blog', args=(comment.blog.id,)))
+    elif comment.story:
+        return HttpResponseRedirect(reverse('story', args=(comment.story.id,)))
+    elif comment.prompt:
+        return HttpResponseRedirect(reverse('prompt', args=(comment.prompt.id,)))
+    elif comment.challenge:
+        return HttpResponseRedirect(reverse('challenge', args=(comment.challenge.id,)))
 
         # -----------------------------------------------------------------------------
