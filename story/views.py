@@ -245,7 +245,6 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
                'rating_str': rating_str,
                'rating_num': rating,
                'comments': comments,
-               #'comment_likes' : comment_likes,
                'subscribed': subscribed,
                'prequel_subscribed': prequel_subscribed,
                'sequel_subscribed': sequel_subscribed,

@@ -28,7 +28,7 @@ from django.utils.http import urlquote
 from django.utils.safestring import mark_safe
 from django.utils.timezone import utc
 from bbcode import util as bbcode
-from castle.models import StoryLog, Profile
+from castle.models import StoryLog, Profile, CommentLike
 
 register = template.Library()
 
@@ -61,11 +61,18 @@ def num_comment_likes(obj):
 
 #-----------------------------------------------------------------------------
 @register.filter
+def users_liked(obj):
+    users = '\n'.join(Profile.objects.filter(comment_liked__comment_id=obj.id).values_list('pen_name', flat=True))
+    return users
+
+
+#-----------------------------------------------------------------------------
+@register.filter
 def comment_like(obj, profile):
     if obj.commentlike_set.filter(user_id=profile.id, comment_id=obj.id):
-        return mark_safe(u'<a href="/comment/' + unicode(obj.id) + u'/unlike/">Unlike</a> <img src="/static/img/coffee-mug-blue.png" height="15px">')
+        return mark_safe(u'<a class="like-comment" href="#" data-url="/comment/' + unicode(obj.id) + u'/unlike/">Unlike</a>')
     else:
-        return mark_safe(u'<a href="/comment/' + unicode(obj.id) + u'/like">Like</a> <img src="/static/img/coffee-mug-blue.png" height="15px">')
+        return mark_safe(u'<a class="like-comment" href="#" data-url="/comment/' + unicode(obj.id) + u'/like">Like</a>')
 
 # -----------------------------------------------------------------------------
 @register.filter
@@ -496,8 +503,8 @@ def avatar(profile):
     else:
         which_icon = 'default.png'
 
-    return mark_safe(u'<a href="/authors/' + escape(profile.pen_name) + u'"><img alt="' + escape(
-        profile.pen_name) + u'" class="img-rounded img-responsive" src="/static/img/avatar/' + which_icon + u'" /></a>')
+    return mark_safe(u'<a href="/authors/' + escape(profile.pen_name) + u'"><img class="author-avatar" alt="' + escape(
+        profile.pen_name) + u'" title="' + escape(profile.pen_name) + u'" src="/static/img/avatar/' + which_icon + u'" /></a>')
 
 
 # -----------------------------------------------------------------------------
@@ -508,8 +515,8 @@ def user_icon(profile):
     else:
         which_icon = 'default.png'
 
-    return mark_safe(u'<a href="/authors/' + escape(profile.pen_name) + u'"><img alt="' + escape(
-        profile.pen_name) + u'" class="img-rounded img-responsive" src="/static/img/icon/' + which_icon + u'" height="48" width="48"/></a>')
+    return mark_safe(u'<a href="/authors/' + escape(profile.pen_name) + u'"><img class="author-icon" alt="' + escape(
+        profile.pen_name) + u'" title="' + escape(profile.pen_name) + u'" src="/static/img/icon/' + which_icon + u'" height="48" width="48"/></a>')
 
 
 # -----------------------------------------------------------------------------

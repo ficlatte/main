@@ -39,6 +39,16 @@ $(document).ready(function(){
         $("div.mature-content").toggle();
     });
 });
+
+$(document).ready(function () {
+    $("a.like-comment").click(function (event) {
+        var $this = $(this),
+          url = $this.data("url");
+
+        $(document.body).load(url);
+        event.preventDefault();
+      });
+   });
 </script>
   </head>
 

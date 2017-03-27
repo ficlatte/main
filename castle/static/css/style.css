@@ -384,6 +384,11 @@ div.col-md-4 span.byline {
 	color: #5aaa38;
 }
 
+.author-avatar, .author-icon {
+    max-width: 100%;
+    margin: 5px;
+}
+
 /* Resend Confirmation Email */
 
 .email-resend-link {
@@ -644,4 +649,12 @@ li.notes-nav {
 
 .blog-post-meta {
 	font-size: 14px;
+}
+
+.blog-submit {
+    clear: both;
+}
+
+.blog-submit-button {
+    margin-top: 15px;
 }

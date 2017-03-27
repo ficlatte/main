@@ -165,7 +165,7 @@ def submit_comment(request):
 
 # -----------------------------------------------------------------------------
 @login_required
-def like_comment(request, comment_id, error_title='', error_messages=None):
+def like_comment(request, comment_id):
     comment = get_object_or_404(Comment, pk=comment_id)
     # Get user profile
     profile = None
@@ -175,13 +175,6 @@ def like_comment(request, comment_id, error_title='', error_messages=None):
         raise Http404
 
     CommentLike.objects.get_or_create(user=profile, comment=comment)
-
-    context = {'thing': comment,
-               'thing_type': u'comment',
-               'error_title': error_title,
-               'error_messages': error_messages,
-               'profile': profile,
-               }
 
     if comment.blog:
         return HttpResponseRedirect(reverse('blog', args=(comment.blog.id,)))
@@ -195,7 +188,7 @@ def like_comment(request, comment_id, error_title='', error_messages=None):
 
 # -----------------------------------------------------------------------------
 @login_required
-def unlike_comment(request, comment_id, error_title='', error_messages=None):
+def unlike_comment(request, comment_id):
     comment = get_object_or_404(Comment, pk=comment_id)
     # Get user profile
     profile = None
@@ -206,13 +199,6 @@ def unlike_comment(request, comment_id, error_title='', error_messages=None):
 
     CommentLike.objects.filter(user=profile, comment=comment).delete()
 
-    context = {'thing': comment,
-               'thing_type': u'comment',
-               'error_title': error_title,
-               'error_messages': error_messages,
-               'profile': profile,
-               }
-
     if comment.blog:
         return HttpResponseRedirect(reverse('blog', args=(comment.blog.id,)))
     elif comment.story:
@@ -222,4 +208,4 @@ def unlike_comment(request, comment_id, error_title='', error_messages=None):
     elif comment.challenge:
         return HttpResponseRedirect(reverse('challenge', args=(comment.challenge.id,)))
 
-        # -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
