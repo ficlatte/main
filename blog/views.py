@@ -51,7 +51,7 @@ def blog_view(request, blog_id, comment_text=None, error_title='', error_message
                'author': blog.user,
                'blog': blog,
                'comments': comments,
-               'page_url': u'/stories/' + unicode(blog_id),
+               'page_url': u'/blog/' + unicode(blog_id),
                'pages': bs_pager(page_num, PAGE_COMMENTS, blog.comment_set.count()),
                'owner': owner,
                'comment_text': comment_text,
