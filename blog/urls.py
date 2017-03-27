@@ -1,7 +1,5 @@
 from django.conf.urls import url
 
-from . import views
-
 urlpatterns = [
     url(r'^$', 'blog.views.blogs', name='blogs'),
     url(r'^(?P<blog_id>\d+)/$', 'blog.views.blog_view', name='blog'),

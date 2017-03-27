@@ -492,7 +492,7 @@ def avatar(profile):
         which_icon = 'default.png'
 
     return mark_safe(u'<a href="/authors/' + escape(profile.pen_name) + u'"><img alt="' + escape(
-        profile.pen_name) + u'" class="img-rounded img-responsive" src="/static/img/avatar/' + which_icon + u'" /></a>')
+        profile.pen_name) + u'" src="/static/img/avatar/' + which_icon + u'" /></a>')
 
 
 # -----------------------------------------------------------------------------
@@ -505,8 +505,6 @@ def user_icon(profile):
 
     return mark_safe(u'<a href="/authors/' + escape(profile.pen_name) + u'"><img alt="' + escape(
         profile.pen_name) + u'" src="/static/img/icon/' + which_icon + u'"/></a>')
-    return mark_safe(u'<a href="/authors/' + escape(profile.pen_name) + u'"><img alt="' + escape(
-        profile.pen_name) + u'" class="img-rounded img-responsive" src="/static/img/icon/' + which_icon + u'" height="48" width="48"/></a>')
 
 
 # -----------------------------------------------------------------------------

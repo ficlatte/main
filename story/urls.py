@@ -17,8 +17,6 @@
 
 from django.conf.urls import url
 
-from . import views
-
 urlpatterns = [
     url(r'^(?P<story_id>\d+)/$', 'story.views.story_view', name='story'),
     url(r'^edit/(?P<story_id>\d+)/$', 'story.views.edit_story', name='edit_story'),
