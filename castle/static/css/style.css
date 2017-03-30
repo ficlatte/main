@@ -658,3 +658,33 @@ li.notes-nav {
 .blog-submit-button {
     margin-top: 15px;
 }
+
+/* Static Pages */
+.privacy, .about {
+    margin-bottom: 1.3em;
+}
+
+ul.about {
+    list-style-type: disc;
+}
+
+ul.repos {
+    list-style-type: circle;
+}
+
+.rules-item {
+    margin-bottom: 1.3em;
+}
+
+#footer {
+    margin-bottom: 4em;
+}
+
+#footer p {
+    font-size: 12px;
+    text-align: center;
+}
+
+#footer .nav a {
+    padding: 0 5px;
+}

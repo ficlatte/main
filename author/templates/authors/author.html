@@ -1,7 +1,7 @@
 {% extends "castle/page_with_selected_sidebar.html" %}
 {%comment%}
 This file is part of Ficlatté.
-Copyright (C) 2015 Paul Robertson
+Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of version 3 of the GNU Affero General Public
@@ -31,8 +31,7 @@ Copyright (C) 2015 Paul Robertson
                   {{author|author_social_media}}
                 </div> <!-- id="" class="col-sm-2 col-md-2" -->
                 <div class="col-sm-8 col-md-8">
-				  {{author|author_link:'h1 class="author"'}} 
-                  {% if profile and not owner %}{{author|author_msg}}{% endif %}
+				  {{author|author_link:'h1 class="author"'}}
                   <p id="user-desc">Joined Ficlatt&eacute; in <span>{{author.ctime|date:"F Y"}}</span></p>
                   <p id="user-stats">{{author|num_stories_txt}}, {{author|num_challenges_txt}}, {{author|num_prompts_txt}}, {{author|profile_comments_txt}}, and {{author|num_friends_txt}}</p>
                   <p id="user-wins">Coffee beans earned: {{author|num_challenge_wins}} <img src="{% static 'img/badge-40.png' %}"></p>

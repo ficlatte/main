@@ -28,5 +28,14 @@ def inbox_count(profile):
 
 #-----------------------------------------------------------------------------
 @register.filter
-def author_msg(profile):
-    return mark_safe(u'<a class="btn btn-success author-msg-btn" href="/notes/compose?recipient=' + escape(profile.pen_name) + u'" type="button"><span class="glyphicon glyphicon-pencil"></span> Message ' + escape(profile.pen_name) + u'</a>')
+def author_msg(profile, wide=None):
+    if (wide):
+        wd = u' btn-block'
+    else:
+        wd = u''
+
+    return mark_safe(u'<a class="btn btn-success' + wd + ' author-msg-btn" href="/notes/compose?recipient=' + escape(
+        profile.pen_name) + u'" type="button"><span class="glyphicon glyphicon-pencil"></span> Message ' + escape(
+        profile.pen_name) + u'</a>')
+
+# -----------------------------------------------------------------------------

@@ -1,3 +1,21 @@
+
+#coding: utf-8
+#This file is part of Ficlatté.
+#Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of version 3 of the GNU Affero General Public
+#    License as published by the Free Software Foundation
+#
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 from django.utils.http import urlquote
 from castle.views import *
 
@@ -57,14 +75,16 @@ def author(request, pen_name):
                'owner': owner,
                'story_list': story_list,
                'num_prompts': num_prompts,
-               'prompt_list': prompt_list, 'num_challenges': num_challenges,
+               'prompt_list': prompt_list,
+               'num_challenges': num_challenges,
                'challenge_list': challenge_list,
                'email_conf': email_conf,
                'page_title': author.pen_name,
                'page_url': u'/authors/' + urlquote(author.pen_name) + u'/',
                'pages': bs_pager(page_num, PAGE_STORIES, num_stories),
                'is_friend': is_friend,
-               'user_dashboard': owner, 'other_user_sidepanel': (not owner),
+               'user_dashboard': owner,
+               'other_user_sidepanel': (not owner),
                }
     return \
         render(request, 'authors/author.html', context)
@@ -91,7 +111,8 @@ def drafts(request):
     context = {'profile': profile,
                'author': profile,
                'story_list': story_list,
-               'page_title': profile.pen_name, 'email_conf': email_conf,
+               'page_title': profile.pen_name,
+               'email_conf': email_conf,
                'page_url': u'/authors/' + urlquote(profile.pen_name) + u'/',
                'pages': bs_pager(page_num, PAGE_STORIES, num_stories),
                'drafts_page': True,

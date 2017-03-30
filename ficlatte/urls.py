@@ -1,7 +1,7 @@
 
 #coding: utf-8
 #This file is part of Ficlatté.
-#Copyright (C) 2015 Paul Robertson
+#Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of version 3 of the GNU Affero General Public
@@ -75,6 +75,7 @@ urlpatterns = patterns('',
     url(r'^tags/$', 'story.views.tags_null', name='tags_null'),    
     
     # Static-ish pages
+    url(r'^about/$', 'castle.views.static_view', {'template_name': 'about.html'}, name="about"),
     url(r'^rules/$', 'castle.views.static_view', {'template_name': 'rules.html'}, name="rules"),
     url(r'^privacy/$', 'castle.views.static_view', {'template_name': 'privacy.html'}, name="privacy"),
     url(r'^help/$', 'castle.views.static_view', {'template_name': 'help.html'}, name="help"),
