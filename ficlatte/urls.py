@@ -74,7 +74,7 @@ urlpatterns = patterns('',
     url(r'^tags/$', 'story.views.tags_null', name='tags_null'),    
     
     # Static-ish pages
-    url(r'^rules/$', 'castle.views.static_view', {'template_name': 'rules.html'}, name="rules"),
+    url(r'^rules(?:\.html)?/$', 'castle.views.static_view', {'template_name': 'rules.html'}, name="rules"),
     url(r'^privacy/$', 'castle.views.static_view', {'template_name': 'privacy.html'}, name="privacy"),
     url(r'^help/$', 'castle.views.static_view', {'template_name': 'help.html'}, name="help"),
     #url(r'^credits/$', 'castle.views.static_view', {'template_name': 'credits.html'}, name="credits"),
