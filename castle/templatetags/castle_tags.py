@@ -1,11 +1,12 @@
-# coding: utf-8
-# This file is part of Ficlatté.
-# Copyright (C) 2015 Paul Robertson
+
+#coding: utf-8
+#This file is part of Ficlatté.
+#Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of version 3 of the GNU Affero General Public
 #    License as published by the Free Software Foundation
-#    
+#
 #
 #    This program is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,7 +29,7 @@ from django.utils.http import urlquote
 from django.utils.safestring import mark_safe
 from django.utils.timezone import utc
 from bbcode import util as bbcode
-from castle.models import StoryLog, Profile, CommentLike
+from castle.models import StoryLog, Profile
 
 register = template.Library()
 

@@ -1,7 +1,7 @@
 {% extends "castle/page_with_sidebar.html" %}
 {%comment%}
 This file is part of Ficlatté.
-Copyright (C) 2015 Paul Robertson
+Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of version 3 of the GNU Affero General Public
@@ -225,7 +225,7 @@ Copyright (C) 2015 Paul Robertson
 				<div class="tag-cloud" id="tags">
 					<p>This story&#39;s tags are</p>
 					{% for t in story.tag_set.all %}
-						<a class="btn btn-primary btn-xs" href="/tags/{{t.tag|iriencode}}/" rel="tag" type="button">{{t.tag}}</a>
+						<a class="btn btn-primary btn-xs" href="/tag/{{t.tag|iriencode}}/" rel="tag" type="button">{{t.tag}}</a>
 					{% endfor %}
 				</div> <!-- id="tags" class="tag-cloud" -->
 			{% endif %}

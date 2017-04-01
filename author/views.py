@@ -19,6 +19,15 @@
 from django.utils.http import urlquote
 from castle.views import *
 
+# -----------------------------------------------------------------------------
+def get_authors(page_num=1, page_size=10):
+    first = (page_num - 1) * page_size
+    last = first + page_size
+    return Profile.objects.all().order_by('pen_name')[first:last]
+
+# -----------------------------------------------------------------------------
+def get_num_authors():
+    return Profile.objects.all().count()
 
 # -----------------------------------------------------------------------------
 def author(request, pen_name):
@@ -86,8 +95,8 @@ def author(request, pen_name):
                'user_dashboard': owner,
                'other_user_sidepanel': (not owner),
                }
-    return \
-        render(request, 'authors/author.html', context)
+
+    return render(request, 'authors/author.html', context)
 
 
 # -----------------------------------------------------------------------------
@@ -399,5 +408,34 @@ def submit_profile(request):
         profile.save()
 
     return HttpResponseRedirect(reverse('author', args=(profile.pen_name,)))
+
+# -----------------------------------------------------------------------------
+def member_directory(request):
+    # Get user profile
+    profile = None
+    if request.user.is_authenticated():
+        profile = request.user.profile
+
+    # Is logged-in user the author?
+    owner = ((profile is not None) and (profile == author))
+
+    page_num = safe_int(request.GET.get('page_num', 1))
+
+    authors = get_authors(page_num, PAGE_AUTHORS)
+    num_authors = get_num_authors()
+    label = u'Member Directory'
+    url = u'/authors/directory/'
+
+    # Build context and render page
+    context = {'profile'         : profile,
+               'owner'           : owner,
+               'authors'         : authors,
+               'num_authors'     : num_authors,
+               'page_title'      : u'Members, page {}'.format(page_num),
+               'page_url'        : url,
+               'pages'           : bs_pager(page_num, PAGE_AUTHORS, num_authors),
+               'label'           : label,
+               }
+    return render(request, 'authors/members.html', context)
 
 # -----------------------------------------------------------------------------

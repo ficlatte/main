@@ -1,3 +1,21 @@
+
+#coding: utf-8
+#This file is part of Ficlatté.
+#Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of version 3 of the GNU Affero General Public
+#    License as published by the Free Software Foundation
+#
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 from random import randint
 from comment.views import *
 
@@ -20,7 +38,7 @@ def get_popular_prompts(page_num=1, page_size=10):
             "SELECT p.id as id, " +
             "SUM(1/(date_part('day', NOW() - l.ctime)+1)) AS score " +
             "FROM castle_storylog AS l " +
-            "LEFT JOIN castle_prompt AS c ON p.id=l.prompt_id " +
+            "LEFT JOIN castle_prompt AS p ON p.id=l.prompt_id " +
             "WHERE l.user_id != p.user_id " +
             "AND l.log_type = " + str(StoryLog.VIEW) + " " +
             "GROUP BY p.id ORDER BY score DESC LIMIT " + str(page_size) + " " +

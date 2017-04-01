@@ -1,4 +1,21 @@
-# coding: utf-8
+
+#coding: utf-8
+#This file is part of Ficlatté.
+#Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of version 3 of the GNU Affero General Public
+#    License as published by the Free Software Foundation
+#
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 from random import randint
 from django.db.models import Avg, Q, Count
 from django.utils.http import urlquote
@@ -730,16 +747,16 @@ def tags(request, tag_name):
         return tags_null(request, u'No stories tagged ' + tag_name)
 
     label = u'Stories tagged “' + unicode(tag_name) + u'”'
-    url = u'/tags/' + urlquote(tag_name) + u'/'
+    url = u'/tag/' + urlquote(tag_name) + u'/'
 
     # Build context and render page
-    context = {'profile': profile,
-               'stories': stories,
-               'page_title': u'Tag ' + tag_name,
-               'page_url': url,
-               'pages': bs_pager(page_num, PAGE_BROWSE, num_stories),
-               'user_dashboard': 1,
-               'label': label,
+    context = {'profile'         : profile,
+               'stories'         : stories,
+               'page_title'      : u'Tag ' + tag_name,
+               'page_url'        : url,
+               'pages'           : bs_pager(page_num, PAGE_BROWSE, num_stories),
+               'user_dashboard'  : 1,
+               'label'           : label,
                }
     return render(request, 'stories/browse.html', context)
 
@@ -757,20 +774,23 @@ def tags_null(request, error_msg=None):
     num_tags = get_num_tags()
     tags = get_all_tags(page_num, PAGE_ALLTAGS)
 
+    label = u'All tags'
     url = u'/tags/'
 
     error_title = u'Tag not found' if error_msg else None
     error_messages = [error_msg] if error_msg else None
 
     # Build context and render page
-    context = {'profile': profile,
-               'tags': tags,
-               'page_title': u'Tag not found',
-               'page_url': url,
-               'pages': bs_pager(page_num, PAGE_ALLTAGS, num_tags),
-               'user_dashboard': 1,
-               'error_title': error_title,
-               'error_messages': error_messages,
+    context = {'profile'          : profile,
+               'tags'             : tags,
+               'num_tags'         : num_tags,
+               'page_title'       : u'All tags',
+               'page_url'         : url,
+               'pages'            : bs_pager(page_num, PAGE_ALLTAGS, num_tags),
+               'user_dashboard'   : 1,
+               'error_title'      : error_title,
+               'error_messages'   : error_messages,
+               'label'            : label,
                }
     return render(request, 'stories/all_tags.html', context)
 

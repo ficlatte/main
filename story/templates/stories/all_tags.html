@@ -20,14 +20,18 @@ Copyright (C) 2015 Paul Robertson
 {% load castle_tags %}
 
 {% block primary_panel %}
-          <div id="tag-list">
-            <h3>All tags</h3>
+        <div id="tag-list" class="panel panel-success">
+			<div class="panel-heading member-directory">
+				<h3 class="panel-title">{{label}} ({{num_tags}})</h3>
+			</div>
 {% block paged_content %}
-            <div class="tag-cloud" id="tags">
-              {% for t in tags %}
-              <a class="btn btn-primary btn-xs" href="/tags/{{t.tag|iriencode}}/" rel="tag" type="button">{{t.tag}}</a>
-              {% endfor %}
-            </div> <!-- id="tags" class="tag-cloud" -->
+            <div class="panel-body">
+              <div class="tag-cloud" id="tags">
+                {% for t in tags %}
+                    <a class="btn btn-primary btn-xs" href="/tag/{{t.tag|iriencode}}/" rel="tag" type="button">{{t.tag}}</a>
+                {% endfor %}
+              </div> <!-- id="tags" class="tag-cloud" -->
+            </div> <!-- class="panel-body" -->
 {% endblock paged_content %}
 {% block pager %}{{block.super}}{%endblock%}
           </div> <!-- id="story-summary" class="" -->

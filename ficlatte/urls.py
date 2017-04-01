@@ -16,15 +16,14 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import django.contrib.auth.views
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
-from django.views.generic import TemplateView
-from django.core.urlresolvers import reverse_lazy
 from django.contrib.sitemaps.views import sitemap
-from castle.sitemap import *
-import django.contrib.auth.views
-import castle.views
+from django.core.urlresolvers import reverse_lazy
+
 import castle.models
+from castle.sitemap import *
 
 # Define sitemaps
 sitemaps = {
@@ -71,7 +70,7 @@ urlpatterns = patterns('',
     url(r'^avatar_upload/', 'castle.views.avatar_upload', name='avatar_upload'),
 
 	# Miscellaneous Story
-    url(r'^tags/(?P<tag_name>[^/]+)/$', 'story.views.tags', name='tags'),
+    url(r'^tag/(?P<tag_name>[^/]+)/$', 'story.views.tags', name='tags'),
     url(r'^tags/$', 'story.views.tags_null', name='tags_null'),    
     
     # Static-ish pages
