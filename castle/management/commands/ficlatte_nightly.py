@@ -22,14 +22,30 @@ from django.db import transaction, connection
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
+import time
 
 class Command(BaseCommand):
-    help = 'Import old Ficlatte database into Django database'
+    help = 'Run nightly magic to select featured story'
     args =''
+
+    #-----------------------------------------------------------------------------
+    def log(self, logfile, message):
+        if (logfile is None):
+            return
+        ln = u'{:0.0f}: {}'.format(time.time(), message)
+
+        f = open(logfile, 'a+')
+        if (f):
+            f.write(ln+u'\n')
+            f.close()
     
+    #-----------------------------------------------------------------------------
     @transaction.atomic
     def do_nightly(self):
-        db = getattr(settings, 'DB', 'mysql')
+        db      = getattr(settings, 'DB', 'mysql')
+        logfile = getattr(settings, 'NIGHTLY_LOG', None)
+
+        self.log(logfile, 'Running nightly')
 
         # Zero out all activity values
         Story.objects.all().update(activity=0)
@@ -38,11 +54,9 @@ class Command(BaseCommand):
         
         cursor = connection.cursor()
 
-#---------------------------------------------        
-# Featured Story
-#---------------------------------------------
-        
-        
+        #---------------------------------------------        
+        # Featured Story
+        #---------------------------------------------
         if (db == 'mysql'):
             cursor.execute(
                 "UPDATE castle_story AS s SET activity = (SELECT "+
@@ -78,12 +92,12 @@ class Command(BaseCommand):
             if (mas[0].ftime is None):
                 mas[0].ftime = timezone.now()
                 mas[0].save()
+            
+            self.log(logfile, 'Featured story sid {} with score {}'.format(mas[0].id, mas[0].activity))
                 
-#---------------------------------------------        
-# Featured Prompt
-#---------------------------------------------
-
-
+        #---------------------------------------------        
+        # Featured Prompt
+        #---------------------------------------------
         if (db == 'mysql'):
             cursor.execute(
                 "UPDATE castle_prompt AS p SET activity = (SELECT "+
@@ -119,12 +133,12 @@ class Command(BaseCommand):
             if (mapr[0].ftime is None):
                 mapr[0].ftime = timezone.now()
                 mapr[0].save()
+            
+            self.log(logfile, 'Featured prompt id {} with score {}'.format(mapr[0].id, mapr[0].activity))
                 
-#---------------------------------------------        
-# Featured Challenge
-#---------------------------------------------
-
-
+        #---------------------------------------------        
+        # Featured Challenge
+        #---------------------------------------------
         if (db == 'mysql'):
             cursor.execute(
                 "UPDATE castle_challenge AS c SET activity = (SELECT "+
@@ -161,9 +175,12 @@ class Command(BaseCommand):
                 mac[0].ftime = timezone.now()
                 mac[0].save()
 
+            self.log(logfile, 'Featured challenge id {} with score {}'.format(mac[0].id, mac[0].activity))
+
         return None
 
             
+    #-----------------------------------------------------------------------------
     def handle(self, *args, **options):
         self.do_nightly()
         
