@@ -62,7 +62,7 @@ def home(request):
                'featured'        : featured,
                'challenge'       : challenge,
                'prompt'          : prompt,
-               'popular'         : get_popular_stories(1, 4),
+               'popular'         : get_popular_stories(1, 5),
                'active'          : get_active_stories(1, 10),
                'recent'          : get_recent_stories(1, 10),
                'old'             : get_old_stories(10),
@@ -189,6 +189,10 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
     # Is logged-in user the author?
     author = story.user
     owner = ((profile is not None) and (profile == author))
+
+    # User can only edit their own drafts
+    if (story.user != profile and story.draft):
+        raise Http404
 
     # Is logged-in user the challenge owner?
     challenge = story.challenge
@@ -518,11 +522,11 @@ def submit_story(request):
     )
     log.save()
 
-    if (prequel_to):
+    if (not story.draft and prequel_to):
         send_notification_email_story(story, prequel_to, 1)
-    elif (sequel_to):
+    elif (not story.draft and sequel_to):
         send_notification_email_story(story, sequel_to, 2)
-    elif (challenge):
+    elif (not story.draft and challenge):
         send_notification_email_challenge_story(story, challenge)
 
     return HttpResponseRedirect(reverse('story', args=(story.id,)))

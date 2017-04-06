@@ -39,19 +39,7 @@ hr {
     background-color: #333;
 }
 
-/* Side panel 
-div#side-panel {
-    display: block;
-    background-color: #ffff00;
-    width: 240px;
-}
-
-ul#story-stats{
-    border-bottom: 1px dotted #b39e4a;
-}
-*/
-
-/* news headline */
+/* News Headline */
 
 div#news h2 a {
 	font-size: 12px;
@@ -203,6 +191,10 @@ p#average-rating span#enabled {
 
 ul#user-activity-list {
 	margin-top: 10px;
+}
+
+#latest-challenge {
+    clear: left;
 }
 
 #latest-challenge .panel-body h3, #latest-prompt .panel-body h3 {
