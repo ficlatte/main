@@ -208,6 +208,10 @@ ul#user-activity-list {
 	margin-top: 10px;
 }
 
+#latest-challenge {
+    clear: left;
+}
+
 #latest-challenge .panel-body h3, #latest-prompt .panel-body h3 {
 	margin-top: 15px;
 }

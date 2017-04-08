@@ -62,7 +62,7 @@ def home(request):
                'featured': featured,
                'challenge': challenge,
                'prompt': prompt,
-               'popular': get_popular_stories(1, 4),
+               'popular': get_popular_stories(1, 5),
                'active': get_active_stories(1, 10),
                'recent': get_recent_stories(1, 10),
                'old': get_old_stories(10),
