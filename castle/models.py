@@ -1,4 +1,3 @@
-
 #coding: utf-8
 #This file is part of Ficlatté.
 #Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
@@ -19,19 +18,19 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
-from datetime import datetime, date
+from datetime import date
 
 # Create your models here.
 
 # Extra user data
 class Profile(models.Model):
-    user                = models.OneToOneField(User)
+    user                   = models.OneToOneField(User)
     friends             = models.ManyToManyField('self', symmetrical=False, related_name='followers', blank=True)
     pen_name            = models.CharField(max_length=64)
     pen_name_uc         = models.CharField(max_length=64, unique=True)
     site_url            = models.URLField(max_length=254, blank=True, null=True)
     site_name           = models.CharField(max_length=1024, blank=True, null=True)
-    facebook_username   = models.CharField(max_length=64, blank=True, null=True)
+    facebook_username    = models.CharField(max_length=64, blank=True, null=True)
     twitter_username    = models.CharField(max_length=64, blank=True, null=True)
     wattpad_username    = models.CharField(max_length=64, blank=True, null=True)
     biography           = models.CharField(max_length=1024)
@@ -55,17 +54,17 @@ class Profile(models.Model):
     # Email flags
     NUM_EMAIL_FLAGS = 11
     
-    AUTOSUBSCRIBE_ON_STORY              = 1  # Subscribe to story's comments when user publishes a story
-    AUTOSUBSCRIBE_ON_STORY_COMMENT      = 2  # Subscribe to story's comments when user publishes comment
-    AUTOSUBSCRIBE_ON_BLOG               = 4  # Subscribe to blog's comments when user publishes a blog
-    AUTOSUBSCRIBE_ON_BLOG_COMMENT       = 8  # Subscribe to blog's comments when user publishes comment
-    AUTOSUBSCRIBE_ON_PROMPT             = 16  # Subscribe to prompt's comments when user publishes a blog
-    AUTOSUBSCRIBE_ON_PROMPT_COMMENT     = 32  # Subscribe to prompt's comments when user publishes comment
-    AUTOSUBSCRIBE_ON_CHALLENGE          = 64  # Subscribe to challenge's comments when user publishes a blog
-    AUTOSUBSCRIBE_ON_CHALLENGE_COMMENT  = 128  # Subscribe to challenges's comments when user publishes comment
-    AUTOSUBSCRIBE_TO_PREQUEL            = 256  # Subscribe to notifications when someone prequels your story
-    AUTOSUBSCRIBE_TO_SEQUEL             = 512  # Subscribe to notifications when someone sequels your story
-    AUTOSUBSCRIBE_TO_CHALLENGE_ENTRY    = 1024  # Subscribe to notifications when someone enters a story in your challenge
+    AUTOSUBSCRIBE_ON_STORY                 = 1  # Subscribe to story's comments when user publishes a story
+    AUTOSUBSCRIBE_ON_STORY_COMMENT         = 2  # Subscribe to story's comments when user publishes comment
+    AUTOSUBSCRIBE_ON_BLOG                  = 4  # Subscribe to blog's comments when user publishes a blog
+    AUTOSUBSCRIBE_ON_BLOG_COMMENT          = 8  # Subscribe to blog's comments when user publishes comment
+    AUTOSUBSCRIBE_ON_PROMPT                = 16  # Subscribe to prompt's comments when user publishes a blog
+    AUTOSUBSCRIBE_ON_PROMPT_COMMENT        = 32  # Subscribe to prompt's comments when user publishes comment
+    AUTOSUBSCRIBE_ON_CHALLENGE             = 64  # Subscribe to challenge's comments when user publishes a blog
+    AUTOSUBSCRIBE_ON_CHALLENGE_COMMENT     = 128  # Subscribe to challenges's comments when user publishes comment
+    AUTOSUBSCRIBE_TO_PREQUEL               = 256  # Subscribe to notifications when someone prequels your story
+    AUTOSUBSCRIBE_TO_SEQUEL                = 512  # Subscribe to notifications when someone sequels your story
+    AUTOSUBSCRIBE_TO_CHALLENGE_ENTRY       = 1024  # Subscribe to notifications when someone enters a story in your challenge
 
     def __unicode__(self):
         return unicode(self.pen_name)
@@ -197,10 +196,10 @@ class Rating(models.Model):
 class Comment(models.Model):
     user        = models.ForeignKey(Profile, related_name='comments_made')       # User making the comment
     body        = models.CharField(max_length=1024)
-    story       = models.ForeignKey(Story, blank=True, null=True)
-    prompt      = models.ForeignKey(Prompt, blank=True, null=True)
-    challenge   = models.ForeignKey(Challenge, blank=True, null=True)
-    blog        = models.ForeignKey(Blog,  blank=True, null=True)
+    story       = models.ForeignKey('castle.Story', blank=True, null=True)
+    prompt        = models.ForeignKey('castle.Prompt', blank=True, null=True)
+    challenge    = models.ForeignKey('castle.Challenge', blank=True, null=True)
+    blog        = models.ForeignKey('castle.Blog',  blank=True, null=True)
     ctime       = models.DateTimeField(default=timezone.now)
     mtime       = models.DateTimeField(default=timezone.now)    
 
@@ -222,7 +221,6 @@ class Comment(models.Model):
                 return r[0].rating
         return None
 
-
 # Activity log
 class StoryLog(models.Model):
     WRITE   = 0
@@ -235,7 +233,6 @@ class StoryLog(models.Model):
     STORY_MOD = 7  # Modified an extant story
     PROMPT    = 8  # Created a writing prompt
     PROMPT_MOD= 9   # Modified a writing prompt
-    CHALLENGE = 10  # Created a challenge
     CHALLENGE_MOD = 11 # Modified a challenge
     CHALLENGE_ENT = 12 # Entered a challenge
     CHALLENGE_WON = 13 # Won a challenge
@@ -263,7 +260,7 @@ class StoryLog(models.Model):
     comment     = models.ForeignKey(Comment, blank=True, null=True)     # ID of comment, if this log is for a comment
     quel        = models.ForeignKey(Story,   blank=True, null=True, related_name='activity_quel_set')     # ID of prequel/sequel if this log is for a prequel/sequel
     prompt      = models.ForeignKey(Prompt, blank=True, null=True)
-    challenge   = models.ForeignKey(Challenge, blank=True, null=True)
+    challenge    = models.ForeignKey(Challenge, blank=True, null=True)
     ctime       = models.DateTimeField(default=timezone.now)
     
     def get_opt(self, o):
@@ -309,8 +306,8 @@ class Subscription(models.Model):
     blog        = models.ForeignKey(Blog,  blank=True, null=True, related_name='subscriptions')
     prompt      = models.ForeignKey(Prompt,  blank=True, null=True, related_name='subscriptions')
     challenge   = models.ForeignKey(Challenge,  blank=True, null=True, related_name='subscriptions')
-    prequel_to  = models.ForeignKey(Story, blank=True, null=True, related_name='prequel_subscriptions')
-    sequel_to   = models.ForeignKey(Story, blank=True, null=True, related_name='sequel_subscriptions')
+    prequel_to     = models.ForeignKey(Story, blank=True, null=True, related_name='prequel_subscriptions')
+    sequel_to    = models.ForeignKey(Story, blank=True, null=True, related_name='sequel_subscriptions')
     ch_entry    = models.ForeignKey(Challenge, blank=True, null=True, related_name='entry_subscriptions')
     
     def __unicode__(self):

@@ -39,7 +39,10 @@ Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
               {% csrf_token %}
               <input name="chid" type="hidden" value="{{challenge.id}}" />
               <input name="pen_name" type="hidden" value="{{profile.pen_name}}" />
-              <p id="play-nice"><a href="/rules.html">Please play by the Ficlatt&eacute; rules</a></p>
+              <p id="play-nice"><a href="/rules/">Please play by the Ficlatt&eacute; rules</a></p>
+                <p><strong>Disclaimer:</strong> Once the challenge gauntlet has been thrown down, it cannot be retrieved.
+                  So before you release your challenge into the wild, please be sure it reads exactly the way you want
+                  and that the dates of the challenge are the ones you want. Challengers are ready to face your gauntlet.</p>
               <div class="form-group">
                 <label class="col-sm-2 control-label" for="challenge_title">Title</label>
                 <div class="col-sm-10">
@@ -49,11 +52,11 @@ Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
               <div class="form-group">
                 <label class="col-sm-2 control-label" for="challenge_stime">Start Date</label>
                 <div class="col-sm-10">
-                  <div id="challenge_stime" class="input-group date">
+                  <div id="challenge_stime_field" class="input-group date">
                     <input readonly="" class="form-control" id="challenge_stime" maxlength="64" name="stime" tabindex="3" type="text" value="{{ challenge.stime|date:'Y-m-d' }}" />
                     <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
                     <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-                </div>
+                  </div>
                 <script type="text/javascript">
                     $("#challenge_stime").datetimepicker({minView: 2, autoclose: true, language: 'en', startView: 2, format: 'yyyy-mm-dd'}).find('input').addClass("form-control");
                 </script>
@@ -62,11 +65,11 @@ Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
                 </div> <!-- id="" class="col-sm-10" -->
                 <label class="col-sm-2 control-label" for="challenge_etime">End Date</label>
                 <div class="col-sm-10">
-                    <div id="challenge_etime" class="input-group date">
-                    <input readonly="" class="form-control" id="challenge_etime" maxlength="64" name="etime" tabindex="3" type="text" value="{{ challenge.etime|date:'Y-m-d' }}" />
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-                </div>
+                    <div id="challenge_etime_field" class="input-group date">
+                      <input readonly="" class="form-control" id="challenge_etime" maxlength="64" name="etime" tabindex="3" type="text" value="{{ challenge.etime|date:'Y-m-d' }}" />
+                      <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                      <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                    </div>
                 <script type="text/javascript">
                     $("#challenge_etime").datetimepicker({minView: 2, autoclose: true, language: 'en', startView: 2, format: 'yyyy-mm-dd'}).find('input').addClass("form-control");
                 </script>

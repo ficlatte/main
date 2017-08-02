@@ -7,6 +7,7 @@
 #    it under the terms of version 3 of the GNU Affero General Public
 #    License as published by the Free Software Foundation
 #
+#
 #    This program is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -22,17 +23,3 @@ from datetimewidget.widgets import DateWidget
 
 class AvatarUploadForm(forms.Form):
     image_file = forms.FileField(label='image file')
-    
-class ChallengeDateForm(forms.ModelForm):
-    
-    class Meta:
-        model = Challenge
-        fields = ('title', 'stime', 'etime', 'body',)
-        dateTimeOptions = {
-            'format': 'YYYY-MM-DD',
-            'autoclose': True
-        }
-        widgets = {
-            'stime': DateWidget(attrs={'id':"challenge_stime"}, usel10n = True, bootstrap_version=3),
-            'etime': DateWidget(attrs={'id':"challenge_etime"}, usel10n = True, bootstrap_version=3)
-        }

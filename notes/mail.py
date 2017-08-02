@@ -1,6 +1,6 @@
 #coding: utf-8
 #This file is part of Ficlatté.
-#Copyright (C) 2015-2017 Paul Robertson & Jim Stitzel
+#Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of version 3 of the GNU Affero General Public

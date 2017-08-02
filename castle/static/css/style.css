@@ -8,6 +8,10 @@ h4 {
 	font-size: 16px;
 }
 
+p {
+    margin: 0 0 1.3em;
+}
+
 ul {
     list-style-type: none;
 }
@@ -17,6 +21,10 @@ hr {
 }
 
 /* jumbotron */
+.navbar-inverse {
+	background-color: #333;
+}
+
 .container .jumbotron, .jumbotron {
     padding: 0;
     background-color: transparent;
@@ -31,19 +39,7 @@ hr {
     background-color: #333;
 }
 
-/* Side panel 
-div#side-panel {
-    display: block;
-    background-color: #ffff00;
-    width: 240px;
-}
-
-ul#story-stats{
-    border-bottom: 1px dotted #b39e4a;
-}
-*/
-
-/* news headline */
+/* News Headline */
 
 div#news h2 a {
 	font-size: 12px;
@@ -195,6 +191,10 @@ p#average-rating span#enabled {
 
 ul#user-activity-list {
 	margin-top: 10px;
+}
+
+#latest-challenge {
+    clear: left;
 }
 
 #latest-challenge .panel-body h3, #latest-prompt .panel-body h3 {
@@ -533,6 +533,16 @@ li.challenge-comment ul li.posted {
 
 .challenge-sidebar {
 	margin-top: 70px;
+}
+
+/* Comments */
+
+li.comment-like {
+	padding: 0 15px;
+}
+
+li.comment-like img {
+	vertical-align: top;
 }
 
 /* Subscriptions */
