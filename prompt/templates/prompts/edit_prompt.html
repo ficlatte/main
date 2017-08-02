@@ -19,50 +19,35 @@ Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
 {% load staticfiles %}
 {% load castle_tags %}
 
-{% block body_tag %} onload="draft_button(); story_len();" {% endblock %}
+{% block body_tag %} onload="story_len();" {% endblock %}
 {% block top_script %}
-<script type="text/javascript">
-function draft_button()
-{
-    var draft=document.getElementById('blog-is-draft').checked;
-
-    var button=document.getElementById('text-submit');
-    
-    if (draft)
-    {
-        button.innerHTML='Save';
-    }
-    else
-    {
-        button.innerHTML='Publish!';
-    }
-    return true;
-}
-</script>
 {% endblock %}
 
     
 {% block primary_panel %}
-          <div class="well" id="new-blog">
-            <h2>Let&#39;s blog</h2>
-            <form accept-charset="utf-8" action="/blog/submit/" class="form-horizontal" id="blog-form" method="post" role="form">
+          <div class="panel panel-success" id="new-prompt">
+            <div class="panel-heading"
+            <h2 class="panel-title">Let&#39;s prompt</h2>
+            </div>
+            <div class="panel-body">
+            <form accept-charset="utf-8" action="/prompts/submit/" class="form-horizontal" id="prompt-form" method="post" role="form">
               {% csrf_token %}
-              <input name="bid" type="hidden" value="{{blog.id}}" />
-              <input name="prequel_to" type="hidden" value="{{blog.prequel_to.id}}" />
-              <input name="sequel_to" type="hidden" value="{{blog.sequel_to.id}}" />
-              <input name="prid" type="hidden" value="{{blog.prompt.id}}" />
-              <p id="play-nice"><a href="/rules.html">Please play by the Ficlatt&eacute; rules</a></p>
+              <input name="prid" type="hidden" value="{{prompt.id}}" />
+              <input name="pen_name" type="hidden" value="{{profile.pen_name}}" />
+              <p id="play-nice"><a href="/rules/">Please play by the Ficlatt&eacute; rules</a></p>
+              <p><strong>Disclaimer:</strong> Once a prompt is published, it is permanent, so please be sure it reads
+                 the way you want before you publish it.</p>
               <div class="form-group">
-                <label class="col-sm-2 control-label" for="blog_title">Title</label>
+                <label class="col-sm-2 control-label" for="prompt_title">Title</label>
                 <div class="col-sm-10">
-                  <input class="form-control" id="blog_title" maxlength="64" name="title" tabindex="2" type="text" value="{{blog.title}}" />
+                  <input class="form-control" id="prompt_title" maxlength="64" name="title" tabindex="2" type="text" value="{{prompt.title}}" />
                 </div> <!-- id="" class="col-sm-10" -->
               </div> <!-- id="" class="form-group" -->
               <div class="form-group">
-                <label class="col-sm-2 control-label" for="blog_body">Blog entry</label>
+                <label class="col-sm-2 control-label" for="prompt_body">Prompt</label>
                 <div class="col-sm-10">
                   <div class="field">
-                    <textarea class="form-control" cols="80" data-maxlength="{{length_limit}}" data-minlength="{{length_min}}" id="text_body" name="body" onkeyup="story_len()" rows="20" tabindex="4" type="text">{{blog.body}}</textarea>
+                    <textarea class="form-control" cols="60" data-maxlength="{{length_limit}}" data-minlength="{{length_min}}" id="text_body" name="body" onkeyup="story_len()" rows="8" tabindex="4" type="text">{{prompt.body}}</textarea>
                     <div class="pull-right">
                       <span class="counter" id="counter">{{length_limit}}</span>
                     </div> <!-- id="" class="pull-right" -->
@@ -74,10 +59,7 @@ function draft_button()
               <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
                   <div class="checkbox">
-                    <label><input id="blog-is-draft" name="is_draft" onclick="draft_button()" tabindex="5" type="checkbox" {% if blog.draft %}checked {% endif %}/> Save as draft</label>
-                  </div> <!-- id="" class="checkbox" -->
-                  <div class="checkbox">
-                    <label><input id="blog-is-bbcode" name="is_bbcode" onclick="draft_button()" tabindex="6" type="checkbox" {% if blog.bbcode %}checked {% endif %}/> Use <a href="https://en.wikipedia.org/wiki/BBCode">bbcode</a></label>
+                    <label><input id="prompt-is-mature" name="is_mature" tabindex="4" type="checkbox" {% if prompt.mature %}checked {% endif %}/> Mark this prompt as mature</label>
                   </div> <!-- id="" class="checkbox" -->
                 </div> <!-- id="" class="col-sm-offset-2 col-sm-10" -->
               </div> <!-- id="" class="form-group" -->
@@ -87,5 +69,6 @@ function draft_button()
                 </div> <!-- id="" class="col-sm-offset-2 col-sm-10" -->
               </div> <!-- id="" class="form-group" -->
             </form>
-          </div> <!-- id="new-blog" class="well" -->
+            </div>
+          </div> <!-- id="new-prompt" class="well" -->
 {% endblock primary_panel %}

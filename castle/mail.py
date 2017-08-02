@@ -229,7 +229,7 @@ The Ficlatte team""")
         challenge_title=challenge.title, story_title=story.title,
         story_user=story.user.pen_name, story_body=story.body,
         story_url=story_url, unsub_url=unsub_url,
-        user_profile_url=(url, reverse('profile')))
+        user_profile_url=(url + reverse('profile')))
 
     # Loop through everyone subscribed to this story
     for sub in subs:

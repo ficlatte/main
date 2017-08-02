@@ -35,7 +35,7 @@ Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
 {% block paged_content %}
           <h2>Comments <small>({{blog|num_comments}} so far!)</small></h2>
           {% for comment in comments %}
-          <div class="row">
+          <div class="row comment-row">
             <div class="col-md-2">
               {{comment.user|avatar}}
             </div> <!-- id="" class="col-md-2" -->
