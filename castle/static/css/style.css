@@ -209,7 +209,7 @@ ul#user-activity-list {
 }
 
 #latest-challenge {
-    clear: left;
+    clear: both;
 }
 
 #latest-challenge .panel-body h3, #latest-prompt .panel-body h3 {
