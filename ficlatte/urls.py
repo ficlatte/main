@@ -1,6 +1,7 @@
 
 #coding: utf-8
 #This file is part of Ficlatté.
+<<<<<<< HEAD
 #Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -70,11 +71,12 @@ urlpatterns = patterns('',
     url(r'^avatar_upload/', 'castle.views.avatar_upload', name='avatar_upload'),
 
 	# Miscellaneous Story
-    url(r'^tags/(?P<tag_name>[^/]+)/$', 'story.views.tags', name='tags'),
+    url(r'^tag/(?P<tag_name>[^/]+)/$', 'story.views.tags', name='tags'),
     url(r'^tags/$', 'story.views.tags_null', name='tags_null'),    
     
     # Static-ish pages
-    url(r'^rules(?:\.html)?/$', 'castle.views.static_view', {'template_name': 'rules.html'}, name="rules"),
+    url(r'^about/$', 'castle.views.static_view', {'template_name': 'about.html'}, name="about"),
+    url(r'^rules/$', 'castle.views.static_view', {'template_name': 'rules.html'}, name="rules"),
     url(r'^privacy/$', 'castle.views.static_view', {'template_name': 'privacy.html'}, name="privacy"),
     url(r'^help/$', 'castle.views.static_view', {'template_name': 'help.html'}, name="help"),
     #url(r'^credits/$', 'castle.views.static_view', {'template_name': 'credits.html'}, name="credits"),

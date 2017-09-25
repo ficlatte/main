@@ -181,4 +181,50 @@ def submit_comment(request):
     elif (challenge):
         return HttpResponseRedirect(reverse('challenge', args=(challenge.id,)))
 
+
+# -----------------------------------------------------------------------------
+@login_required
+def like_comment(request, comment_id):
+    comment = get_object_or_404(Comment, pk=comment_id)
+    # Get user profile
+    profile = None
+    if request.user.is_authenticated():
+        profile = request.user.profile
+    if profile is None:
+        raise Http404
+
+    CommentLike.objects.get_or_create(user=profile, comment=comment)
+
+    if comment.blog:
+        return HttpResponseRedirect(reverse('blog', args=(comment.blog.id,)))
+    elif comment.story:
+        return HttpResponseRedirect(reverse('story', args=(comment.story.id,)))
+    elif comment.prompt:
+        return HttpResponseRedirect(reverse('prompt', args=(comment.prompt.id,)))
+    elif comment.challenge:
+        return HttpResponseRedirect(reverse('challenge', args=(comment.challenge.id,)))
+
+
+# -----------------------------------------------------------------------------
+@login_required
+def unlike_comment(request, comment_id):
+    comment = get_object_or_404(Comment, pk=comment_id)
+    # Get user profile
+    profile = None
+    if request.user.is_authenticated():
+        profile = request.user.profile
+    if profile is None:
+        raise Http404
+
+    CommentLike.objects.filter(user=profile, comment=comment).delete()
+
+    if comment.blog:
+        return HttpResponseRedirect(reverse('blog', args=(comment.blog.id,)))
+    elif comment.story:
+        return HttpResponseRedirect(reverse('story', args=(comment.story.id,)))
+    elif comment.prompt:
+        return HttpResponseRedirect(reverse('prompt', args=(comment.prompt.id,)))
+    elif comment.challenge:
+        return HttpResponseRedirect(reverse('challenge', args=(comment.challenge.id,)))
+
 # -----------------------------------------------------------------------------

@@ -1,11 +1,12 @@
+
 #coding: utf-8
 #This file is part of Ficlatté.
-#Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
+#Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of version 3 of the GNU Affero General Public
 #    License as published by the Free Software Foundation
-#    
+#
 #
 #    This program is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,13 +25,13 @@ from datetime import date
 
 # Extra user data
 class Profile(models.Model):
-    user                   = models.OneToOneField(User)
+    user                = models.OneToOneField(User)
     friends             = models.ManyToManyField('self', symmetrical=False, related_name='followers', blank=True)
     pen_name            = models.CharField(max_length=64)
     pen_name_uc         = models.CharField(max_length=64, unique=True)
     site_url            = models.URLField(max_length=254, blank=True, null=True)
     site_name           = models.CharField(max_length=1024, blank=True, null=True)
-    facebook_username    = models.CharField(max_length=64, blank=True, null=True)
+    facebook_username   = models.CharField(max_length=64, blank=True, null=True)
     twitter_username    = models.CharField(max_length=64, blank=True, null=True)
     wattpad_username    = models.CharField(max_length=64, blank=True, null=True)
     biography           = models.CharField(max_length=1024)
@@ -197,8 +198,8 @@ class Comment(models.Model):
     user        = models.ForeignKey(Profile, related_name='comments_made')       # User making the comment
     body        = models.CharField(max_length=1024)
     story       = models.ForeignKey('castle.Story', blank=True, null=True)
-    prompt        = models.ForeignKey('castle.Prompt', blank=True, null=True)
-    challenge    = models.ForeignKey('castle.Challenge', blank=True, null=True)
+    prompt      = models.ForeignKey('castle.Prompt', blank=True, null=True)
+    challenge   = models.ForeignKey('castle.Challenge', blank=True, null=True)
     blog        = models.ForeignKey('castle.Blog',  blank=True, null=True)
     ctime       = models.DateTimeField(default=timezone.now)
     mtime       = models.DateTimeField(default=timezone.now)    

@@ -1,0 +1,59 @@
+{% extends "castle/page_without_sidebar.html" %}
+{%comment%}
+This file is part of Ficlatté.
+Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of version 3 of the GNU Affero General Public
+    License as published by the Free Software Foundation
+    
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+{%endcomment%}
+{% load staticfiles %}
+{% load castle_tags %}
+{% load author_tags %}
+{% load note_tags %}
+
+{% block primary_panel %}
+          <div class="panel panel-success">
+			<div class="panel-heading member-directory">
+				<h3 class="panel-title">{{label}} ({{num_authors}})</h3>
+			</div>
+{% block paged_content %}
+          <div class="panel-body">
+              <ul class="list-group">
+              {% for author in authors %}
+                <li class="list-group-item">
+					<div class="row">
+                        <div class="col-sm-2 col-md-2">
+                            {{author|avatar}}
+                        </div> <!-- id="" class="col-sm-2 col-md-2" -->
+                        <div class="col-sm-7 col-md-7">
+				            {{author|author_link:'h1 class="author"'}}
+                            <p id="user-desc">Joined Ficlatt&eacute; in <span>{{author.ctime|date:"F Y"}}</span></p>
+                            <p id="user-stats">{{author|num_stories_txt}}, {{author|num_challenges_txt}}, {{author|num_prompts_txt}}, {{author|profile_comments_txt}}, and {{author|num_friends_txt}}</p>
+                            <p id="user-wins">Coffee beans earned: {{author|num_challenge_wins}} <img src="{% static 'img/badge-40.png' %}"></p>
+                            <p>{{author|recent_story}}</p>
+                        </div> <!-- id="" class="col-sm-8 col-md-8" -->
+                        <div class="col-sm-3 col-md-3">
+                            {% if profile %}
+                                {{ author|is_friend:profile }}<br />
+                                {{author|author_msg:1}}
+                            {% endif %}
+                        </div> <!-- id="" class="col-sm-2 col-md-2" -->
+                    </div> <!-- id="" class="row" -->
+				</li>
+              {% endfor %}
+              </ul> <!-- class="list-group" -->
+            </div> <!-- id="" class="panel-body" -->
+{% endblock paged_content %}
+{% block pager %}{{block.super}}{%endblock%}
+		</div> <!-- id="" class="panel panel-success member-directory" -->
+{% endblock primary_panel %}

@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 #coding: utf-8
 #This file is part of Ficlatté.
 #Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
+=======
+
+#coding: utf-8
+#This file is part of Ficlatté.
+#Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
+>>>>>>> comment-likes-static-pages
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of version 3 of the GNU Affero General Public

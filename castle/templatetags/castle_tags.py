@@ -1,11 +1,12 @@
-# coding: utf-8
-# This file is part of Ficlatté.
-# Copyright (C) 2015 Paul Robertson
+
+#coding: utf-8
+#This file is part of Ficlatté.
+#Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of version 3 of the GNU Affero General Public
 #    License as published by the Free Software Foundation
-#    
+#
 #
 #    This program is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -59,6 +60,20 @@ def num_comments(obj):
 def num_comment_likes(obj):
     return obj.commentlike_set.count()
 
+#-----------------------------------------------------------------------------
+@register.filter
+def users_liked(obj):
+    users = '\n'.join(Profile.objects.filter(comment_liked__comment_id=obj.id).values_list('pen_name', flat=True))
+    return users
+
+
+#-----------------------------------------------------------------------------
+@register.filter
+def comment_like(obj, profile):
+    if obj.commentlike_set.filter(user_id=profile.id, comment_id=obj.id):
+        return mark_safe(u'<a class="like-comment" href="#" data-url="/comment/' + unicode(obj.id) + u'/unlike/">Unlike</a>')
+    else:
+        return mark_safe(u'<a class="like-comment" href="#" data-url="/comment/' + unicode(obj.id) + u'/like">Like</a>')
 
 # -----------------------------------------------------------------------------
 @register.filter
@@ -311,9 +326,7 @@ def story_link(story, tag=None):
         return mark_safe(u'<a href="/stories/' + unicode(story.id) + u'" class="story-link">' + t1 + escape(
             d + story.title) + u' ' + mark_safe(w) + mark_safe(m) + t2 + u'</a>')
 
-        # -----------------------------------------------------------------------------
-
-
+# -----------------------------------------------------------------------------
 @register.filter
 def prompt_link(prompt, tag=None):
     if prompt is None:
@@ -491,8 +504,8 @@ def avatar(profile):
     else:
         which_icon = 'default.png'
 
-    return mark_safe(u'<a href="/authors/' + escape(profile.pen_name) + u'"><img alt="' + escape(
-        profile.pen_name) + u'" src="/static/img/avatar/' + which_icon + u'" /></a>')
+    return mark_safe(u'<a href="/authors/' + escape(profile.pen_name) + u'"><img class="author-avatar" alt="' + escape(
+        profile.pen_name) + u'" title="' + escape(profile.pen_name) + u'" src="/static/img/avatar/' + which_icon + u'" /></a>')
 
 
 # -----------------------------------------------------------------------------
@@ -503,8 +516,8 @@ def user_icon(profile):
     else:
         which_icon = 'default.png'
 
-    return mark_safe(u'<a href="/authors/' + escape(profile.pen_name) + u'"><img alt="' + escape(
-        profile.pen_name) + u'" src="/static/img/icon/' + which_icon + u'"/></a>')
+    return mark_safe(u'<a href="/authors/' + escape(profile.pen_name) + u'"><img class="author-icon" alt="' + escape(
+        profile.pen_name) + u'" title="' + escape(profile.pen_name) + u'" src="/static/img/icon/' + which_icon + u'" height="48" width="48"/></a>')
 
 
 # -----------------------------------------------------------------------------

@@ -1,7 +1,11 @@
 
 #coding: utf-8
 #This file is part of Ficlatté.
+<<<<<<< HEAD
 #Copyright (C) 2015-2017 Paul Robertson & Jim Stitzel
+=======
+#Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
+>>>>>>> comment-likes-static-pages
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of version 3 of the GNU Affero General Public
@@ -16,12 +20,15 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+<<<<<<< HEAD
 from django.template import Library, Node, TemplateSyntaxError
+=======
+from django.template import Library
+>>>>>>> comment-likes-static-pages
 from django.utils.html import escape
-from django.utils.http import urlquote
 from django.utils.safestring import mark_safe
+
 from notes.models import Note
-from castle.models import Profile
 
 register = Library()
 
@@ -51,7 +58,16 @@ def author_msg(profile, wide=None):
         wd = u' btn-block'
     else:
         wd = u''
+<<<<<<< HEAD
         
     return mark_safe(u'<a class="btn btn-success'+wd+' author-msg-btn" href="/notes/compose?recipient=' + escape(profile.pen_name) + u'" type="button"><span class="glyphicon glyphicon-pencil"></span> Message ' + escape(profile.pen_name) + u'</a>')
 
 #-----------------------------------------------------------------------------
+=======
+
+    return mark_safe(u'<a class="btn btn-success' + wd + ' author-msg-btn" href="/notes/compose?recipient=' + escape(
+        profile.pen_name) + u'" type="button"><span class="glyphicon glyphicon-pencil"></span> Message ' + escape(
+        profile.pen_name) + u'</a>')
+
+# -----------------------------------------------------------------------------
+>>>>>>> comment-likes-static-pages

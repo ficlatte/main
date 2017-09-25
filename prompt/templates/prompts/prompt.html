@@ -75,6 +75,9 @@ Copyright (C) 2015 Paul Robertson
 						{{comment.body|encode_story}}
 						<ul class="list-inline">
 							<li class="posted">Posted <abbr class="dtposted" title="{{comment.ctime|date:'Y-m-d'}}">{{comment.ctime|age}}</abbr></li>
+							<li class="comment-like">
+                   		 		{% if profile %}{{ comment|comment_like:profile }}{% endif %} <img title="{{comment|users_liked}}" src="/static/img/coffee-mug-blue.png" height="15px"> {{ comment|num_comment_likes }}
+							</li>
 						</ul>
 					</div>
 				</div>

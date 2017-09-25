@@ -1,0 +1,99 @@
+{% extends "castle/page_without_sidebar.html" %}
+{%comment%}
+This file is part of Ficlatté.
+Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of version 3 of the GNU Affero General Public
+    License as published by the Free Software Foundation
+    
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+{%endcomment%}
+{% load staticfiles %}
+{% load castle_tags %}
+
+{% block primary_panel %}
+    <h1>About Ficlatté</h1>
+
+    <p class="about"><strong>What is Ficlatté?</strong></p>
+
+    <p class="about">Ficly is about creativity. It's about looking for a way to allow anyone to carve out fifteen minutes to create and
+    write, whether that's to continue a story someone else has started or to start something new of their own, with
+    just two or three paragraphs and a simple idea.</p>
+
+    <p class="about">That’s the basic premise. We impose a limit of 1,024 characters because sometimes constraints are good. They
+        force you choose your words more carefully, to make the maximum impact with a minimum of syllables. They also
+        make it less daunting to write than it might be if you were staring at a never-ending blank screen in a word
+        processor. All you have to do is write one kilobyte of something – something fictional. That's it. That’s all.</p>
+
+    <p></p>
+
+    <p><strong>The Story of Ficlatté</strong></p>
+
+    <p class="about">Ficlatté is the third-generation of a micro-fiction website that began nearly a decade ago with
+        <strong>ficlets</strong>, the experimental brain-child of AOL, helmed by Kevin Lawver and Jason Garber.
+        ficlets lived for 18 months and gathered a community that generated over 45,000 individual entries. Then AOL
+        mothballed the project and moved on to other things.</p>
+
+    <p class="about">Fortunately Kevin and Jason weren't content to leave it at that. In 2009 they built the successor
+        to ficlets, called <a href="http://ficly.com">Ficly</a> and breathed new life into what ficlets began. Many members
+        of the ficlets community migrated to Ficly, and over the next five years, the community grew again into a vibrant
+        hive of creativity and imagination.</p>
+
+    <p  class="about">But alas even Ficly was ultimately forced to close its doors and the community was once again
+        temporarily homeless. But they didn't have to wait long or go far. In 2015 Paul Robertson launched the first
+        version of Ficlatté and got the skeleton of a new castle off the ground. Many members of Ficly's community
+        found their way here; many others got lost along the way. But over the last several years, we've slowly been developing
+        this barebones castle into a fully-featured fortress, and the stories being told around the various hearths
+        within these walls have kept us warm during many a cold night. We hope Ficlatté will outlast both ficlets and Ficly
+        combined, and we continue to construct new rooms, corridors, and secret passageways throughout the castle with
+        that hope in mind.</p>
+
+    <p  class="about">We hope you'll join us. For most of us here, this is a kind of surrogate family, a home away
+        from home, if you will, where the stories are always fresh, the coffee is always hot, and the companionship
+        and camaraderie are always warm and welcoming.</p>
+
+    <p  class="about"><strong>Who Are We?</strong></p>
+
+    <p  class="about">Ultimately, Ficlatté is made up of everyone who spends time here -- writing, creating, critiquing, and
+        commenting. Without our community, this place could not be what it is.</p>
+
+    <p  class="about">However, our current development team is comprised of three individuals:</p>
+
+        <ul class="about">
+            <li>Paul Robertson - <a href="http://twitter.com/ficlatte">@ficlatte</a> - dev-at-ficlatte.com</li>
+            <li><a href="http://jimstitzel.com">Jim Stitzel</a> - <a href="http://twitter.com/stitzelj">@stitzelj</a> -
+             jimstitzel-at-gmail.com</li>
+            <li><a href="https://github.com/HSAR">Shu Sam Chen</a></li>
+        </ul>
+
+    <p class="about">In addition, we'd like to acknowledge the following people, companies, and resources without
+        which our castle would be little more than a pile of stone blocks lying in a field:</p>
+
+        <ul class="about">
+            <li><a href="https://ficlatte.com/authors/dkscully/">dkscully</a> for the original site design and layout
+            that got us off the ground.</li>
+            <li><a href="http://CreateSigns.com">CreateSigns.com</a> for the lovely new logo that now adorns our gates.</li>
+            <li>And of course the various open source projects that we've borrowed from in part or in whole to give
+            you more ways to keep writing:</li>
+                <ul class="repos">
+                    <li><a href="https://www.djangoproject.com/">Django</a></li>
+                    <li><a href="http://getbootstrap.com/">Bootstrap</a></li>
+                    <li><a href="http://github.com/maaku/django-bbcode">Django-bbcode</a></li>
+                    <li><a href="https://github.com/smalot/bootstrap-datetimepicker">bootstrap-datetimepicker</a></li>
+                    <li><a href="https://github.com/arneb/django-messages">django-messages</a></li>
+                    <li><a href="http://www.pixeden.com/">Pixeden</a></li>
+                </ul>
+        </ul>
+
+    <p class="about">And we're not done building. If anything, we're just beginning. So stick around, grab a hot cup o'
+    joe, and keep writing!</p>
+
+{% endblock %}

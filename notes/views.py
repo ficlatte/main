@@ -1,3 +1,4 @@
+
 #coding: utf-8
 #This file is part of Ficlatté.
 #Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
@@ -15,141 +16,114 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.http import Http404, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
-from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
-from django.core.exceptions import ObjectDoesNotExist
-from django.utils.text import wrap
-from django.utils.translation import ugettext as _
-from django.utils import timezone
-from django.core.urlresolvers import reverse
-from django.conf import settings
-
-from castle.models import *
-from .models import *
-from .mail import *
-
 import re
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 re_crlf = re.compile(r'(\r\n|\r|\n)')
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 def get_foo(request, foo, key):
-
     nid = request.get(key, None)
-    if ((nid is None) or (nid == '') or (nid == 'None')):  # Text 'None' results in None return
+    if (nid is None) or (nid == '') or (nid == 'None'):  # Text 'None' results in None return
         return None
 
     # The id may be invalid; the note may not exist.
     # Return it if it's there or None otherwise
     sl = foo.objects.filter(pk=nid)
-    if (sl):
+    if sl:
         return sl[0]
     else:
         return None
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 @login_required
 def inbox(request):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if request.user.is_authenticated():
         profile = request.user.profile
 
     # Get target user's information
-    author = Profile.objects.filter(pen_name_uc = profile.pen_name.upper())
-    if (not author):
+    author = Profile.objects.filter(pen_name_uc=profile.pen_name.upper())
+    if not author:
         raise Http404()
-    author = author[0]          # Get single object from collection
-
-    # Is logged-in user the author?
-    owner = ((profile is not None) and (profile == author))
+    author = author[0]  # Get single object from collection
 
     note_list = Note.objects.inbox_for(request.user.profile)
 
-    context = { 'profile' 		: profile,
-                'author'		: author,
-                'page_title'	: u'Inbox',
-                'note_list'		: note_list,
-              }
+    context = {'profile'        : profile,
+               'author'         : author,
+               'page_title'     : u'Inbox',
+               'note_list'      : note_list,
+               }
 
     return render(request, 'notes/inbox.html', context)
 
-#-----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 @login_required
 def outbox(request):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if request.user.is_authenticated():
         profile = request.user.profile
 
     # Get target user's information
-    author = Profile.objects.filter(pen_name_uc = profile.pen_name.upper())
-    if (not author):
+    author = Profile.objects.filter(pen_name_uc=profile.pen_name.upper())
+    if not author:
         raise Http404()
-    author = author[0]          # Get single object from collection
-
-    # Is logged-in user the author?
-    owner = ((profile is not None) and (profile == author))
+    author = author[0]  # Get single object from collection
 
     note_list = Note.objects.outbox_for(request.user.profile)
 
-    context = { 'profile' 		: profile,
-                'author'		: author,
-                'page_title'	: u'Outbox',
-                'note_list'		: note_list,
-              }
+    context = {'profile'        : profile,
+               'author'         : author,
+               'page_title'     : u'Outbox',
+               'note_list'      : note_list,
+               }
 
     return render(request, 'notes/outbox.html', context)
 
-#-----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 @login_required
 def trash(request):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if request.user.is_authenticated():
         profile = request.user.profile
 
     # Get target user's information
-    author = Profile.objects.filter(pen_name_uc = profile.pen_name.upper())
-    if (not author):
+    author = Profile.objects.filter(pen_name_uc=profile.pen_name.upper())
+    if not author:
         raise Http404()
-    author = author[0]          # Get single object from collection
-
-    # Is logged-in user the author?
-    owner = ((profile is not None) and (profile == author))
+    author = author[0]  # Get single object from collection
 
     note_list = Note.objects.trash_for(request.user.profile)
 
-    context = { 'profile' 		: profile,
-                'author'		: author,
-                'page_title'	: u'Trash',
-                'note_list'		: note_list,
-              }
+    context = {'profile'        : profile,
+               'author'         : author,
+               'page_title'     : u'Trash',
+               'note_list'      : note_list,
+               }
 
     return render(request, 'notes/trash.html', context)
 
-#-----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 @login_required
 def view(request, note_id):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if request.user.is_authenticated():
         profile = request.user.profile
 
     # Get target user's information
-    author = Profile.objects.filter(pen_name_uc = profile.pen_name.upper())
-    if (not author):
+    author = Profile.objects.filter(pen_name_uc=profile.pen_name.upper())
+    if not author:
         raise Http404()
-    author = author[0]          # Get single object from collection
-
-    # Is logged-in user the author?
-    owner = ((profile is not None) and (profile == author))
+    author = author[0]  # Get single object from collection
 
     now = timezone.now()
     note = get_object_or_404(Note, id=note_id)
@@ -172,24 +146,21 @@ def view(request, note_id):
 def new_note(request):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if request.user.is_authenticated():
         profile = request.user.profile
 
     # Get target user's information
-    author = Profile.objects.filter(pen_name_uc = profile.pen_name.upper())
-    if (not author):
+    author = Profile.objects.filter(pen_name_uc=profile.pen_name.upper())
+    if not author:
         raise Http404()
-    author = author[0]          # Get single object from collection
-
-    # Is logged-in user the author?
-    owner = ((profile is not None) and (profile == author))
+    author = author[0]  # Get single object from collection
 
     if request.GET.get('recipient', ''):
         recipient_obj = request.GET.get('recipient', '')
-        recipient = get_object_or_404(Profile, pen_name_uc = recipient_obj.upper())
+        recipient = get_object_or_404(Profile, pen_name_uc=recipient_obj.upper())
 
         # Create a blank note from an author page
-        note = Note(recipient = recipient)
+        note = Note(recipient=recipient)
     else:
         # Create a blank note
         note = Note()
@@ -208,62 +179,58 @@ def new_note(request):
 def submit_note(request):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if request.user.is_authenticated():
         profile = request.user.profile
 
     # Get target user's information
-    author = Profile.objects.filter(pen_name_uc = profile.pen_name.upper())
-    if (not author):
+    author = Profile.objects.filter(pen_name_uc=profile.pen_name.upper())
+    if not author:
         raise Http404()
-    author = author[0]          # Get single object from collection
+    author = author[0]  # Get single object from collection
 
     # Get bits and bobs
-    errors     	= []
-    note      	= get_foo(request.POST, Note,  'nid')
-    new_note	= (note is None)
+    errors = []
+    note = get_foo(request.POST, Note, 'nid')
 
-    # Is logged-in user the author?
-    owner = ((profile is not None) and (profile == author))
-
-    if (not profile.email_authenticated()):
+    if not profile.email_authenticated():
         errors.append(u'You must have authenticated your e-mail address before writing a note.')
 
     # Get story object, either existing or new
-    if (note is None):
-        note = Note(user       = profile,
+    if note is None:
+        note = Note(user=profile,
                     )
 
     # Lookup user ID of recipient
     recipient = request.POST.get('recipient', '')
-    recipient_obj = Profile.objects.get(pen_name_uc = recipient.upper())
+    recipient_obj = Profile.objects.get(pen_name_uc=recipient.upper())
     recipient_id = recipient_obj.user_id
 
     # Populate story object with data from submitted form
-    note.sender_id		= profile.user_id
-    note.recipient_id	= recipient_id
-    note.subject		= request.POST.get('subject', '')
-    note.body			= request.POST.get('body', '')
+    note.sender_id      = profile.user_id
+    note.recipient_id   = recipient_id
+    note.subject        = request.POST.get('subject', '')
+    note.body           = request.POST.get('body', '')
 
     # Condense all end-of-line markers into \n
     note.body = re_crlf.sub(u"\n", note.body)
 
     # Check for submission errors
     l = len(note.body)
-    if (len(note.subject) < 1):
+    if len(note.subject) < 1:
         errors.append(u'Story title must be at least 1 character long')
 
-    if (l > 1024):
+    if l > 1024:
         errors.append(u'Note is over 2048 characters (currently ' + unicode(l) + u')')
 
     # If there have been errors, re-display the page
-    if (errors):
-    # Build context and render page
-        context = {	'profile'		: profile,
-                    'author'		: author,
-                    'note'			: note,
-                    'length_limit'	: 2048,
-                    'error_messages': errors,
-                  }
+    if errors:
+        # Build context and render page
+        context = {'profile'        : profile,
+                   'author'         : author,
+                   'note'           :  note,
+                   'length_limit'   : 2048,
+                   'error_messages' : errors,
+                   }
 
         return render(request, 'notes/compose.html', context)
 
@@ -275,30 +242,27 @@ def submit_note(request):
 
     # Send notification email
     send_note_email(note)
-    
+
     return HttpResponseRedirect(reverse('notes_inbox'))
-    
-#-----------------------------------------------------------------------------
+
+
+# -----------------------------------------------------------------------------
 @login_required
 def reply(request, note_id):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if request.user.is_authenticated():
         profile = request.user.profile
 
     # Get target user's information
-    author = Profile.objects.filter(pen_name_uc = profile.pen_name.upper())
-    if (not author):
+    author = Profile.objects.filter(pen_name_uc=profile.pen_name.upper())
+    if not author:
         raise Http404()
-    author = author[0]          # Get single object from collection
-
-    # Is logged-in user the author?
-    owner = ((profile is not None) and (profile == author))
+    author = author[0]  # Get single object from collection
 
     parent = get_object_or_404(Note, pk=note_id)
     reply_recipient_id = parent.sender_id
-    reply_recipient_obj = Profile.objects.get(pk = reply_recipient_id)
-    reply_recipient = reply_recipient_obj.pen_name
+    reply_recipient_obj = Profile.objects.get(pk=reply_recipient_id)
 
     # Format subject line
     if 'Re: ' in parent.subject:
@@ -313,38 +277,36 @@ def reply(request, note_id):
     quote = '\n'.join(lines)
 
     # Populate reply fields
-    note = Note(sender		= profile,
-                recipient	= reply_recipient_obj,
-                subject		= subject,
-                body		= quote,
+    note = Note(sender      = profile,
+                recipient   = reply_recipient_obj,
+                subject     = subject,
+                body        = quote,
                 )
 
     # Build context and render page
-    context = {	'profile'		: profile,
-                'author'		: author,
-                'page_title'	: u'Reply',
-                'note'			: note,
-                'length_limit'	: 2048,
-              }
+    context = {'profile'      : profile,
+               'author'       : author,
+               'page_title'   : u'Reply',
+               'note'         : note,
+               'length_limit' : 2048,
+               }
 
     return render(request, 'notes/compose.html', context)
 
-#-----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 @login_required
 def forward(request, note_id):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if request.user.is_authenticated():
         profile = request.user.profile
 
     # Get target user's information
-    author = Profile.objects.filter(pen_name_uc = profile.pen_name.upper())
-    if (not author):
+    author = Profile.objects.filter(pen_name_uc=profile.pen_name.upper())
+    if not author:
         raise Http404()
-    author = author[0]          # Get single object from collection
-
-    # Is logged-in user the author?
-    owner = ((profile is not None) and (profile == author))
+    author = author[0]  # Get single object from collection
 
     parent = get_object_or_404(Note, pk=note_id)
 
@@ -361,40 +323,34 @@ def forward(request, note_id):
     quote = '\n'.join(lines)
 
     # Populate reply fields
-    note = Note(sender		= profile,
-                subject		= subject,
-                body		= quote,
+    note = Note(sender=profile,
+                subject=subject,
+                body=quote,
                 )
 
     # Build context and render page
-    context = {	'profile'		: profile,
-                'author'		: author,
-                'page_title'	: u'Reply',
-                'note'			: note,
-                'length_limit'	: 2048,
-              }
+    context = {'profile'        : profile,
+               'author'         : author,
+               'page_title'     : u'Reply',
+               'note'           : note,
+               'length_limit'   : 2048,
+               }
 
     return render(request, 'notes/compose.html', context)
 
-#-----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 @login_required
 def delete(request, note_id, success_url=None):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if request.user.is_authenticated():
         profile = request.user.profile
 
     # Get target user's information
-    author = Profile.objects.filter(pen_name_uc = profile.pen_name.upper())
-    if (not author):
+    author = Profile.objects.filter(pen_name_uc=profile.pen_name.upper())
+    if not author:
         raise Http404()
-    author = author[0]          # Get single object from collection
-
-    # Is logged-in user the author?
-    owner = ((profile is not None) and (profile == author))
-
-    # Has the author's email been confirmed?
-    email_conf = (author.email_auth == 0)
 
     now = timezone.now()
     note = get_object_or_404(Note, id=note_id)
@@ -414,25 +370,20 @@ def delete(request, note_id, success_url=None):
         return HttpResponseRedirect(success_url)
     raise Http404
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 @login_required
 def undelete(request, note_id, success_url=None):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+
+    if request.user.is_authenticated():
         profile = request.user.profile
 
     # Get target user's information
-    author = Profile.objects.filter(pen_name_uc = profile.pen_name.upper())
-    if (not author):
+    author = Profile.objects.filter(pen_name_uc=profile.pen_name.upper())
+    if not author:
         raise Http404()
-    author = author[0]          # Get single object from collection
-
-    # Is logged-in user the author?
-    owner = ((profile is not None) and (profile == author))
-
-    # Has the author's email been confirmed?
-    email_conf = (author.email_auth == 0)
+    author = author[0]  # Get single object from collection
 
     note = get_object_or_404(Note, id=note_id)
     undeleted = False
@@ -451,4 +402,4 @@ def undelete(request, note_id, success_url=None):
         return HttpResponseRedirect(success_url)
     raise Http404
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
