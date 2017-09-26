@@ -17,6 +17,12 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
+from django.contrib.auth.decorators import login_required
+from django.http import Http404, HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
+from django.utils.text import wrap
+
+from .mail import *
 
 # -----------------------------------------------------------------------------
 

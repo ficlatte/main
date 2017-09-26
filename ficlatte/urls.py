@@ -1,7 +1,6 @@
 
 #coding: utf-8
 #This file is part of Ficlatté.
-<<<<<<< HEAD
 #Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
 #
 #    This program is free software: you can redistribute it and/or modify

@@ -222,7 +222,20 @@ class Comment(models.Model):
                 return r[0].rating
         return None
 
-# Activity log
+# Comment Likes
+class CommentLike(models.Model):
+    user = models.ForeignKey(Profile, related_name='comment_liked')
+    comment = models.ForeignKey(Comment, blank=True, null=True)
+
+    def __unicode__(self):
+        return self.story.user.__unicode__() + u' likes comment by "' + self.comment.user.__unicode__() + u' with text "' + unicode(
+        self.comment)[:30] + u'"'
+
+    # Each user can only Like a comment once
+    class Meta:
+        unique_together = ('user', 'comment')
+
+        # Activity log
 class StoryLog(models.Model):
     WRITE   = 0
     VIEW    = 1

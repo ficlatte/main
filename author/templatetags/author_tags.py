@@ -16,19 +16,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.template import Library
-from django.conf import settings
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
-from castle.models import Story
 
 register = Library()
-
-# -----------------------------------------------------------------------------
-@register.filter
-def recent_story(obj):
-    r_story = Story.objects.filter(user_id=obj.id).order_by('-id')[0]
-    return mark_safe(u'Most recent story: <a href="' + getattr(settings, "SITE_URL") + u'/stories/' + escape(r_story.id) + u'">' + escape(
-        r_story.title) + u'</a>, published ' + escape(r_story.ptime.date()))
 
 #-----------------------------------------------------------------------------
 @register.filter

@@ -1,7 +1,7 @@
 {% extends "castle/page_without_sidebar.html" %}
 {%comment%}
 This file is part of Ficlatté.
-Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
+Copyright © 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of version 3 of the GNU Affero General Public
@@ -40,12 +40,11 @@ Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
                             <p id="user-desc">Joined Ficlatt&eacute; in <span>{{author.ctime|date:"F Y"}}</span></p>
                             <p id="user-stats">{{author|num_stories_txt}}, {{author|num_challenges_txt}}, {{author|num_prompts_txt}}, {{author|profile_comments_txt}}, and {{author|num_friends_txt}}</p>
                             <p id="user-wins">Coffee beans earned: {{author|num_challenge_wins}} <img src="{% static 'img/badge-40.png' %}"></p>
-                            <p>{{author|recent_story}}</p>
                         </div> <!-- id="" class="col-sm-8 col-md-8" -->
                         <div class="col-sm-3 col-md-3">
                             {% if profile %}
                                 {{ author|is_friend:profile }}<br />
-                                {{author|author_msg:1}}
+                                {{ author|author_msg:1 }}
                             {% endif %}
                         </div> <!-- id="" class="col-sm-2 col-md-2" -->
                     </div> <!-- id="" class="row" -->

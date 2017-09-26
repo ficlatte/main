@@ -1,11 +1,7 @@
 {% extends "castle/page_with_sidebar.html" %}
 {%comment%}
 This file is part of Ficlatté.
-<<<<<<< HEAD
 Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
-=======
-Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
->>>>>>> comment-likes-static-pages
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of version 3 of the GNU Affero General Public
@@ -165,35 +161,14 @@ Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
     {% endif %}
     {% if story.tag_set.count > 0 or story.prompt or story.challenge or story.prequel_to or story.sequel_to %}
           <div class="panel panel-success" id="inspiration">
-<<<<<<< HEAD
-            {% if story.prompt %}
-            <div class="panel-heading">
-                <h4 class="panel-title">Story prompt:</h4>
-            </div>
-=======
 			{% if story.prompt %}
             <div class="panel-heading">
 				<h4 class="panel-title">Story prompt:</h4>
 			</div>
->>>>>>> comment-likes-static-pages
             <div class="panel-body">
                 {{story.prompt.body|encode_story}}
                 <p>{{story.prompt|prompt_link}} by {{story.prompt.user|author_link}}</p>
             </div>
-<<<<<<< HEAD
-            {% endif %}
-            {% if story.prompt_text %}
-            <div class="panel-heading">
-                <h4 class="panel-title">Author's prompt text:</h4>
-            </div>
-            <div class="panel-body">
-                {{story.prompt_text}}
-            </div>
-            {% endif %}
-            {% if story.challenge %}
-            <div class="panel-heading">
-                <h4 class="panel-title">Story challenge:</h4>
-=======
 			{% endif %}
 			{% if story.prompt_text %}
             <div class="panel-heading">
@@ -206,7 +181,6 @@ Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
 			{% if story.challenge %}
             <div class="panel-heading">
 				<h4 class="panel-title">Story challenge:</h4>
->>>>>>> comment-likes-static-pages
             </div>
             <div class="panel-body">
                 {{story.challenge.body|big_snippet}}
@@ -216,11 +190,7 @@ Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
             {% if story.prequel_to %}
             {% if story.prompt %}<hr>{% endif %}
             <div class="panel-heading">
-<<<<<<< HEAD
-                <h4 class="panel-title">Inspired by (prequel to):</h4>
-=======
 				<h4 class="panel-title">Inspired by (prequel to):</h4>
->>>>>>> comment-likes-static-pages
             </div>
             <div class="panel-body">
                 {{story.prequel_to.body|small_snippet}}
@@ -234,33 +204,6 @@ Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
             {% if story.sequel_to %}
             {% if story.prompt or story.prequel_to %}<hr />{% endif %}
             <div class="panel-heading">
-<<<<<<< HEAD
-                <h4 class="panel-title">Inspired by (sequel to):</h4>
-            </div>
-            <div class="panel-body">
-                {{story.sequel_to.body|small_snippet}}
-                <small>
-                {{story.sequel_to|story_link}}
-                <br />
-                {{story.sequel_to.user|author_span}}
-                </small>
-            </div>
-            {% endif %}
-            {% if not story.prompt and not story.prequel_to and not story.sequel_to and not story.challenge %}
-            <div class="panel-heading">
-                <h4 class="panel-title">Tags:</h4>
-            </div>
-            {% endif %}
-            {% if story.tag_set.count > 0 %}
-            {% if story.prompt or story.prequel_to or story.sequel_to or story.challenge %}<hr>{% endif %}
-                <div class="tag-cloud" id="tags">
-                    <p>This story&#39;s tags are</p>
-                    {% for t in story.tag_set.all %}
-                        <a class="btn btn-primary btn-xs" href="/tags/{{t.tag|iriencode}}/" rel="tag" type="button">{{t.tag}}</a>
-                    {% endfor %}
-                </div> <!-- id="tags" class="tag-cloud" -->
-            {% endif %}
-=======
 				<h4 class="panel-title">Inspired by (sequel to):</h4>
             </div>
             <div class="panel-body">
@@ -286,7 +229,6 @@ Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
 					{% endfor %}
 				</div> <!-- id="tags" class="tag-cloud" -->
 			{% endif %}
->>>>>>> comment-likes-static-pages
           </div> <!-- id="inspiration" class="panel panel-success" -->
     {% endif %}
           <ul class="list-unstyled" id="story-stats">
