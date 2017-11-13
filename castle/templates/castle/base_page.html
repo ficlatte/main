@@ -39,6 +39,16 @@ $(document).ready(function(){
         $("div.mature-content").toggle();
     });
 });
+
+$(document).ready(function () {
+    $("a.like-comment").click(function (event) {
+        var $this = $(this),
+          url = $this.data("url");
+
+        $(document.body).load(url);
+        event.preventDefault();
+      });
+   });
 </script>
   </head>
 
@@ -95,6 +105,7 @@ $(document).ready(function(){
               <li><a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}">Log in</a></li>
               <li><a href="{% url 'register' %}">Register</a></li>
               {% endif %}
+              <li><a href="{% url 'about' %}">What is Ficlatté?</a></li>
               <li><a href="{% url 'blogs' %}">Blog</a></li>
               <li><a href="{% url 'help' %}" target="_blank">Help</a></li>
             </ul>
@@ -132,6 +143,8 @@ $(document).ready(function(){
                 <li><a href="{% url 'challenges' %}" id="nav-challenges">Challenges</a></li>
                 <li><a href="{% url 'prompts' %}" id="nav-prompts">Prompts</a></li>
                 <li><a href="{% url 'recent_stories' %}" id="nav-browse">Browse</a></li>
+                <li><a href="{% url 'member_directory' %}">Authors</a></li>
+                <li><a href="{% url 'tags_null' %}">Tags</a></li>
               </ul>
             </div> <!-- id="navbar2" class="collapse navbar-collapse" -->
           </div> <!-- id="" class="container-fluid" -->
@@ -169,7 +182,12 @@ $(document).ready(function(){
 {% block page_footer %}
       <footer id="footer">
         <hr />
-        <p>&copy; 2014-{% now "Y" %} Ficlatt&eacute;</p>
+        <p>&copy; 2014-{% now "Y" %} Ficlatt&eacute; | All stories are licensed under a
+            <a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license">Creative Commons Attribution-Share Alike 3.0 License</a>.</p>
+        <p class="nav"><a href="{% url 'about' %}">About Ficlatté</a> | <a href="{% url 'rules' %}">Community Standards</a> |
+            <a href="{% url 'help' %}">Help & Support</a> | <a href="{% url 'blogs' %}">Ficlatté Blog</a> |
+            <a href="{% url 'privacy' %}">Privacy Policy</a> | <a href="http://ficly.com">Ficly</a> |
+            <a href="http://ficlets.ficly.com/">The Ficlets Memorial</a></p>
       </footer>
 {% endblock %}
 

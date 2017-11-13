@@ -1,11 +1,12 @@
+
 #coding: utf-8
 #This file is part of Ficlatté.
-#Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
+#Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of version 3 of the GNU Affero General Public
 #    License as published by the Free Software Foundation
-#    
+#
 #
 #    This program is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,6 +40,7 @@ PAGE_BROWSE     = 25
 PAGE_PROMPTS    = 20
 PAGE_CHALLENGES = 15
 PAGE_BLOG       = 10
+PAGE_AUTHORS    = 25
 PAGE_ALLTAGS    = 200
 
 re_crlf = re.compile(r'(\r\n|\r|\n)')
@@ -417,7 +419,7 @@ def add_friend(request, user_id):
     # Add friend to profile's friendship list
     profile.friends.add(friend)
 
-    return HttpResponseRedirect(reverse('author', args=(friend.pen_name,)))
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 # -----------------------------------------------------------------------------
@@ -434,7 +436,7 @@ def del_friend(request, user_id):
     # Add friend to profile's friendship list
     profile.friends.remove(friend)
 
-    return HttpResponseRedirect(reverse('author', args=(friend.pen_name,)))
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 # -----------------------------------------------------------------------------

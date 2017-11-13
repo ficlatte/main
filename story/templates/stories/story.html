@@ -14,7 +14,7 @@ Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
     GNU Affero General Public License for more details.
 
     You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    along with this program.  If not, see <'http://www.gnu.org/licenses/'>.
 {%endcomment%}
 {% load staticfiles %}
 {% load castle_tags %}
@@ -121,6 +121,9 @@ Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
               {{comment.body|encode_story}}
               <ul class="list-inline">
                 <li class="posted">#{{comment.id}} Posted <abbr class="dtposted" title="{{comment.ctime|date:'Y-m-d'}}">{{comment.ctime|age}}</abbr></li>
+                <li class="comment-like">
+                    {% if profile %}{{ comment|comment_like:profile }}{% endif %} <img title="{{comment|users_liked}}" src="/static/img/coffee-mug-blue.png" height="15px"> {{ comment|num_comment_likes }}
+                </li>
                 {% if comment.get_rating %}
                 <li><span class="glyphicon glyphicon-pencil"></span> <span>{{comment.get_rating}}</span> out of <span>5</span></li>
                 {% endif %}

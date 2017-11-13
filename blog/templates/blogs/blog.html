@@ -32,6 +32,7 @@ Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
           </div> <!-- id="" class="row" -->
           <hr />
           {{blog|encode_blog}}
+          <hr />
 {% block paged_content %}
           <h2>Comments <small>({{blog|num_comments}} so far!)</small></h2>
           {% for comment in comments %}
@@ -39,18 +40,21 @@ Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
             <div class="col-md-2">
               {{comment.user|avatar}}
             </div> <!-- id="" class="col-md-2" -->
-            <div class="col-md-10">
+            <div class="col-md-10 comment-body">
               <a name="comment-{{comment.id}}" rel="self bookmark"></a>
               {{comment.user|author_link:'h4'}}
               {{comment.body|encode_story}}
               <ul class="list-inline">
-                <li class="posted">Posted <abbr class="dtposted" title="{{comment.ctime|date:'Y-m-d'}}">{{comment.ctime|age}}</abbr></li>
+                <li class="posted">#{{comment.id}} Posted <abbr class="dtposted" title="{{comment.ctime|date:'Y-m-d'}}">{{comment.ctime|age}}</abbr></li>
+                <li class="comment-like">
+                    {% if profile %}{{ comment|comment_like:profile }}{% endif %} <img title="{{comment|users_liked}}" src="/static/img/coffee-mug-blue.png" height="15px"> {{ comment|num_comment_likes }}
+                </li>
               </ul>
             </div> <!-- id="" class="col-md-10" -->
           </div> <!-- id="" class="row" -->
           {% endfor %}
           {% if profile %}
-          <hr />
+
           <div id="comment-box">
             <h3>Everybody loves feedback</h3>
             <form action="/comment/submit/" id="comment-form" method="post" role="form">
@@ -62,8 +66,8 @@ Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
                   <textarea class="form-control" id="comment_body" maxlength="1024" name="body" rows="7"></textarea>
                 </div> <!-- id="" class="col-md-10" -->
               </div> <!-- id="" class="form-group" -->
-              <div class="form-group">
-                <input alt="Submit comment" type="submit" value="Submit" />
+              <div class="form-group blog-submit">
+                <input class="blog-submit-button" alt="Submit comment" type="submit" value="Submit" />
               </div> <!-- id="" class="form-group" -->
             </form>
           </div> <!-- id="comment-box" class="" -->

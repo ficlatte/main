@@ -1,3 +1,21 @@
+/*
+This file is part of Ficlatté.
+Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of version 3 of the GNU Affero General Public
+    License as published by the Free Software Foundation
+
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 body {
 	background: transparent url("../img/001-Basik-Paper.png") repeat;
 	font-family: 'Ubuntu', sans-serif;
@@ -20,7 +38,12 @@ hr {
 	border-top: 1px solid #ccc;
 }
 
-/* jumbotron */
+#pager {
+    margin-left: 15px;
+}
+
+/* Jumbotron */
+
 .navbar-inverse {
 	background-color: #333;
 }
@@ -33,10 +56,6 @@ hr {
 .img-banner {
 	background-color: transparent;
 	border: none;
-}
-
-.navbar-inverse {
-    background-color: #333;
 }
 
 /* News Headline */
@@ -194,7 +213,7 @@ ul#user-activity-list {
 }
 
 #latest-challenge {
-    clear: left;
+    clear: both;
 }
 
 #latest-challenge .panel-body h3, #latest-prompt .panel-body h3 {
@@ -382,6 +401,11 @@ div.col-md-4 span.byline {
 
 .byline a {
 	color: #5aaa38;
+}
+
+.author-avatar, .author-icon {
+    max-width: 100%;
+    margin: 5px;
 }
 
 /* Resend Confirmation Email */
@@ -644,4 +668,42 @@ li.notes-nav {
 
 .blog-post-meta {
 	font-size: 14px;
+}
+
+.blog-submit {
+    clear: both;
+}
+
+.blog-submit-button {
+    margin-top: 15px;
+}
+
+/* Static Pages */
+.privacy, .about {
+    margin-bottom: 1.3em;
+}
+
+ul.about {
+    list-style-type: disc;
+}
+
+ul.repos {
+    list-style-type: circle;
+}
+
+.rules-item {
+    margin-bottom: 1.3em;
+}
+
+#footer {
+    margin-bottom: 4em;
+}
+
+#footer p {
+    font-size: 12px;
+    text-align: center;
+}
+
+#footer .nav a {
+    padding: 0 5px;
 }

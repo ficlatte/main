@@ -1,6 +1,7 @@
+
 #coding: utf-8
 #This file is part of Ficlatté.
-#Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
+#Copyright (C) 2015-2017 Paul Robertson, Jim Stitzel, & Shu Sam Chen
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of version 3 of the GNU Affero General Public
@@ -14,7 +15,6 @@
 #
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 
 from random import randint
 from django.db.models import Avg, Q, Count
@@ -190,7 +190,7 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
     author = story.user
     owner = ((profile is not None) and (profile == author))
 
-    # User can only edit their own drafts
+    # User can only see their own drafts
     if (story.user != profile and story.draft):
         raise Http404
 
@@ -753,7 +753,7 @@ def tags(request, tag_name):
         return tags_null(request, u'No stories tagged ' + tag_name)
 
     label = u'Stories tagged “' + unicode(tag_name) + u'”'
-    url = u'/tags/' + urlquote(tag_name) + u'/'
+    url = u'/tag/' + urlquote(tag_name) + u'/'
 
     # Build context and render page
     context = {'profile'         : profile,
@@ -780,20 +780,23 @@ def tags_null(request, error_msg=None):
     num_tags = get_num_tags()
     tags = get_all_tags(page_num, PAGE_ALLTAGS)
 
+    label = u'All tags'
     url = u'/tags/'
 
     error_title = u'Tag not found' if error_msg else None
     error_messages = [error_msg] if error_msg else None
 
     # Build context and render page
-    context = {'profile'         : profile,
-               'tags'            : tags,
-               'page_title'      : u'Tag not found',
-               'page_url'        : url,
-               'pages'           : bs_pager(page_num, PAGE_ALLTAGS, num_tags),
-               'user_dashboard'  : 1,
-               'error_title'     : error_title,
-               'error_messages'  : error_messages,
+    context = {'profile'          : profile,
+               'tags'             : tags,
+               'num_tags'         : num_tags,
+               'page_title'       : u'All tags',
+               'page_url'         : url,
+               'pages'            : bs_pager(page_num, PAGE_ALLTAGS, num_tags),
+               'user_dashboard'   : 1,
+               'error_title'      : error_title,
+               'error_messages'   : error_messages,
+               'label'            : label,
                }
     return render(request, 'stories/all_tags.html', context)
 
