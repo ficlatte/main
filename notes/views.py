@@ -21,6 +21,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.utils.text import wrap
+from django.core.exceptions import ObjectDoesNotExist
 
 from .mail import *
 
@@ -201,15 +202,22 @@ def submit_note(request):
     if not profile.email_authenticated():
         errors.append(u'You must have authenticated your e-mail address before writing a note.')
 
-    # Get story object, either existing or new
+    # Get note object, either existing or new
     if note is None:
         note = Note(user=profile,
                     )
 
     # Lookup user ID of recipient
     recipient = request.POST.get('recipient', '')
-    recipient_obj = Profile.objects.get(pen_name_uc=recipient.upper())
-    recipient_id = recipient_obj.user_id
+    try:
+        recipient_obj = Profile.objects.get(pen_name_uc=recipient.upper())
+        recipient_id = recipient_obj.user_id
+    except ObjectDoesNotExist:
+        if profile.email_authenticated():
+            # Only report 'recipient unknown' if profile has validated user name
+            # (will help to reduce data leaks)
+            errors.append(u'Recipient unknown: '+recipient)
+        recipient_id = 0
 
     # Populate story object with data from submitted form
     note.sender_id      = profile.user_id
@@ -225,7 +233,7 @@ def submit_note(request):
     if len(note.subject) < 1:
         errors.append(u'Story title must be at least 1 character long')
 
-    if l > 1024:
+    if l > 2048:
         errors.append(u'Note is over 2048 characters (currently ' + unicode(l) + u')')
 
     # If there have been errors, re-display the page
