@@ -30,6 +30,7 @@ from django.shortcuts import render, get_object_or_404
 from .forms import AvatarUploadForm
 from .images import convert_avatars
 from .mail import *
+from the_pit.views import the_pit
 
 # -----------------------------------------------------------------------------
 # Global symbols
@@ -286,6 +287,8 @@ def confirmation(request, yesno, uid, token):
     logged_in_user = None
     if (request.user.is_authenticated()):
         logged_in_user = request.user.profile
+        if (logged_in_user.spambot):
+            return the_pit(request)
 
     int_token = safe_int(token, -1)
 
@@ -334,6 +337,8 @@ def resend_email_conf(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+    if (profile.spambot):
+        return the_pit(request)
 
     # Set modification time
     time_now = timezone.now()
@@ -412,6 +417,8 @@ def add_friend(request, user_id):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+    if (profile.spambot):
+        return the_pit(request)
 
     # get friend object
     friend = get_object_or_404(Profile, pk=user_id)
@@ -429,6 +436,8 @@ def del_friend(request, user_id):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+    if (profile.spambot):
+        return the_pit(request)
 
     # get friend object
     friend = get_object_or_404(Profile, pk=user_id)
@@ -446,6 +455,8 @@ def avatar_upload(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+    if (profile.spambot):
+        return the_pit(request)
 
     if (request.method == 'POST'):
         form = AvatarUploadForm(request.POST, request.FILES)
@@ -484,6 +495,8 @@ def static_view(request, template_name):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     context = {
                'profile': profile

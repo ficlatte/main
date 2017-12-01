@@ -49,6 +49,7 @@ urlpatterns = patterns('',
     url(r'^challenges/', include('challenge.urls')), # Challenges
     url(r'^comment/', include('comment.urls')), # Comments
     url(r'^notes/', include('notes.urls')), # Notes
+    url(r'^the_pit/', include('the_pit.urls')), # Spambot purgatory
     
     # Registration and Authentication
     url(r'^$', 'story.views.home', name='home'),

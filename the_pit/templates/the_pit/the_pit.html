@@ -1,0 +1,41 @@
+{% comment %}
+This file is part of Ficlatté.
+Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of version 3 of the GNU Affero General Public
+    License as published by the Free Software Foundation
+    
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+{% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="IE=edge" http-equiv="X-UA-Compatible" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="Ficlatté" name="author" />
+    <meta content="Perl" name="generator" />
+    <meta content="Micro-fiction site" name="description" />
+    <meta content="amazing" name="keywords" />
+    <title>the pit</title>
+  </head>
+
+  <body {% block body_tag %} {% endblock %} >
+    {% for r in refs %}
+    <p><a href="{% url 'the_pit' %}{{ r }}/">{{ r }}</a></p>
+    {% endfor %}
+    <footer id="footer">
+      <hr />
+      <p>&copy; 2014-{% now "Y" %} Ficlatt&eacute;</p>
+    </footer>
+
+  </body>
+</html>

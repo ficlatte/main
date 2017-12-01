@@ -24,6 +24,7 @@ from django.utils.text import wrap
 from django.core.exceptions import ObjectDoesNotExist
 
 from .mail import *
+from the_pit.views import the_pit
 
 # -----------------------------------------------------------------------------
 
@@ -50,6 +51,8 @@ def inbox(request):
     profile = None
     if request.user.is_authenticated():
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # Get target user's information
     author = Profile.objects.filter(pen_name_uc=profile.pen_name.upper())
@@ -75,6 +78,8 @@ def outbox(request):
     profile = None
     if request.user.is_authenticated():
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # Get target user's information
     author = Profile.objects.filter(pen_name_uc=profile.pen_name.upper())
@@ -100,6 +105,8 @@ def trash(request):
     profile = None
     if request.user.is_authenticated():
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # Get target user's information
     author = Profile.objects.filter(pen_name_uc=profile.pen_name.upper())
@@ -125,6 +132,8 @@ def view(request, note_id):
     profile = None
     if request.user.is_authenticated():
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # Get target user's information
     author = Profile.objects.filter(pen_name_uc=profile.pen_name.upper())
@@ -155,6 +164,8 @@ def new_note(request):
     profile = None
     if request.user.is_authenticated():
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # Get target user's information
     author = Profile.objects.filter(pen_name_uc=profile.pen_name.upper())
@@ -188,6 +199,8 @@ def submit_note(request):
     profile = None
     if request.user.is_authenticated():
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # Get target user's information
     author = Profile.objects.filter(pen_name_uc=profile.pen_name.upper())
@@ -267,6 +280,8 @@ def reply(request, note_id):
     profile = None
     if request.user.is_authenticated():
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # Get target user's information
     author = Profile.objects.filter(pen_name_uc=profile.pen_name.upper())
@@ -315,6 +330,8 @@ def forward(request, note_id):
     profile = None
     if request.user.is_authenticated():
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # Get target user's information
     author = Profile.objects.filter(pen_name_uc=profile.pen_name.upper())
@@ -360,6 +377,8 @@ def delete(request, note_id, success_url=None):
     profile = None
     if request.user.is_authenticated():
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # Get target user's information
     author = Profile.objects.filter(pen_name_uc=profile.pen_name.upper())
@@ -392,6 +411,8 @@ def undelete(request, note_id, success_url=None):
 
     if request.user.is_authenticated():
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # Get target user's information
     author = Profile.objects.filter(pen_name_uc=profile.pen_name.upper())

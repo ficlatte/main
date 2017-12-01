@@ -48,6 +48,7 @@ class Profile(models.Model):
     ctime               = models.DateTimeField(default=timezone.now)    # Creation time
     mtime               = models.DateTimeField(default=timezone.now)    # Modification time
     atime               = models.DateTimeField(default=timezone.now)    # Can't remember what this was supposed to be for
+    spambot             = models.BooleanField(default=False)
 
     # Flags
     HAS_AVATAR = 1

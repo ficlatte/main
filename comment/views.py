@@ -19,7 +19,7 @@
 
 from django.core.exceptions import ObjectDoesNotExist
 from castle.views import *
-
+from the_pit.views import the_pit
 
 # -----------------------------------------------------------------------------
 # Comment Submission
@@ -33,6 +33,8 @@ def submit_comment(request):
         profile = request.user.profile
     if (not profile):
         raise Http404
+    if (profile.spambot):
+        return the_pit(request)
 
     # Get bits and bobs
     errors = []
@@ -192,6 +194,8 @@ def like_comment(request, comment_id):
         profile = request.user.profile
     if profile is None:
         raise Http404
+    if (profile.spambot):
+        return the_pit(request)
 
     CommentLike.objects.get_or_create(user=profile, comment=comment)
 
@@ -215,6 +219,8 @@ def unlike_comment(request, comment_id):
         profile = request.user.profile
     if profile is None:
         raise Http404
+    if (profile.spambot):
+        return the_pit(request)
 
     CommentLike.objects.filter(user=profile, comment=comment).delete()
 

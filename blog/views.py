@@ -18,7 +18,7 @@
 
 
 from comment.views import *
-
+from the_pit.views import the_pit
 
 # -----------------------------------------------------------------------------
 def blogs(request):
@@ -93,6 +93,8 @@ def blog_unsubscribe(request, blog_id, error_title='', error_messages=None):
         profile = request.user.profile
     if (profile is None):
         raise Http404
+    if (profile.spambot):
+        return the_pit(request)
 
     Subscription.objects.filter(user=profile, blog=blog).delete()
 
@@ -119,6 +121,8 @@ def new_blog(request):
 
     if ((profile is None) or (not request.user.has_perm("castle.post_blog"))):
         raise Http404
+    if (profile.spambot):
+        return the_pit(request)
 
     # Build context and render page
     context = {'profile'          : profile,
@@ -145,6 +149,8 @@ def edit_blog(request, blog_id):
 
     if ((profile is None) or (not request.user.has_perm("castle.post_blog"))):
         raise Http404
+    if (profile.spambot):
+        return the_pit(request)
 
     # Build context and render page
     context = {'profile'          : profile,
@@ -169,6 +175,8 @@ def submit_blog(request):
 
     if ((profile is None) or (not request.user.has_perm("castle.post_blog"))):
         raise Http404
+    if (profile.spambot):
+        return the_pit(request)
 
     # Get bits and bobs
     errors = []

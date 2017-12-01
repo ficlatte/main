@@ -18,7 +18,7 @@
 
 from random import randint
 from comment.views import *
-
+from the_pit.views import the_pit
 
 # -----------------------------------------------------------------------------
 def get_popular_prompts(page_num=1, page_size=10):
@@ -82,6 +82,8 @@ def browse_prompts(request, dataset=0):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     page_num = safe_int(request.GET.get('page_num', 1))
 
@@ -165,8 +167,10 @@ def prompt_view(request, prompt_id):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
-        # Get stories inspired by prompt
+    # Get stories inspired by prompt
     page_num = safe_int(request.GET.get('page_num', 1))
     stories = prompt.story_set.exclude(draft=True).order_by('ctime')[(page_num - 1) * PAGE_STORIES:page_num * PAGE_STORIES]
     num_stories = prompt.story_set.exclude(draft=True).count()
@@ -223,6 +227,8 @@ def new_prompt(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # Create a blank prompt to give the template some defaults
     prompt = Prompt()
@@ -246,6 +252,8 @@ def edit_prompt(request, prompt_id):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # Get prompt
     prompt = get_object_or_404(Prompt, pk=prompt_id)
@@ -274,6 +282,8 @@ def submit_prompt(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # Get bits and bobs
     errors = []
@@ -362,6 +372,8 @@ def prompt_subscribe(request, prompt_id, error_title='', error_messages=None):
         profile = request.user.profile
     if (profile is None):
         raise Http404
+    if (profile.spambot):
+        return the_pit(request)
 
     Subscription.objects.get_or_create(user=profile, prompt=prompt)
 
@@ -388,6 +400,8 @@ def prompt_unsubscribe(request, prompt_id, error_title='', error_messages=None):
         profile = request.user.profile
     if (profile is None):
         raise Http404
+    if (profile.spambot):
+        return the_pit(request)
 
     Subscription.objects.filter(user=profile, prompt=prompt).delete()
 

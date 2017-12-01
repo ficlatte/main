@@ -20,7 +20,7 @@ from random import randint
 from django.db.models import Avg, Q, Count
 from django.utils.http import urlquote
 from comment.views import *
-
+from the_pit.views import the_pit
 
 # -----------------------------------------------------------------------------
 def home(request):
@@ -28,6 +28,8 @@ def home(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # Get featured story
     featured_id = Misc.objects.filter(key='featured')
@@ -185,6 +187,8 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # Is logged-in user the author?
     author = story.user
@@ -296,6 +300,8 @@ def new_story(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # Get prequel, sequel and prompt data from the GET request
     prequel_to = get_foo(request.GET, Story, 'prequel_to')
@@ -331,6 +337,8 @@ def edit_story(request, story_id):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # Get story
     story = get_object_or_404(Story, pk=story_id)
@@ -362,6 +370,8 @@ def delete_story(request, story_id):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # Get story
     story = get_object_or_404(Story, pk=story_id)
@@ -388,6 +398,8 @@ def submit_story(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # Has the author's email been confirmed?
     email_conf = (profile.email_auth == 0)
@@ -538,6 +550,8 @@ def browse_stories(request, dataset=0):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     page_num = safe_int(request.GET.get('page_num', 1))
 
@@ -590,6 +604,8 @@ def story_subscribe(request, story_id, error_title='', error_messages=None):
         profile = request.user.profile
     if (profile is None):
         raise Http404
+    if (profile.spambot):
+        return the_pit(request)
 
     Subscription.objects.get_or_create(user=profile, story=story)
 
@@ -616,6 +632,8 @@ def story_unsubscribe(request, story_id, error_title='', error_messages=None):
         profile = request.user.profile
     if (profile is None):
         raise Http404
+    if (profile.spambot):
+        return the_pit(request)
 
     Subscription.objects.filter(user=profile, story=story).delete()
 
@@ -642,6 +660,8 @@ def prequel_subscribe(request, story_id, error_title='', error_messages=None):
         profile = request.user.profile
     if (profile is None):
         raise Http404
+    if (profile.spambot):
+        return the_pit(request)
 
     Subscription.objects.get_or_create(user=profile, prequel_to=story)
 
@@ -668,6 +688,8 @@ def prequel_unsubscribe(request, story_id, error_title='', error_messages=None):
         profile = request.user.profile
     if (profile is None):
         raise Http404
+    if (profile.spambot):
+        return the_pit(request)
 
     Subscription.objects.filter(user=profile, prequel_to=story).delete()
 
@@ -694,6 +716,8 @@ def sequel_subscribe(request, story_id, error_title='', error_messages=None):
         profile = request.user.profile
     if (profile is None):
         raise Http404
+    if (profile.spambot):
+        return the_pit(request)
 
     Subscription.objects.get_or_create(user=profile, sequel_to=story)
 
@@ -720,6 +744,8 @@ def sequel_unsubscribe(request, story_id, error_title='', error_messages=None):
         profile = request.user.profile
     if (profile is None):
         raise Http404
+    if (profile.spambot):
+        return the_pit(request)
 
     Subscription.objects.filter(user=profile, sequel_to=story).delete()
 
@@ -742,6 +768,8 @@ def tags(request, tag_name):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     page_num = safe_int(request.GET.get('page_num', 1))
 
@@ -773,6 +801,8 @@ def tags_null(request, error_msg=None):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     page_num = safe_int(request.GET.get('page_num', 1))
 

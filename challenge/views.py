@@ -20,7 +20,7 @@ from django.shortcuts import redirect
 from datetime import datetime
 from comment.views import *
 from .forms import ChallengeDateForm
-
+from the_pit.views import the_pit
 
 # -----------------------------------------------------------------------------
 def get_popular_challenges(page_num=1, page_size=10):
@@ -236,6 +236,8 @@ def new_challenge(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+    if (profile.spambot):
+        return the_pit(request)
 
     if (request.method == "POST"):
         form = ChallengeDateForm(request.POST, instance=post)
@@ -272,6 +274,8 @@ def edit_challenge(request, challenge_id):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # User can only edit their own challenges
     if (challenge.user != profile):
@@ -299,6 +303,8 @@ def submit_challenge(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # Get bits and bobs
     errors = []
@@ -400,6 +406,8 @@ def challenge_winner(request, challenge_id, story_id):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # Only challenge's author can select a winner
     if (challenge.user_id != profile.id):
@@ -441,6 +449,8 @@ def challenge_subscribe(request, challenge_id, error_title='', error_messages=No
         profile = request.user.profile
     if (profile is None):
         raise Http404
+    if (profile.spambot):
+        return the_pit(request)
 
     Subscription.objects.get_or_create(user=profile, challenge=challenge)
 
@@ -467,6 +477,8 @@ def challenge_unsubscribe(request, challenge_id, error_title='', error_messages=
         profile = request.user.profile
     if (profile is None):
         raise Http404
+    if (profile.spambot):
+        return the_pit(request)
 
     Subscription.objects.filter(user=profile, challenge=challenge).delete()
 
@@ -493,6 +505,8 @@ def challenge_entry_subscribe(request, challenge_id, error_title='', error_messa
         profile = request.user.profile
     if (profile is None):
         raise Http404
+    if (profile.spambot):
+        return the_pit(request)
 
     Subscription.objects.get_or_create(user=profile, ch_entry=challenge)
 
@@ -519,6 +533,8 @@ def challenge_entry_unsubscribe(request, challenge_id, error_title='', error_mes
         profile = request.user.profile
     if (profile is None):
         raise Http404
+    if (profile.spambot):
+        return the_pit(request)
 
     Subscription.objects.filter(user=profile, ch_entry=challenge).delete()
 
