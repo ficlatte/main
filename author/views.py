@@ -41,8 +41,8 @@ def author(request, pen_name):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
-    if (profile.spambot):
-        return the_pit(request)
+        if (profile.spambot):
+            return the_pit(request)
 
     # Get target author's information
     author = Profile.objects.filter(pen_name_uc=pen_name.upper())
@@ -108,8 +108,8 @@ def drafts(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
-    if (profile.spambot):
-        return the_pit(request)
+        if (profile.spambot):
+            return the_pit(request)
 
     # Has the author's email been confirmed?
     email_conf = (profile.email_auth == 0)
@@ -140,8 +140,8 @@ def author_prompts(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
-    if (profile.spambot):
-        return the_pit(request)
+        if (profile.spambot):
+            return the_pit(request)
 
     # Has the author's email been confirmed?
     email_conf = (profile.email_auth == 0)
@@ -173,8 +173,8 @@ def author_challenges(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
-    if (profile.spambot):
-        return the_pit(request)
+        if (profile.spambot):
+            return the_pit(request)
 
     # Has the author's email been confirmed?
     email_conf = (profile.email_auth == 0)
@@ -206,8 +206,8 @@ def profile_view(request, error_title=None, error_messages=None):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
-    if (profile.spambot):
-        return the_pit(request)
+        if (profile.spambot):
+            return the_pit(request)
 
     # Do e-mail subscription bits
     email_flags = []

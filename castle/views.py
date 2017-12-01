@@ -337,8 +337,8 @@ def resend_email_conf(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
-    if (profile.spambot):
-        return the_pit(request)
+        if (profile.spambot):
+            return the_pit(request)
 
     # Set modification time
     time_now = timezone.now()
@@ -417,8 +417,8 @@ def add_friend(request, user_id):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
-    if (profile.spambot):
-        return the_pit(request)
+        if (profile.spambot):
+            return the_pit(request)
 
     # get friend object
     friend = get_object_or_404(Profile, pk=user_id)
@@ -436,8 +436,8 @@ def del_friend(request, user_id):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
-    if (profile.spambot):
-        return the_pit(request)
+        if (profile.spambot):
+            return the_pit(request)
 
     # get friend object
     friend = get_object_or_404(Profile, pk=user_id)
@@ -455,8 +455,8 @@ def avatar_upload(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
-    if (profile.spambot):
-        return the_pit(request)
+        if (profile.spambot):
+            return the_pit(request)
 
     if (request.method == 'POST'):
         form = AvatarUploadForm(request.POST, request.FILES)

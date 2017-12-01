@@ -26,6 +26,8 @@ def blogs(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # Get blogs
     page_num = safe_int(request.GET.get('page_num', 1))
@@ -51,6 +53,8 @@ def blog_view(request, blog_id, comment_text=None, error_title='', error_message
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # Is logged-in user the author?
     author = blog.user
@@ -118,11 +122,11 @@ def new_blog(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     if ((profile is None) or (not request.user.has_perm("castle.post_blog"))):
         raise Http404
-    if (profile.spambot):
-        return the_pit(request)
 
     # Build context and render page
     context = {'profile'          : profile,

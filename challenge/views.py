@@ -82,6 +82,8 @@ def browse_challenges(request, dataset=0):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     page_num = safe_int(request.GET.get('page_num', 1))
 
@@ -130,6 +132,8 @@ def challenges(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
     # Get featured challenge
     featured_id = Misc.objects.filter(key='featured_challenge')
@@ -165,8 +169,10 @@ def challenge_view(request, challenge_id, comment_text=None, error_title='', err
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
+        if (profile.spambot):
+            return the_pit(request)
 
-        # Get stories inspired by challenge
+    # Get stories inspired by challenge
     page_num = safe_int(request.GET.get('page_num', 1))
     stories = challenge.story_set.exclude(draft=True).order_by('ctime')[(page_num - 1) * PAGE_STORIES:page_num * PAGE_STORIES]
     num_stories = challenge.story_set.exclude(draft=True).count()
@@ -236,8 +242,8 @@ def new_challenge(request):
     profile = None
     if (request.user.is_authenticated()):
         profile = request.user.profile
-    if (profile.spambot):
-        return the_pit(request)
+        if (profile.spambot):
+            return the_pit(request)
 
     if (request.method == "POST"):
         form = ChallengeDateForm(request.POST, instance=post)
