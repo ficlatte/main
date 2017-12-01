@@ -47,6 +47,10 @@ $ python manage.py runserver
 
 You should now be able to connect to the test server (http://127.0.0.1:8000) using your superuser account, or create yourself an author using the 'register' link in the top right hand corner: just like if you were using the real site.
 
+For your local development server, you can run an email simulator by running the following command in a new terminal window:
+
+$ python -m smtpd -n -c DebuggingServer localhost:1025
+
 The challenges module requires a datepicker package be installed:
 
 $ pip install django-datetime-widget

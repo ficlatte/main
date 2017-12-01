@@ -16,6 +16,11 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import urllib
+import urllib2
+import json
+from ficlatte import settings
+from django.contrib import messages
 from django.utils.http import urlquote
 from castle.views import *
 
@@ -369,9 +374,27 @@ def submit_profile(request):
         un = unicode(profile.id)
         user.username = u'user' + un
         user.last_name = un
-        user.save()
-        user = authenticate(username=profile.user.username, password=password)
-        login(request, user)
+
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        url = 'https://www.google.com/recaptcha/api/siteverify'
+        values = {
+            'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+        data = urllib.urlencode(values)
+        data2 = urllib.quote(data)
+        req = urllib2.Request(url, data2)
+        response = urllib2.urlopen(req)
+        result = json.load(response)
+
+        if result['success']:
+            user.save()
+            user = authenticate(username=profile.user.username, password=password)
+            login(request, user)
+            messages.success(request, 'Registration successful!')
+        else:
+            messages.error(request, 'Invalid reCAPTCHA. Please try again.')
+
     else:
         profile.save()
 

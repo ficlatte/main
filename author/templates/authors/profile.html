@@ -86,8 +86,19 @@ Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
               <label><input name="rules" type="checkbox" {% if profile.id %}checked {% endif %}/>I agree to the <a href="/rules/" target="_blank">Ficlatt&eacute; rules</a></label>
             </div> <!-- id="" class="checkbox" -->
             <input name="action" type="hidden" value="update profile" />
-            <input name="uid" type="hidden" value="1" />
-            <button class="btn btn-lg btn-success btn-block" type="submit">Submit</button>
+            <input name="uid" type="hidden" value="1" /><br />
+            {% if not profile %}
+              <script src='https://www.google.com/recaptcha/api.js'></script>
+              <script type="text/javascript">
+                function recaptcha_callback() {
+                    $('#capenable').removeAttr('disabled');
+                };
+              </script>
+              <div class="g-recaptcha" data-sitekey="6Lf4LjsUAAAAAJTICi7mVecanM-8guxhAf-9bEB_"  data-callback="recaptcha_callback"></div><br />
+              <button disabled="disabled" id="capenable" class="btn btn-lg btn-success btn-block" type="submit">Submit</button>
+            {% else %}
+                <button class="btn btn-lg btn-success btn-block" type="submit">Submit</button>
+            {% endif %}
           </form>
 
           <p>If you want to change your pen name, password and/or e-mail address, also enter your current password.</p>
