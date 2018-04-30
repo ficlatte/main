@@ -216,7 +216,7 @@ class Comment(models.Model):
     blog        = models.ForeignKey('castle.Blog',  blank=True, null=True)
     ctime       = models.DateTimeField(default=timezone.now)
     mtime       = models.DateTimeField(default=timezone.now)    
-    spam        = models.IntegerField(default=0)
+    spam        = models.IntegerField(default=0, choices=SPAM_OPTIONS)
 
     def __unicode__(self):
         if (self.story is not None):
@@ -288,7 +288,8 @@ class StoryLog(models.Model):
     comment     = models.ForeignKey(Comment, blank=True, null=True)     # ID of comment, if this log is for a comment
     quel        = models.ForeignKey(Story,   blank=True, null=True, related_name='activity_quel_set')     # ID of prequel/sequel if this log is for a prequel/sequel
     prompt      = models.ForeignKey(Prompt, blank=True, null=True)
-    challenge    = models.ForeignKey(Challenge, blank=True, null=True)
+    ignore_me   = models.BooleanField(default=False)
+    challenge   = models.ForeignKey(Challenge, blank=True, null=True)
     ctime       = models.DateTimeField(default=timezone.now)
     
     def get_opt(self, o):
