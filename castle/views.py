@@ -393,6 +393,12 @@ def dashboard(request):
 
     # Recent users
     recent_users = Profile.objects.all().order_by('-ctime')[0:10]
+    
+    # Spam stats
+    quarantined    = Comment.objects.filter(spam=Comment.SPAM_QUARANTINE).count()
+    confirmed_spam = Comment.objects.filter(spam=Comment.SPAM_CONFIRMED).count()
+    not_spam       = Comment.objects.filter(spam=Comment.SPAM_APPROVED).count()
+    spambots       = Profile.objects.filter(spambot=True).count()
 
     # Build context and render page
     context = {
@@ -405,6 +411,10 @@ def dashboard(request):
                'pub_stories'   : pub_stories,
                'log'           : log,
                'recent_users'  : recent_users,
+               'quarantined'   : quarantined,
+               'confirmed_spam': confirmed_spam,
+               'not_spam'      : not_spam,
+               'spambots'      : spambots,
               }
 
     return render(request, 'castle/dashboard.html', context)

@@ -71,6 +71,10 @@ def submit_comment(request):
     # Condense all end-of-line markers into \n
     comment.body = re_crlf.sub(u"\n", comment.body)
 
+    # Check for obvious spam indicators (but don't signal to spam bot that we're onto them)
+    if (comment.body.find('<a href=') >= 0):
+        comment.spam = Comment.SPAM_QUARANTINE
+
     # Check for submission errors
     l = len(comment.body)
     if ((l < 1) and (rating is None)):

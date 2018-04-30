@@ -40,15 +40,21 @@ def home(request):
             featured = featured_query[0]
 
     # Get latest challenge
-    challenge = Challenge.objects.all().order_by('-id')[0]
+    try:
+        challenge = Challenge.objects.all().order_by('-id')[0]
+    except IndexError:
+        prompt = None
 
     # Get latest prompt
-    prompt = Prompt.objects.all().order_by('-id')[0]
+    try:
+        prompt = Prompt.objects.all().order_by('-id')[0]
+    except IndexError:
+        prompt = None
 
     # Suppress story if marked as mature and either the user is not logged in
     # or the user has not enabled viewing of mature stories
     suppressed = False
-    if (featured.mature):
+    if (featured is not None) and (featured.mature):
         if ((not profile) or ((featured.user != profile) and (not profile.mature))):
             suppressed = True
 
@@ -136,6 +142,8 @@ def get_old_stories(page_size=10):
 # -----------------------------------------------------------------------------
 def get_random_story(page_size=10):
     total = Story.objects.filter(draft=False).count()
+    if (total < 1):
+        return 0
     end = 0 if (total < page_size) else (total - page_size)
     first = randint(0, end)
     story = Story.objects.filter(draft=False).order_by('ptime')[first]
@@ -221,7 +229,7 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
 
     # Get comments
     page_num = safe_int(request.GET.get('page_num', 1))
-    comments = story.comment_set.all().order_by('ctime')[(page_num - 1) * PAGE_COMMENTS:page_num * PAGE_COMMENTS]
+    comments = story.comment_set.filter(spam__lt=Comment.SPAM_QUARANTINE).order_by('ctime')[(page_num - 1) * PAGE_COMMENTS:page_num * PAGE_COMMENTS]
 
     # Log view
     if (profile):
@@ -276,7 +284,7 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
                'sequel_subscribed'   : sequel_subscribed,
                'page_title'          : story.title,
                'page_url'            : u'/stories/' + unicode(story_id) + u'/',
-               'pages'               : bs_pager(page_num, PAGE_COMMENTS, story.comment_set.count()),
+               'pages'               : bs_pager(page_num, PAGE_COMMENTS, story.comment_set.filter(spam__lt=Comment.SPAM_QUARANTINE).count()),
                'story_sidepanel'     : 1,
                'owner'               : owner,
                'challenge'           : challenge,
