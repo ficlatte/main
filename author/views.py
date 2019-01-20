@@ -229,6 +229,13 @@ def profile_view(request, error_title=None, error_messages=None):
         page_title = u'Profile of ' + profile.pen_name
     else:
         page_title = u'Register new user'
+    
+    # Do we have a Captcha key?
+    try:
+        k = settings.GOOGLE_RECAPTCHA_SECRET_KEY
+        no_captcha = False
+    except AttributeError:
+        no_captcha = True
 
     # Build context and render page
     context = {'profile'          : profile,
@@ -238,6 +245,7 @@ def profile_view(request, error_title=None, error_messages=None):
                'email_flags'      : email_flags,
                'error_title'      : error_title,
                'error_messages'   : error_messages,
+               'no_captcha'       : no_captcha,
                }
 
     return render(request, 'authors/profile.html', context)
@@ -246,6 +254,7 @@ def profile_view(request, error_title=None, error_messages=None):
 # -----------------------------------------------------------------------------
 @transaction.atomic
 def submit_profile(request):
+    print "SHITE!"
     # Get user profile
     new_registration = False
     new_email_addr = False
@@ -367,6 +376,7 @@ def submit_profile(request):
         else:
             return profile_view(request, 'Profile update unsuccessful', errors)
 
+    print "SHITE1"
     # If new registration, we should create a new Django user
     if (new_registration):
         # Create a temporary user name because we need to call the
@@ -387,30 +397,43 @@ def submit_profile(request):
         un = unicode(profile.id)
         user.username = u'user' + un
         user.last_name = un
+        print "shite2"
 
-        recaptcha_response = request.POST.get('g-recaptcha-response')
-        url = 'https://www.google.com/recaptcha/api/siteverify'
-        values = {
-            'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
-            'response': recaptcha_response
-        }
-        data = urllib.urlencode(values)
-        data2 = urllib.quote(data)
-        req = urllib2.Request(url, data2)
-        response = urllib2.urlopen(req)
-        result = json.load(response)
+        try:
+            key = settings.GOOGLE_RECAPTCHA_SECRET_KEY
+            recaptcha_response = request.POST.get('g-recaptcha-response')
+            url = 'https://www.google.com/recaptcha/api/siteverify'
+            values = {
+                'secret': key,
+                'response': recaptcha_response
+            }
+            data = urllib.urlencode(values)
+            data2 = urllib.quote(data)
+            req = urllib2.Request(url, data2)
+            response = urllib2.urlopen(req)
+            result = json.load(response)
 
-        if result['success']:
+            if result['success']:
+                user.save()
+                user = authenticate(username=profile.user.username, password=password)
+                login(request, user)
+                messages.success(request, 'Registration successful!')
+            else:
+                messages.error(request, 'Invalid reCAPTCHA. Please try again.')
+        except AttributeError:
+            # We do not have a RECAPTCHA key, so skip confirmation
             user.save()
             user = authenticate(username=profile.user.username, password=password)
             login(request, user)
             messages.success(request, 'Registration successful!')
-        else:
-            messages.error(request, 'Invalid reCAPTCHA. Please try again.')
+            print "shite3"
 
     else:
+        print "shite4"
         profile.save()
 
+    print "shite5"
+    
     # If this is a new user, or the e-mail address is changed, send a conf email
     if (new_registration or new_email_addr):
         # Get random 64 bit integer
@@ -419,9 +442,12 @@ def submit_profile(request):
         profile.email_addr = email_addr
         profile.email_auth = token_s
         profile.email_time = time_now
+        print "shite6"
         send_conf_email(profile, token)
         profile.save()
+        print "shite7"
 
+    print "shite8"
     return HttpResponseRedirect(reverse('author', args=(profile.pen_name,)))
 
 # -----------------------------------------------------------------------------

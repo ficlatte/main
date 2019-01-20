@@ -62,7 +62,7 @@ def blog_view(request, blog_id, comment_text=None, error_title='', error_message
 
     # Get comments
     page_num = safe_int(request.GET.get('page_num', 1))
-    comments = blog.comment_set.all().order_by('ctime')[(page_num - 1) * PAGE_COMMENTS:page_num * PAGE_COMMENTS]
+    comments = blog.comment_set.filter(spam__lt=Comment.SPAM_QUARANTINE).order_by('ctime')[(page_num - 1) * PAGE_COMMENTS:page_num * PAGE_COMMENTS]
 
     # Is user subscribed?
     subscribed = False
@@ -75,7 +75,7 @@ def blog_view(request, blog_id, comment_text=None, error_title='', error_message
                'blog'            : blog,
                'comments'        : comments,
                'page_url'        : u'/blog/' + unicode(blog_id),
-               'pages'           : bs_pager(page_num, PAGE_COMMENTS, blog.comment_set.count()),
+               'pages'           : bs_pager(page_num, PAGE_COMMENTS, blog.comment_set.filter(spam__lt=Comment.SPAM_QUARANTINE).count()),
                'owner'           : owner,
                'comment_text'    : comment_text,
                'subscribed'      : subscribed,

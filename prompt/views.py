@@ -177,7 +177,7 @@ def prompt_view(request, prompt_id):
 
     # Get comments
     page_num = safe_int(request.GET.get('page_num', 1))
-    comments = prompt.comment_set.all().order_by('ctime')[(page_num - 1) * PAGE_COMMENTS:page_num * PAGE_COMMENTS]
+    comments = prompt.comment_set.filter(spam__lt=Comment.SPAM_QUARANTINE).order_by('ctime')[(page_num - 1) * PAGE_COMMENTS:page_num * PAGE_COMMENTS]
 
     # Prompt's owner gets an edit link
     owner = ((profile is not None) and (profile == prompt.user))

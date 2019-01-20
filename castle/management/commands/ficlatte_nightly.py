@@ -24,6 +24,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from date import timedelta
 import time
+from datetime import datetime, timedelta
 
 class Command(BaseCommand):
     help = 'Run nightly magic to select featured story'
@@ -77,6 +78,7 @@ class Command(BaseCommand):
                 "FROM castle_storylog AS l "+
                 "WHERE l.story_id IS NOT NULL AND s.id=l.story_id "+
                 "AND ((timestampdiff(day,l.ctime,now())) < 30) "+
+                "AND (l.ignore_me != 1) "+
                 "AND l.user_id != s.user_id )")
         elif (db == 'postgres'):
             cursor.execute(
@@ -84,6 +86,7 @@ class Command(BaseCommand):
                 "sum(l.log_type / (date_part('day', NOW() - l.ctime)+1)) "+
                 "FROM castle_storylog AS l "+
                 "WHERE l.story_id IS NOT NULL AND s.id=l.story_id "+
+                "AND (l.ignore_me != TRUE) "+
                 "AND ((date_part('day', NOW() - l.ctime)) < 30) "+
                 "AND l.user_id != s.user_id )")
 
@@ -118,6 +121,7 @@ class Command(BaseCommand):
                 "FROM castle_storylog AS l "+
                 "WHERE l.prompt_id IS NOT NULL AND p.id=l.prompt_id "+
                 "AND ((timestampdiff(day,l.ctime,now())) < 30) "+
+                "AND (l.ignore_me != 1) "+
                 "AND l.user_id != p.user_id )")
         elif (db == 'postgres'):
             cursor.execute(
@@ -126,6 +130,7 @@ class Command(BaseCommand):
                 "FROM castle_storylog AS l "+
                 "WHERE l.prompt_id IS NOT NULL AND p.id=l.prompt_id "+
                 "AND ((date_part('day', NOW() - l.ctime)) < 30) "+
+                "AND (l.ignore_me != TRUE) "+
                 "AND l.user_id != p.user_id )")
 
         # Find most active challenge
@@ -159,6 +164,7 @@ class Command(BaseCommand):
                 "FROM castle_storylog AS l "+
                 "WHERE l.challenge_id IS NOT NULL AND c.id=l.challenge_id "+
                 "AND ((timestampdiff(day,l.ctime,now())) < 30) "+
+                "AND (l.ignore_me != 1) "+
                 "AND l.user_id != c.user_id )")
         elif (db == 'postgres'):
             cursor.execute(
@@ -167,6 +173,7 @@ class Command(BaseCommand):
                 "FROM castle_storylog AS l "+
                 "WHERE l.challenge_id IS NOT NULL AND c.id=l.challenge_id "+
                 "AND ((date_part('day', NOW() - l.ctime)) < 30) "+
+                "AND (l.ignore_me != TRUE) "+
                 "AND l.user_id != c.user_id )")
 
         # Find most active challenge
@@ -189,6 +196,13 @@ class Command(BaseCommand):
                 mac[0].save()
 
             self.log(logfile, 'Featured challenge id {} with score {}'.format(mac[0].id, mac[0].activity))
+        
+        # Clear out unverified user accounts after 21 days
+        pp = Profile.objects.exclude(email_auth=0).filter(email_time__lte=timezone.now()-timedelta(days=21))
+        c = pp.count()
+        if (c > 0):
+            self.log(logfile, 'Deleting {} unconfirmed users older than 21 days'.format(pp.count()))
+            pp.delete()
 
         return None
 

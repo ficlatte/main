@@ -71,6 +71,12 @@ def submit_comment(request):
     # Condense all end-of-line markers into \n
     comment.body = re_crlf.sub(u"\n", comment.body)
 
+    # Check for obvious spam indicators (but don't signal to spam bot that we're onto them)
+    quarantine = False
+    if (comment.body.find('<a href=') >= 0):
+        comment.spam = Comment.SPAM_QUARANTINE
+        quarantine = True
+
     # Check for submission errors
     l = len(comment.body)
     if ((l < 1) and (rating is None)):
@@ -122,6 +128,7 @@ def submit_comment(request):
             log = StoryLog(
                 user=profile,
                 story=story,
+                ignore_me=quarantine,
                 comment=comment,
                 log_type=StoryLog.COMMENT
             )
@@ -132,6 +139,7 @@ def submit_comment(request):
             log = StoryLog(
                 user=profile,
                 story=story,
+                ignore_me=quarantine,
                 log_type=StoryLog.RATE
             )
             log.save()
@@ -142,6 +150,7 @@ def submit_comment(request):
                 user=profile,
                 prompt=prompt,
                 comment=comment,
+                ignore_me=quarantine,
                 log_type=StoryLog.COMMENT
             )
             log.save()
@@ -152,15 +161,17 @@ def submit_comment(request):
                 user=profile,
                 challenge=challenge,
                 comment=comment,
+                ignore_me=quarantine,
                 log_type=StoryLog.COMMENT
             )
             log.save()
 
     # Send e-mail messages to subscribed users
-    send_notification_email_comment(comment)
+    if not quarantine:
+        send_notification_email_comment(comment)
 
     # Auto-subscribe to e-mail notifications according to user's preferences
-    if (profile):
+    if (profile and not quarantine):
         if (blog):
             if (profile.email_flags & Profile.AUTOSUBSCRIBE_ON_BLOG_COMMENT):
                 Subscription.objects.get_or_create(user=profile, blog=blog)

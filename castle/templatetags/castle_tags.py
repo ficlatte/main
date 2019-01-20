@@ -29,7 +29,7 @@ from django.utils.http import urlquote
 from django.utils.safestring import mark_safe
 from django.utils.timezone import utc
 from bbcode import util as bbcode
-from castle.models import StoryLog, Profile
+from castle.models import StoryLog, Profile, Comment
 
 register = template.Library()
 
@@ -43,7 +43,7 @@ def get_range(end, start=0):
 # -----------------------------------------------------------------------------
 @register.filter
 def num_comments_txt(obj):
-    c = obj.comment_set.count()
+    c = obj.comment_set.filter(spam__lt=Comment.SPAM_QUARANTINE).count()
     if c == 1:
         return u'1 comment'
     else:
@@ -53,7 +53,7 @@ def num_comments_txt(obj):
 # -----------------------------------------------------------------------------
 @register.filter
 def num_comments(obj):
-    return obj.comment_set.count()
+    return obj.comment_set.filter(spam__lt=Comment.SPAM_QUARANTINE).count()
         
 #-----------------------------------------------------------------------------
 @register.filter
@@ -446,9 +446,10 @@ def dashboard_entry(log):
 
     elif log.log_type == StoryLog.COMMENT:
         if log.story:
-            return mark_safe(
-                author_link(log.user) + u' wrote a comment on ' + story_link(log.story) + u' by ' + author_link(
-                    log.story.user))
+            txt = author_link(log.user) + u' wrote a comment on ' + story_link(log.story) + u' by ' + author_link(log.story.user)
+            if (log.comment.spam == Comment.SPAM_QUARANTINE):
+                txt += u' QUARANTINED!'
+            return mark_safe(txt)
         if log.prompt:
             return mark_safe(author_link(log.user) + u' wrote a comment on ' + prompt_link(log.prompt))
         else:

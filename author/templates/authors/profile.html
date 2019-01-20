@@ -87,7 +87,7 @@ Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
             </div> <!-- id="" class="checkbox" -->
             <input name="action" type="hidden" value="update profile" />
             <input name="uid" type="hidden" value="1" /><br />
-            {% if not profile %}
+            {% if not profile and not no_captcha %}
               <script src='https://www.google.com/recaptcha/api.js'></script>
               <script type="text/javascript">
                 function recaptcha_callback() {

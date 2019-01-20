@@ -196,6 +196,18 @@ class Rating(models.Model):
 
 # Comment on story or blog post
 class Comment(models.Model):
+    SPAM_DEFAULT    = 0         # We don't think it's spam
+    SPAM_APPROVED   = 1         # We have approved comment for publication
+    SPAM_QUARANTINE = 2         # Comment has been automatically quarantined
+    SPAM_CONFIRMED  = 3         # We have confirmed that the comment is spam
+    
+    SPAM_OPTIONS = (
+        (SPAM_DEFAULT,      u'default'),
+        (SPAM_APPROVED,     u'approved'),
+        (SPAM_QUARANTINE,   u'quarantined'),
+        (SPAM_CONFIRMED,    u'definitely spam'),
+    )
+    
     user        = models.ForeignKey(Profile, related_name='comments_made')       # User making the comment
     body        = models.CharField(max_length=1024)
     story       = models.ForeignKey('castle.Story', blank=True, null=True)
@@ -204,6 +216,7 @@ class Comment(models.Model):
     blog        = models.ForeignKey('castle.Blog',  blank=True, null=True)
     ctime       = models.DateTimeField(default=timezone.now)
     mtime       = models.DateTimeField(default=timezone.now)    
+    spam        = models.IntegerField(default=0, choices=SPAM_OPTIONS)
 
     def __unicode__(self):
         if (self.story is not None):
@@ -275,7 +288,8 @@ class StoryLog(models.Model):
     comment     = models.ForeignKey(Comment, blank=True, null=True)     # ID of comment, if this log is for a comment
     quel        = models.ForeignKey(Story,   blank=True, null=True, related_name='activity_quel_set')     # ID of prequel/sequel if this log is for a prequel/sequel
     prompt      = models.ForeignKey(Prompt, blank=True, null=True)
-    challenge    = models.ForeignKey(Challenge, blank=True, null=True)
+    ignore_me   = models.BooleanField(default=False)
+    challenge   = models.ForeignKey(Challenge, blank=True, null=True)
     ctime       = models.DateTimeField(default=timezone.now)
     
     def get_opt(self, o):
