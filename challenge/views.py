@@ -189,7 +189,7 @@ def challenge_view(request, challenge_id, comment_text=None, error_title='', err
     owner = ((profile is not None) and (profile == challenge.user))
 
     # Log view
-    if (profile):
+    if (profile and profile.email_authenticated()):
         log = StoryLog(
             user=profile,
             challenge=challenge,
@@ -388,15 +388,16 @@ def submit_challenge(request):
             Subscription.objects.get_or_create(user=profile, ch_entry=challenge)
 
     # Log entry
-    log_type = StoryLog.CHALLENGE
-    if (not new_challenge):
-        log_type = StoryLog.CHALLENGE_MOD
-    log = StoryLog(
-        user=profile,
-        log_type=log_type,
-        challenge=challenge,
-    )
-    log.save()
+    if (profile) and (profile.email_authenticated()):
+        log_type = StoryLog.CHALLENGE
+        if (not new_challenge):
+            log_type = StoryLog.CHALLENGE_MOD
+        log = StoryLog(
+            user=profile,
+            log_type=log_type,
+            challenge=challenge,
+        )
+        log.save()
 
     return HttpResponseRedirect(reverse('challenge', args=(challenge.id,)))
 

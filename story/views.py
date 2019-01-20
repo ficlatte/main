@@ -224,7 +224,7 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
     comments = story.comment_set.all().order_by('ctime')[(page_num - 1) * PAGE_COMMENTS:page_num * PAGE_COMMENTS]
 
     # Log view
-    if (profile):
+    if (profile) and (profile.email_authenticated()):
         log = StoryLog(
             user=profile,
             story=story,

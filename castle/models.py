@@ -72,7 +72,7 @@ class Profile(models.Model):
         return unicode(self.pen_name)
     
     def email_authenticated(self):
-        return (self.email_auth == 0L)
+        return (self.email_auth == 0L) and (not self.spambot)
     
     def is_friend(self, other):
         return self.friends.filter(id=other.id).exists()
