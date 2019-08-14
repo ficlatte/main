@@ -270,7 +270,7 @@ def submit_profile(request):
     pen_name = request.POST.get('pen_name', '')
     password = request.POST.get('password', '')
     new_password = request.POST.get('new_password', '')
-    password_again = request.POST.get('password', '')
+    password_again = request.POST.get('password_again', '')
     site_url = request.POST.get('site_url', '')
     site_name = request.POST.get('site_name', '')
     facebook_username = request.POST.get('facebook_username', '')
