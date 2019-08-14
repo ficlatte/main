@@ -183,7 +183,7 @@ def prompt_view(request, prompt_id):
     owner = ((profile is not None) and (profile == prompt.user))
 
     # Log view
-    if (profile):
+    if (profile) and (profile.email_authenticated()):
         log = StoryLog(
             user=profile,
             prompt=prompt,
@@ -349,15 +349,16 @@ def submit_prompt(request):
             Subscription.objects.get_or_create(user=profile, prompt=prompt)
 
     # Log entry
-    log_type = StoryLog.PROMPT
-    if (not new_prompt):
-        log_type = StoryLog.PROMPT_MOD
-    log = StoryLog(
-        user=profile,
-        log_type=log_type,
-        prompt=prompt
-    )
-    log.save()
+    if (profile) and (profile.email_authenticated()):
+        log_type = StoryLog.PROMPT
+        if (not new_prompt):
+            log_type = StoryLog.PROMPT_MOD
+        log = StoryLog(
+            user=profile,
+            log_type=log_type,
+            prompt=prompt
+        )
+        log.save()
 
     return HttpResponseRedirect(reverse('prompt', args=(prompt.id,)))
 

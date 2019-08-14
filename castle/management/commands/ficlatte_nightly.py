@@ -22,6 +22,7 @@ from django.db import transaction, connection
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
+from date import timedelta
 import time
 from datetime import datetime, timedelta
 
@@ -48,6 +49,18 @@ class Command(BaseCommand):
 
         self.log(logfile, 'Running nightly')
 
+        #---------------------------------------------------
+        # Remove all unverified accounts older than 14 days
+        #---------------------------------------------------
+        # 14 days ago
+        tt = timezone.now() - timedelta(days=14)
+        unconfirmed_profiles = Profile.objects.exclude(email_auth=0).exclude(ctime__lte=tt)
+        for up in unconfirmed_profiles:
+            up.delete()
+
+        #---------------------------------------------------
+        # Activity-related things
+        #---------------------------------------------------
         # Zero out all activity values
         Story.objects.all().update(activity=0)
         Prompt.objects.all().update(activity=0)
