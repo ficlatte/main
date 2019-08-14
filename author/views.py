@@ -426,7 +426,7 @@ def submit_profile(request):
 
     else:
         if (new_password):
-            profile.user.set_password(password)
+            profile.user.set_password(new_password)
             profile.user.save()
         profile.save()
     
