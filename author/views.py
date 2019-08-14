@@ -254,7 +254,6 @@ def profile_view(request, error_title=None, error_messages=None):
 # -----------------------------------------------------------------------------
 @transaction.atomic
 def submit_profile(request):
-    print "SHITE!"
     # Get user profile
     new_registration = False
     new_email_addr = False
@@ -376,7 +375,6 @@ def submit_profile(request):
         else:
             return profile_view(request, 'Profile update unsuccessful', errors)
 
-    print "SHITE1"
     # If new registration, we should create a new Django user
     if (new_registration):
         # Create a temporary user name because we need to call the
@@ -397,7 +395,6 @@ def submit_profile(request):
         un = unicode(profile.id)
         user.username = u'user' + un
         user.last_name = un
-        print "shite2"
 
         try:
             key = settings.GOOGLE_RECAPTCHA_SECRET_KEY
@@ -426,13 +423,12 @@ def submit_profile(request):
             user = authenticate(username=profile.user.username, password=password)
             login(request, user)
             messages.success(request, 'Registration successful!')
-            print "shite3"
 
     else:
-        print "shite4"
+        if (new_password):
+            user.set_password(password)
+            user.save()
         profile.save()
-
-    print "shite5"
     
     # If this is a new user, or the e-mail address is changed, send a conf email
     if (new_registration or new_email_addr):
@@ -442,12 +438,9 @@ def submit_profile(request):
         profile.email_addr = email_addr
         profile.email_auth = token_s
         profile.email_time = time_now
-        print "shite6"
         send_conf_email(profile, token)
         profile.save()
-        print "shite7"
 
-    print "shite8"
     return HttpResponseRedirect(reverse('author', args=(profile.pen_name,)))
 
 # -----------------------------------------------------------------------------
