@@ -428,8 +428,6 @@ def submit_profile(request):
         if (new_password):
             profile.user.set_password(new_password)
             profile.user.save()
-            user = authenticate(username=profile.user.username, password=password)
-            login(request, user)
         profile.save()
     
     # If this is a new user, or the e-mail address is changed, send a conf email
