@@ -257,6 +257,7 @@ def submit_profile(request):
     # Get user profile
     new_registration = False
     new_email_addr = False
+    change_password = False
     if (request.user.is_authenticated()):
         profile = request.user.profile
         if (profile.spambot):
@@ -296,12 +297,16 @@ def submit_profile(request):
         if (password != password_again):
             errors.append(u'Password and password check did not match')
     elif (new_password):
+        change_password = True
         if (not request.user.check_password(password)):
             errors.append(u'Old password incorrect')
+            change_password = False
         if (len(new_password) < 6):
             errors.append(u'Password must be at least 6 characters')
+            change_password = False
         if (new_password != password_again):
             errors.append(u'Password and password check did not match')
+            change_password = False
     elif (password):
         if (not request.user.check_password(password)):
             errors.append(u'Old password incorrect')
@@ -425,10 +430,12 @@ def submit_profile(request):
             messages.success(request, 'Registration successful!')
 
     else:
-        if (new_password):
-            profile.user.set_password(new_password)
-            profile.user.save()
         profile.save()
+
+    if (change_password):
+        profile.user.set_password(new_password)
+        profile.user.save()
+
     
     # If this is a new user, or the e-mail address is changed, send a conf email
     if (new_registration or new_email_addr):

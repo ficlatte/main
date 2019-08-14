@@ -22,7 +22,6 @@ from django.db import transaction, connection
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
-from date import timedelta
 import time
 from datetime import datetime, timedelta
 
