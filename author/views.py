@@ -426,8 +426,8 @@ def submit_profile(request):
 
     else:
         if (new_password):
-            user.set_password(password)
-            user.save()
+            profile.user.set_password(password)
+            profile.user.save()
         profile.save()
     
     # If this is a new user, or the e-mail address is changed, send a conf email
