@@ -258,6 +258,7 @@ def submit_profile(request):
     new_registration = False
     new_email_addr = False
     change_password = False
+    captcha_failed = False
     if (request.user.is_authenticated()):
         profile = request.user.profile
         if (profile.spambot):
@@ -422,6 +423,7 @@ def submit_profile(request):
                 messages.success(request, 'Registration successful!')
             else:
                 messages.error(request, 'Invalid reCAPTCHA. Please try again.')
+                captcha_failed = True
         except AttributeError:
             # We do not have a RECAPTCHA key, so skip confirmation
             user.save()
@@ -438,7 +440,7 @@ def submit_profile(request):
 
     
     # If this is a new user, or the e-mail address is changed, send a conf email
-    if (new_registration or new_email_addr):
+    if ((new_registration or new_email_addr) and not captcha_failed):
         # Get random 64 bit integer
         token = random64()
         token_s = to_signed64(token)
