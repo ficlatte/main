@@ -434,11 +434,10 @@ def submit_profile(request):
     else:
         profile.save()
 
-    if (change_password):
+    if (change_password and not captcha_failed):
         profile.user.set_password(new_password)
         profile.user.save()
 
-    
     # If this is a new user, or the e-mail address is changed, send a conf email
     if ((new_registration or new_email_addr) and not captcha_failed):
         # Get random 64 bit integer
