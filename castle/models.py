@@ -358,18 +358,20 @@ class Subscription(models.Model):
         return r
 
 class DebugLog(models.Model):
-    user        = models.ForeignKey(Profile, null=True)
+    uid         = models.IntegerField(default=0)
     timestamp   = models.IntegerField()
     log         = models.CharField(max_length = 2048)
     
     def __unicode__(self):
         # Generate human-readable date
-        r = datetimeutcfromtimestamp(self.timestamp).strftime('%Y-%m-%d %H:%M:%S')
+        r = datetime.utcfromtimestamp(self.timestamp).strftime('%Y-%m-%d %H:%M:%S')
         
         # Add user ID
-        if (self.user is not None):
-            r += u': '+unicode(self.user)+ u' - '
+        if (self.uid >= 1):
+            r += str(self.uid)
+            #r += u': '+unicode(Profile.objects.get(pk=self.uid))+ u' - '
         else:
             r += u': <no user> - '
         
         r += self.log
+        return r

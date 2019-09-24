@@ -256,6 +256,8 @@ def profile_view(request, error_title=None, error_messages=None):
 @transaction.atomic
 def submit_profile(request):
     # Prepare debug log message
+    dlm = DebugLog()
+    dlm.timestamp = int(time.time())
     dlm_str = u''
     
     # Get user profile
@@ -267,6 +269,7 @@ def submit_profile(request):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
+        dlm.uid = profile.id;
         dlm_str += u'is_auth;'
     else:
         profile = Profile()
@@ -388,17 +391,11 @@ def submit_profile(request):
     if (errors):
         if (new_registration):
             dlm_str += u'new registration unsuccessful'
-            dlm = DebugLog()
-            dlm.user      = user
-            dlm.timestamp = int(time.time())
             dlm.log       = dlm_str
             dlm.save()
             return profile_view(request, 'Registration unsuccessful', errors)
         else:
             dlm_str += u'profile update unsuccessful'
-            dlm = DebugLog()
-            dlm.user      = user
-            dlm.timestamp = int(time.time())
             dlm.log       = dlm_str
             dlm.save()
             return profile_view(request, 'Profile update unsuccessful', errors)
@@ -436,6 +433,8 @@ def submit_profile(request):
             if result['success']:
                 dlm_str += u'Captcha successful;'
                 user.save()
+                profile.user = user
+                profile.save()
                 user = authenticate(username=profile.user.username, password=password)
                 login(request, user)
                 messages.success(request, 'Registration successful!')
@@ -447,6 +446,8 @@ def submit_profile(request):
             # We do not have a RECAPTCHA key, so skip confirmation
             dlm_str += u'no Captcha;'
             user.save()
+            profile.user = user
+            profile.save()
             user = authenticate(username=profile.user.username, password=password)
             login(request, user)
             messages.success(request, 'Registration successful!')
@@ -455,6 +456,7 @@ def submit_profile(request):
             user.save()
             profile.user = user
             profile.save()
+            dlm.uid = profile.id;
             un = unicode(profile.id)
             user.username = u'user' + un
             user.last_name = un
@@ -480,9 +482,6 @@ def submit_profile(request):
         profile.save()
         
     # Debug log message
-    dlm = DebugLog()
-    dlm.user      = user
-    dlm.timestamp = int(time.time())
     dlm.log       = dlm_str
     dlm.save()
 
