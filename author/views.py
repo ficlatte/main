@@ -19,6 +19,7 @@
 import urllib
 import urllib2
 import json
+import time
 from ficlatte import settings
 from django.contrib import messages
 from django.utils.http import urlquote
@@ -254,6 +255,9 @@ def profile_view(request, error_title=None, error_messages=None):
 # -----------------------------------------------------------------------------
 @transaction.atomic
 def submit_profile(request):
+    # Prepare debug log message
+    dlm_str = u''
+    
     # Get user profile
     new_registration = False
     new_email_addr = False
@@ -263,9 +267,11 @@ def submit_profile(request):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
+        dlm_str += u'is_auth;'
     else:
         profile = Profile()
         new_registration = True
+        dlm_str += u'new_reg;'
 
     # Get data from form
     pen_name = request.POST.get('pen_name', '')
@@ -362,13 +368,17 @@ def submit_profile(request):
     profile.email_flags = eflags
 
     # If user is changing e-mail address, they need their password too
+    dlm_str += u'a;'
     if (not new_registration and ((email_addr and email_addr != profile.email_addr) or (pen_name and pen_name.upper() != profile.pen_name_uc))):
         if (not password):
             errors.append(u'When you change your pen name or e-mail address, you need to supply your password too.')
+            dlm_str += u'no_pass_err;'
         elif (not request.user.check_password(password)):
             errors.append(u'Old password incorrect')
+            dlm_str += u'wrong_pass_err'
         else:
             new_email_addr = True
+            dlm_str += u'new_email;'
 
     # Set modification time
     time_now = timezone.now()
@@ -377,12 +387,25 @@ def submit_profile(request):
     # If there have been errors, re-display the page
     if (errors):
         if (new_registration):
+            dlm_str += u'new registration unsuccessful'
+            dlm = DebugLog()
+            dlm.user      = user
+            dlm.timestamp = int(time.time())
+            dlm.log       = dlm_str
+            dlm.save()
             return profile_view(request, 'Registration unsuccessful', errors)
         else:
+            dlm_str += u'profile update unsuccessful'
+            dlm = DebugLog()
+            dlm.user      = user
+            dlm.timestamp = int(time.time())
+            dlm.log       = dlm_str
+            dlm.save()
             return profile_view(request, 'Profile update unsuccessful', errors)
 
     # If new registration, we should create a new Django user
     if (new_registration):
+        dlm_str += u'new_registration;'
         # Create a temporary user name because we need to call the
         # user something whilst we create the profile entry
         # We then go back and update the Django user name to express clearly
@@ -395,12 +418,6 @@ def submit_profile(request):
             email=email_addr,
         )
         user.set_password(password)
-        user.save()
-        profile.user = user
-        profile.save()
-        un = unicode(profile.id)
-        user.username = u'user' + un
-        user.last_name = un
 
         try:
             key = settings.GOOGLE_RECAPTCHA_SECRET_KEY
@@ -417,30 +434,43 @@ def submit_profile(request):
             result = json.load(response)
 
             if result['success']:
+                dlm_str += u'Captcha successful;'
                 user.save()
                 user = authenticate(username=profile.user.username, password=password)
                 login(request, user)
                 messages.success(request, 'Registration successful!')
             else:
+                dlm_str += u'Captcha failed;'
                 messages.error(request, 'Invalid reCAPTCHA. Please try again.')
                 captcha_failed = True
         except AttributeError:
             # We do not have a RECAPTCHA key, so skip confirmation
+            dlm_str += u'no Captcha;'
             user.save()
             user = authenticate(username=profile.user.username, password=password)
             login(request, user)
             messages.success(request, 'Registration successful!')
 
+        if (not captcha_failed):
+            user.save()
+            profile.user = user
+            profile.save()
+            un = unicode(profile.id)
+            user.username = u'user' + un
+            user.last_name = un
+
     else:
         profile.save()
 
     if (change_password and not captcha_failed):
+        dlm_str += u'b;'
         profile.user.set_password(new_password)
         profile.user.save()
 
     # If this is a new user, or the e-mail address is changed, send a conf email
     if ((new_registration or new_email_addr) and not captcha_failed):
         # Get random 64 bit integer
+        dlm_str += u'c;'
         token = random64()
         token_s = to_signed64(token)
         profile.email_addr = email_addr
@@ -448,6 +478,13 @@ def submit_profile(request):
         profile.email_time = time_now
         send_conf_email(profile, token)
         profile.save()
+        
+    # Debug log message
+    dlm = DebugLog()
+    dlm.user      = user
+    dlm.timestamp = int(time.time())
+    dlm.log       = dlm_str
+    dlm.save()
 
     return HttpResponseRedirect(reverse('author', args=(profile.pen_name,)))
 

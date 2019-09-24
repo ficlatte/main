@@ -19,7 +19,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
-from datetime import date
+from datetime import date, datetime
 
 # Create your models here.
 
@@ -356,3 +356,20 @@ class Subscription(models.Model):
         if (self.ch_entry is not None):
             r += u' subscribed to entries on challenge '+unicode(self.challenge)
         return r
+
+class DebugLog(models.Model):
+    user        = models.ForeignKey(Profile, null=True)
+    timestamp   = models.IntegerField()
+    log         = models.CharField(max_length = 2048)
+    
+    def __unicode__(self):
+        # Generate human-readable date
+        r = datetimeutcfromtimestamp(self.timestamp).strftime('%Y-%m-%d %H:%M:%S')
+        
+        # Add user ID
+        if (self.user is not None):
+            r += u': '+unicode(self.user)+ u' - '
+        else:
+            r += u': <no user> - '
+        
+        r += self.log
