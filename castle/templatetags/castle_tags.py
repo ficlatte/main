@@ -224,9 +224,11 @@ def author_link(profile, tag=None):
         t2 = u'</' + tag.partition(' ')[0] + u'>'  # Get bit before first space
 
     # FIXME: Need proper URL magic here
-    return mark_safe(
-        t1 + u'<a href="/authors/' + urlquote(profile.pen_name) + u'">' + escape(profile.pen_name) + u'</a>' + t2)
-
+    try:
+        return mark_safe(
+            t1 + u'<a href="/authors/' + urlquote(profile.pen_name) + u'">' + escape(profile.pen_name) + u'</a>' + t2)
+    except AttributeError:
+        return mark_safe(t1+u'<a href="#">no profile</a>' + t2)
 
 # -----------------------------------------------------------------------------
 @register.filter

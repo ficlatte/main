@@ -23,6 +23,7 @@ mysql> exit
 
 Install Django  
 $ sudo -H pip install django==1.8.4
+$ sudo -H pip install django-datetime-widget
 
 Get Django started  
 $ cd ficlatte_directory  

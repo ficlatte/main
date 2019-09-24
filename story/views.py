@@ -43,7 +43,7 @@ def home(request):
     try:
         challenge = Challenge.objects.all().order_by('-id')[0]
     except IndexError:
-        prompt = None
+        challenge = None
 
     # Get latest prompt
     try:
