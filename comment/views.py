@@ -29,7 +29,7 @@ from the_pit.views import the_pit
 def submit_comment(request):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
     if (not profile):
         raise Http404
@@ -201,7 +201,7 @@ def like_comment(request, comment_id):
     comment = get_object_or_404(Comment, pk=comment_id)
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         profile = request.user.profile
     if profile is None:
         raise Http404
@@ -226,7 +226,7 @@ def unlike_comment(request, comment_id):
     comment = get_object_or_404(Comment, pk=comment_id)
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         profile = request.user.profile
     if profile is None:
         raise Http404

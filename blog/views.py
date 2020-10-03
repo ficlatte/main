@@ -24,7 +24,7 @@ from the_pit.views import the_pit
 def blogs(request):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -51,7 +51,7 @@ def blog_view(request, blog_id, comment_text=None, error_title='', error_message
 
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -93,7 +93,7 @@ def blog_unsubscribe(request, blog_id, error_title='', error_messages=None):
     blog = get_object_or_404(Blog, pk=blog_id)
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
     if (profile is None):
         raise Http404
@@ -120,7 +120,7 @@ def blog_unsubscribe(request, blog_id, error_title='', error_messages=None):
 def new_blog(request):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -148,7 +148,7 @@ def edit_blog(request, blog_id):
 
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
 
     if ((profile is None) or (not request.user.has_perm("castle.post_blog"))):
@@ -174,7 +174,7 @@ def edit_blog(request, blog_id):
 def submit_blog(request):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
 
     if ((profile is None) or (not request.user.has_perm("castle.post_blog"))):

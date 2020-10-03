@@ -80,7 +80,7 @@ def get_old_prompts(page_size=10):
 def browse_prompts(request, dataset=0):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -130,7 +130,7 @@ def popular_prompts(request):
 def prompts(request):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
 
     # Get featured prompt
@@ -165,7 +165,7 @@ def prompt_view(request, prompt_id):
 
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -225,7 +225,7 @@ def prompt_view(request, prompt_id):
 def new_prompt(request):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -250,7 +250,7 @@ def new_prompt(request):
 def edit_prompt(request, prompt_id):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -280,7 +280,7 @@ def edit_prompt(request, prompt_id):
 def submit_prompt(request):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -369,7 +369,7 @@ def prompt_subscribe(request, prompt_id, error_title='', error_messages=None):
     prompt = get_object_or_404(Prompt, pk=prompt_id)
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
     if (profile is None):
         raise Http404
@@ -397,7 +397,7 @@ def prompt_unsubscribe(request, prompt_id, error_title='', error_messages=None):
     prompt = get_object_or_404(Prompt, pk=prompt_id)
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
     if (profile is None):
         raise Http404

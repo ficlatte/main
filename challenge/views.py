@@ -80,7 +80,7 @@ def get_recent_winners(page_num=1, page_size=10):
 def browse_challenges(request, dataset=0):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -130,7 +130,7 @@ def popular_challenges(request):
 def challenges(request):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -167,7 +167,7 @@ def challenge_view(request, challenge_id, comment_text=None, error_title='', err
 
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -240,7 +240,7 @@ def challenge_view(request, challenge_id, comment_text=None, error_title='', err
 def new_challenge(request):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -278,7 +278,7 @@ def edit_challenge(request, challenge_id):
 
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -307,7 +307,7 @@ def edit_challenge(request, challenge_id):
 def submit_challenge(request):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -411,7 +411,7 @@ def challenge_winner(request, challenge_id, story_id):
 
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -452,7 +452,7 @@ def challenge_subscribe(request, challenge_id, error_title='', error_messages=No
     challenge = get_object_or_404(Challenge, pk=challenge_id)
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
     if (profile is None):
         raise Http404
@@ -480,7 +480,7 @@ def challenge_unsubscribe(request, challenge_id, error_title='', error_messages=
     challenge = get_object_or_404(Challenge, pk=challenge_id)
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
     if (profile is None):
         raise Http404
@@ -508,7 +508,7 @@ def challenge_entry_subscribe(request, challenge_id, error_title='', error_messa
     challenge = get_object_or_404(Challenge, pk=challenge_id)
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
     if (profile is None):
         raise Http404
@@ -536,7 +536,7 @@ def challenge_entry_unsubscribe(request, challenge_id, error_title='', error_mes
     challenge = get_object_or_404(Challenge, pk=challenge_id)
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
     if (profile is None):
         raise Http404

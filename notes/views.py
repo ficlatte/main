@@ -49,7 +49,7 @@ def get_foo(request, foo, key):
 def inbox(request):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -76,7 +76,7 @@ def inbox(request):
 def outbox(request):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -103,7 +103,7 @@ def outbox(request):
 def trash(request):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -130,7 +130,7 @@ def trash(request):
 def view(request, note_id):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -162,7 +162,7 @@ def view(request, note_id):
 def new_note(request):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -197,7 +197,7 @@ def new_note(request):
 def submit_note(request):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -278,7 +278,7 @@ def submit_note(request):
 def reply(request, note_id):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -328,7 +328,7 @@ def reply(request, note_id):
 def forward(request, note_id):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -375,7 +375,7 @@ def forward(request, note_id):
 def delete(request, note_id, success_url=None):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -409,7 +409,7 @@ def undelete(request, note_id, success_url=None):
     # Get user profile
     profile = None
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)

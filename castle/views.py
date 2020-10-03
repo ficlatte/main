@@ -285,7 +285,7 @@ def confirmation(request, yesno, uid, token):
     profile = get_object_or_404(Profile, pk=uid)
 
     logged_in_user = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         logged_in_user = request.user.profile
         if (logged_in_user.spambot):
             return the_pit(request)
@@ -335,7 +335,7 @@ def confirmation(request, yesno, uid, token):
 def resend_email_conf(request):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -370,7 +370,7 @@ def resend_email_conf(request):
 def dashboard(request):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         profile = request.user.profile
 
     if (profile is None) or (not request.user.has_perm("castle.admin")):
@@ -425,7 +425,7 @@ def dashboard(request):
 def add_friend(request, user_id):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -444,7 +444,7 @@ def add_friend(request, user_id):
 def del_friend(request, user_id):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -463,7 +463,7 @@ def del_friend(request, user_id):
 def avatar_upload(request):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -503,7 +503,7 @@ def avatar_upload(request):
 def static_view(request, template_name):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)

@@ -169,7 +169,7 @@ class Tag(models.Model):
 class Blog(models.Model):
     user        = models.ForeignKey(Profile, on_delete=models.CASCADE)
     title       = models.CharField(max_length=256)
-    body        = models.CharField(max_length=20480)
+    body        = models.TextField()
     draft       = models.BooleanField(default=False)
     bbcode      = models.BooleanField(default=False)
     ctime       = models.DateTimeField(default=timezone.now)    # Creation time

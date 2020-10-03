@@ -40,7 +40,7 @@ def get_num_authors():
 def author(request, pen_name):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -107,7 +107,7 @@ def author(request, pen_name):
 def drafts(request):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -139,7 +139,7 @@ def drafts(request):
 def author_prompts(request):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -172,7 +172,7 @@ def author_prompts(request):
 def author_challenges(request):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -205,7 +205,7 @@ def author_challenges(request):
 def profile_view(request, error_title=None, error_messages=None):
     # Get user profile
     profile = None
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -265,7 +265,7 @@ def submit_profile(request):
     new_email_addr = False
     change_password = False
     captcha_failed = False
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         profile = request.user.profile
         if (profile.spambot):
             return the_pit(request)
@@ -491,7 +491,7 @@ def submit_profile(request):
 def member_directory(request):
     # Get user profile
     profile = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         profile = request.user.profile
 
     # Is logged-in user the author?
