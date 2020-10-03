@@ -17,7 +17,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import urllib
-import urllib2
+#import urllib2     # FIXME: need to fix Captcha stuff
 import json
 import time
 from ficlatte import settings
@@ -426,8 +426,8 @@ def submit_profile(request):
             }
             data = urllib.urlencode(values)
             data2 = urllib.quote(data)
-            req = urllib2.Request(url, data2)
-            response = urllib2.urlopen(req)
+            #req = urllib2.Request(url, data2)
+            #response = urllib2.urlopen(req)
             result = json.load(response)
 
             if result['success']:

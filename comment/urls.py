@@ -15,12 +15,11 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.conf.urls import url
-
+from django.urls import path
 from . import views
 
 urlpatterns = [
-    url(r'^submit/$', 'comment.views.submit_comment', name='submit_comment'),
-    url(r'^(?P<comment_id>\d+)/like/$', 'comment.views.like_comment', name='like_comment'),
-    url(r'^(?P<comment_id>\d+)/unlike/$', 'comment.views.unlike_comment', name='unlike_comment'),
+    path('submit/', views.submit_comment, name='submit_comment'),
+    path('<int:comment_id>/like/', views.like_comment, name='like_comment'),
+    path('<int:comment_id>/unlike/', views.unlike_comment, name='unlike_comment'),
 ]

@@ -18,7 +18,7 @@
 
 from string import Template
 from django.core.mail import send_mail
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 from .models import *
 

@@ -15,22 +15,22 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.conf.urls import url
+from django.urls import path
 
 from . import views
 
 urlpatterns = [
-    url(r'^$', 'challenge.views.challenges', name='challenges'),
-    url(r'^recent/$', 'challenge.views.browse_challenges', name='challenges_recent'),
-    url(r'^active/$', 'challenge.views.active_challenges', name='challenges_active'),
-    url(r'^popular/$', 'challenge.views.popular_challenges', name='challenges_popular'),
-    url(r'^(?P<challenge_id>\d+)/$', 'challenge.views.challenge_view', name='challenge'),
-    url(r'^(?P<challenge_id>\d+)/winner/(?P<story_id>\d+)/$', 'challenge.views.challenge_winner', name='challenge_winner'),
-    #url(r'^edit/(?P<challenge_id>\d+)/$', 'challenge.views.edit_challenge', name='edit_challenge'),
-    url(r'^new/$', 'challenge.views.new_challenge', name='new_challenge'),
-    url(r'^submit/$', 'challenge.views.submit_challenge', name='submit_challenge'),
-    url(r'^unsubscribe/(?P<challenge_id>\d+)/$', 'challenge.views.challenge_unsubscribe', name='challenge-unsub'),
-    url(r'^subscribe/(?P<challenge_id>\d+)/$', 'challenge.views.challenge_subscribe', name='challenge-sub'),
-    url(r'^entries/unsubscribe/(?P<challenge_id>\d+)/$', 'challenge.views.challenge_entry_unsubscribe', name='challenge-entry-unsub'),
-    url(r'^entries/subscribe/(?P<challenge_id>\d+)/$', 'challenge.views.challenge_entry_subscribe', name='challenge-entry-sub'),
+    path('', views.challenges, name='challenges'),
+    path('recent/', views.browse_challenges, name='challenges_recent'),
+    path('active/', views.active_challenges, name='challenges_active'),
+    path('popular/', views.popular_challenges, name='challenges_popular'),
+    path('<int:challenge_id>/', views.challenge_view, name='challenge'),
+    path('<int:challenge_id>/winner/<int:story_id>/', views.challenge_winner, name='challenge_winner'),
+    #path('edit/<int:challenge_id>/', views.edit_challenge, name='edit_challenge'),
+    path('new/', views.new_challenge, name='new_challenge'),
+    path('submit/', views.submit_challenge, name='submit_challenge'),
+    path('unsubscribe/<int:challenge_id>/', views.challenge_unsubscribe, name='challenge-unsub'),
+    path('subscribe/<int:challenge_id>/', views.challenge_subscribe, name='challenge-sub'),
+    path('entries/unsubscribe/<int:challenge_id>/', views.challenge_entry_unsubscribe, name='challenge-entry-unsub'),
+    path('entries/subscribe/<int:challenge_id>/', views.challenge_entry_subscribe, name='challenge-entry-sub'),
 ]

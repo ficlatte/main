@@ -16,21 +16,22 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.conf.urls import url
+from django.urls import path
+from . import views
 
 urlpatterns = [
-    url(r'^(?P<story_id>\d+)/$', 'story.views.story_view', name='story'),
-    url(r'^edit/(?P<story_id>\d+)/$', 'story.views.edit_story', name='edit_story'),
-    url(r'^delete/(?P<story_id>\d+)/$', 'story.views.delete_story', name='delete_story'),
-    url(r'^new/$', 'story.views.new_story', name='new_story'),
-    url(r'^submit/$', 'story.views.submit_story', name='submit_story'),
-    url(r'^unsubscribe/(?P<story_id>\d+)/$', 'story.views.story_unsubscribe', name='story-unsub'),
-    url(r'^subscribe/(?P<story_id>\d+)/$', 'story.views.story_subscribe', name='story-sub'),
-    url(r'^prequels/unsubscribe/(?P<story_id>\d+)/$', 'story.views.prequel_unsubscribe', name='prequel-unsub'),
-    url(r'^prequels/subscribe/(?P<story_id>\d+)/$', 'story.views.prequel_subscribe', name='prequel-sub'),
-    url(r'^sequels/unsubscribe/(?P<story_id>\d+)/$', 'story.views.sequel_unsubscribe', name='sequel-unsub'),
-    url(r'^sequels/subscribe/(?P<story_id>\d+)/$', 'story.views.sequel_subscribe', name='sequel-sub'),
-    url(r'^$', 'story.views.browse_stories', name='recent_stories'),
-    url(r'^active/$', 'story.views.active_stories', name='active_stories'),
-    url(r'^popular/$', 'story.views.popular_stories', name='popular_stories'),
+    path('<int:story_id>/', views.story_view, name='story'),
+    path('edit/<int:story_id>/', views.edit_story, name='edit_story'),
+    path('delete/<int:story_id>/', views.delete_story, name='delete_story'),
+    path('new/', views.new_story, name='new_story'),
+    path('submit/', views.submit_story, name='submit_story'),
+    path('unsubscribe/<int:story_id>/', views.story_unsubscribe, name='story-unsub'),
+    path('subscribe/<int:story_id>/', views.story_subscribe, name='story-sub'),
+    path('prequels/unsubscribe/<int:story_id>/', views.prequel_unsubscribe, name='prequel-unsub'),
+    path('prequels/subscribe/<int:story_id>/', views.prequel_subscribe, name='prequel-sub'),
+    path('sequels/unsubscribe/<int:story_id>/', views.sequel_unsubscribe, name='sequel-unsub'),
+    path('sequels/subscribe/<int:story_id>/', views.sequel_subscribe, name='sequel-sub'),
+    path('', views.browse_stories, name='recent_stories'),
+    path('active/', views.active_stories, name='active_stories'),
+    path('popular/', views.popular_stories, name='popular_stories'),
 ]

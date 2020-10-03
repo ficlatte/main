@@ -16,14 +16,17 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import django.contrib.auth.views
-from django.conf.urls import patterns, include, url
+from django.urls import include, path, re_path, reverse, reverse_lazy
 from django.contrib import admin
 from django.contrib.sitemaps.views import sitemap
-from django.core.urlresolvers import reverse_lazy
+#from django.core.urlresolvers import reverse_lazy
+from django.contrib.auth import views as auth_views
 
 import castle.models
 from castle.sitemap import *
+import story
+import castle
+import author
 
 # Define sitemaps
 sitemaps = {
@@ -36,48 +39,53 @@ sitemaps = {
     'static': StaticViewSitemap,
 }
 
-urlpatterns = patterns('',
+urlpatterns = [
 	# Admin
-    url(r'^admin/', include(admin.site.urls)),
+    path('admin/', admin.site.urls),
 
 	# Apps
-    url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'), # Sitemap
-    url(r'^blog/', include('blog.urls')), # Blog
-    url(r'^authors/', include('author.urls')), # Authors
-    url(r'^stories/', include('story.urls')), # Stories
-    url(r'^prompts/', include('prompt.urls')), # Prompts
-    url(r'^challenges/', include('challenge.urls')), # Challenges
-    url(r'^comment/', include('comment.urls')), # Comments
-    url(r'^notes/', include('notes.urls')), # Notes
-    url(r'^the_pit/', include('the_pit.urls')), # Spambot purgatory
+    path('sitemap\.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'), # Sitemap
+    path('blog/', include('blog.urls')), # Blog
+    path('authors/', include('author.urls')), # Authors
+    path('stories/', include('story.urls')), # Stories
+    path('prompts/', include('prompt.urls')), # Prompts
+    path('challenges/', include('challenge.urls')), # Challenges
+    path('comment/', include('comment.urls')), # Comments
+    path('notes/', include('notes.urls')), # Notes
+    path('the_pit/', include('the_pit.urls')), # Spambot purgatory
     
     # Registration and Authentication
-    url(r'^$', 'story.views.home', name='home'),
-    url(r'^login/$', django.contrib.auth.views.login, {'template_name': 'castle/login.html'}, name='login'),
-    url(r'^logout/$', castle.views.signout, name='signout'),
-    url(r'^signin/$',     'castle.views.signin',  name='signin'),       # Process log-in credentials
-    url(r'^register/$', 'author.views.profile_view', name='register'),
-    url(r'^confirmation/(?P<yesno>(?:yes|no))/(?P<uid>\d+)/(?P<token>\d+)/$', 'castle.views.confirmation', name='confirmation'),
-    url(r'^resend_email_conf/$', 'castle.views.resend_email_conf', name='resend_email_conf'),
-    url(r'^password_reset/$', django.contrib.auth.views.password_reset, {'post_reset_redirect': reverse_lazy('password_reset_done'), 'html_email_template_name': 'castle/registration/password_reset_email.html', 'template_name': 'castle/registration/password_reset_form.html'}, name='password_reset'),
-    url(r'^password_reset/done/$', django.contrib.auth.views.password_reset_done, {'template_name': 'castle/registration/password_reset_done.html'}, name='password_reset_done'),
-    url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', django.contrib.auth.views.password_reset_confirm, {'template_name': 'castle/registration/password_reset_confirm.html'}, name='password_reset_confirm'),
-    url(r'^reset/done/$', django.contrib.auth.views.password_reset_complete, {'template_name': 'castle/registration/password_reset_complete.html'}, name='password_reset_complete'),
+    path('', story.views.home, name='home'),
+
+    #FIXME: fix log in/out
+    #path('login/', django.contrib.auth.views.login, {'template_name': 'castle/login.html'}, name='login'),
+    #path('logout/', castle.views.signout, name='signout'),
+    path('login/', auth_views.LoginView.as_view(), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    
+    path('signin/',     castle.views.signin,  name='signin'),       # Process log-in credentials
+    path('register/', author.views.profile_view, name='register'),
+    re_path(r'^confirmation/(?P<yesno>(?:yes|no))/(?P<uid>\d+)/(?P<token>\d+)/$', castle.views.confirmation, name='confirmation'),
+    path('resend_email_conf/', castle.views.resend_email_conf, name='resend_email_conf'),
+    #path('password_reset/', django.contrib.auth.views.password_reset, {'post_reset_redirect': reverse_lazy('password_reset_done'), 'html_email_template_name': 'castle/registration/password_reset_email.html', 'template_name': 'castle/registration/password_reset_form.html'}, name='password_reset'),
+    #path('password_reset/done/', django.contrib.auth.views.password_reset_done, {'template_name': 'castle/registration/password_reset_done.html'}, name='password_reset_done'),
+    #path('reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/', django.contrib.auth.views.password_reset_confirm, {'template_name': 'castle/registration/password_reset_confirm.html'}, name='password_reset_confirm'),
+    #path('reset/done/', django.contrib.auth.views.password_reset_complete, {'template_name': 'castle/registration/password_reset_complete.html'}, name='password_reset_complete'),
     
     # User Dashboard
-    url(r'^dashboard/$',  'castle.views.dashboard', name='dashboard'),
-    url(r'^friendship/add/(?P<user_id>\d+)/$', 'castle.views.add_friend', name='add_friend'),
-    url(r'^friendship/del/(?P<user_id>\d+)/$', 'castle.views.del_friend', name='del_friend'), 
-    url(r'^avatar_upload/', 'castle.views.avatar_upload', name='avatar_upload'),
+    path('dashboard/',  castle.views.dashboard, name='dashboard'),
+    path('friendship/add/<int:user_id>/', castle.views.add_friend, name='add_friend'),
+    path('friendship/del/<int:user_id>/', castle.views.del_friend, name='del_friend'), 
+    path('avatar_upload/', castle.views.avatar_upload, name='avatar_upload'),
 
 	# Miscellaneous Story
-    url(r'^tag/(?P<tag_name>[^/]+)/$', 'story.views.tags', name='tags'),
-    url(r'^tags/$', 'story.views.tags_null', name='tags_null'),    
+    path('tag/<str:tag_name>/', story.views.tags, name='tags'),
+    path('tags/', story.views.tags_null, name='tags_null'),    
     
     # Static-ish pages
-    url(r'^about/$', 'castle.views.static_view', {'template_name': 'about.html'}, name="about"),
-    url(r'^rules/$', 'castle.views.static_view', {'template_name': 'rules.html'}, name="rules"),
-    url(r'^privacy/$', 'castle.views.static_view', {'template_name': 'privacy.html'}, name="privacy"),
-    url(r'^help/$', 'castle.views.static_view', {'template_name': 'help.html'}, name="help"),
-    #url(r'^credits/$', 'castle.views.static_view', {'template_name': 'credits.html'}, name="credits"),
-)
+    path('about/',castle.views.static_view, {'template_name': 'about.html'}, name="about"),
+    path('rules/', castle.views.static_view, {'template_name': 'rules.html'}, name="rules"),
+    path('privacy/', castle.views.static_view, {'template_name': 'privacy.html'}, name="privacy"),
+    path('help/', castle.views.static_view, {'template_name': 'help.html'}, name="help"),
+    #path('credits/$', castle.views.static_view, {'template_name': 'credits.html'}, name="credits"),
+]

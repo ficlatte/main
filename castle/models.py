@@ -25,7 +25,7 @@ from datetime import date, datetime
 
 # Extra user data
 class Profile(models.Model):
-    user                = models.OneToOneField(User)
+    user                = models.OneToOneField(User, on_delete=models.CASCADE)
     friends             = models.ManyToManyField('self', symmetrical=False, related_name='followers', blank=True)
     pen_name            = models.CharField(max_length=64)
     pen_name_uc         = models.CharField(max_length=64, unique=True)
@@ -44,7 +44,7 @@ class Profile(models.Model):
     old_salt            = models.CharField(max_length=16, blank=True, null=True)     # DEPRECATED pass salt
     prefs               = models.IntegerField(default=0)
     flags               = models.IntegerField(default=0)
-    stored              = models.ForeignKey('Story', blank=True, null=True)            # User can make a note of a story for later use
+    stored              = models.ForeignKey('Story', blank=True, null=True, on_delete=models.CASCADE)            # User can make a note of a story for later use
     ctime               = models.DateTimeField(default=timezone.now)    # Creation time
     mtime               = models.DateTimeField(default=timezone.now)    # Modification time
     atime               = models.DateTimeField(default=timezone.now)    # Can't remember what this was supposed to be for
@@ -72,7 +72,7 @@ class Profile(models.Model):
         return unicode(self.pen_name)
     
     def email_authenticated(self):
-        return (self.email_auth == 0L) and (not self.spambot)
+        return (self.email_auth == 0) and (not self.spambot)
     
     def is_friend(self, other):
         return self.friends.filter(id=other.id).exists()
@@ -85,7 +85,7 @@ class Profile(models.Model):
 
 # Story prompts
 class Prompt(models.Model):
-    user        = models.ForeignKey(Profile)
+    user        = models.ForeignKey(Profile, on_delete=models.CASCADE)
     title       = models.CharField(max_length=128)
     body        = models.CharField(max_length=256)
     mature      = models.BooleanField(default=False)
@@ -99,7 +99,7 @@ class Prompt(models.Model):
         
 # Challenges
 class Challenge(models.Model):
-    user        = models.ForeignKey(Profile)
+    user        = models.ForeignKey(Profile, on_delete=models.CASCADE)
     title       = models.CharField(max_length=128)
     body        = models.CharField(max_length=1024)
     mature      = models.BooleanField(default=False)
@@ -109,7 +109,7 @@ class Challenge(models.Model):
     stime       = models.DateField(default=timezone.now)        # Challenge start date
     etime       = models.DateField(default=timezone.now)        # Challenge end date
     ftime       = models.DateTimeField(blank=True, null=True)   # Featured time (first only)
-    winner      = models.ForeignKey('Story', related_name='winner', null=True)
+    winner      = models.ForeignKey('Story', related_name='winner', null=True, on_delete=models.CASCADE)
 
     def __unicode__(self):
         return unicode(self.title)
@@ -133,13 +133,13 @@ class Challenge(models.Model):
 
 # Stories
 class Story(models.Model):
-    user        = models.ForeignKey(Profile)
+    user        = models.ForeignKey(Profile, on_delete=models.CASCADE)
     title       = models.CharField(max_length=256)
     body        = models.CharField(max_length=2048)
-    prequel_to  = models.ForeignKey('self', blank=True, null=True, related_name='prequels')
-    sequel_to   = models.ForeignKey('self', blank=True, null=True, related_name='sequels')
-    prompt      = models.ForeignKey(Prompt, blank=True, null=True)
-    challenge   = models.ForeignKey(Challenge, blank=True, null=True)
+    prequel_to  = models.ForeignKey('self', blank=True, null=True, related_name='prequels', on_delete=models.CASCADE)
+    sequel_to   = models.ForeignKey('self', blank=True, null=True, related_name='sequels', on_delete=models.CASCADE)
+    prompt      = models.ForeignKey(Prompt, blank=True, null=True, on_delete=models.CASCADE)
+    challenge   = models.ForeignKey(Challenge, blank=True, null=True, on_delete=models.CASCADE)
     mature      = models.BooleanField(default=False)
     draft       = models.BooleanField(default=False)
     ficly       = models.BooleanField(default=False)
@@ -155,7 +155,7 @@ class Story(models.Model):
     
 # Story tags
 class Tag(models.Model):
-    story       = models.ForeignKey(Story)
+    story       = models.ForeignKey(Story, on_delete=models.CASCADE)
     tag         = models.CharField(max_length=64)
 
     def __unicode__(self):
@@ -167,7 +167,7 @@ class Tag(models.Model):
 
 # Stories
 class Blog(models.Model):
-    user        = models.ForeignKey(Profile)
+    user        = models.ForeignKey(Profile, on_delete=models.CASCADE)
     title       = models.CharField(max_length=256)
     body        = models.CharField(max_length=20480)
     draft       = models.BooleanField(default=False)
@@ -181,8 +181,8 @@ class Blog(models.Model):
     
 # Story rating
 class Rating(models.Model):
-    user        = models.ForeignKey(Profile)
-    story       = models.ForeignKey(Story)
+    user        = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    story       = models.ForeignKey(Story, on_delete=models.CASCADE)
     rating      = models.IntegerField(blank=True, null=True)
     ctime       = models.DateTimeField(default=timezone.now)
     mtime       = models.DateTimeField(default=timezone.now)
@@ -208,12 +208,12 @@ class Comment(models.Model):
         (SPAM_CONFIRMED,    u'definitely spam'),
     )
     
-    user        = models.ForeignKey(Profile, related_name='comments_made')       # User making the comment
+    user        = models.ForeignKey(Profile, related_name='comments_made', on_delete=models.CASCADE)       # User making the comment
     body        = models.CharField(max_length=1024)
-    story       = models.ForeignKey('castle.Story', blank=True, null=True)
-    prompt      = models.ForeignKey('castle.Prompt', blank=True, null=True)
-    challenge   = models.ForeignKey('castle.Challenge', blank=True, null=True)
-    blog        = models.ForeignKey('castle.Blog',  blank=True, null=True)
+    story       = models.ForeignKey('castle.Story', blank=True, null=True, on_delete=models.CASCADE)
+    prompt      = models.ForeignKey('castle.Prompt', blank=True, null=True, on_delete=models.CASCADE)
+    challenge   = models.ForeignKey('castle.Challenge', blank=True, null=True, on_delete=models.CASCADE)
+    blog        = models.ForeignKey('castle.Blog',  blank=True, null=True, on_delete=models.CASCADE)
     ctime       = models.DateTimeField(default=timezone.now)
     mtime       = models.DateTimeField(default=timezone.now)    
     spam        = models.IntegerField(default=0, choices=SPAM_OPTIONS)
@@ -238,8 +238,8 @@ class Comment(models.Model):
 
 # Comment Likes
 class CommentLike(models.Model):
-    user = models.ForeignKey(Profile, related_name='comment_liked')
-    comment = models.ForeignKey(Comment, blank=True, null=True)
+    user = models.ForeignKey(Profile, related_name='comment_liked', on_delete=models.CASCADE)
+    comment = models.ForeignKey(Comment, blank=True, null=True, on_delete=models.CASCADE)
 
     def __unicode__(self):
         return self.story.user.__unicode__() + u' likes comment by "' + self.comment.user.__unicode__() + u' with text "' + unicode(
@@ -282,14 +282,14 @@ class StoryLog(models.Model):
         (CHALLENGE_WON, u'won a challenge'),
     )
     
-    user        = models.ForeignKey(Profile)
-    story       = models.ForeignKey(Story, blank=True, null=True)
+    user        = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    story       = models.ForeignKey(Story, blank=True, null=True, on_delete=models.CASCADE)
     log_type    = models.IntegerField(default=1, choices=LOG_OPTIONS)
-    comment     = models.ForeignKey(Comment, blank=True, null=True)     # ID of comment, if this log is for a comment
-    quel        = models.ForeignKey(Story,   blank=True, null=True, related_name='activity_quel_set')     # ID of prequel/sequel if this log is for a prequel/sequel
-    prompt      = models.ForeignKey(Prompt, blank=True, null=True)
+    comment     = models.ForeignKey(Comment, blank=True, null=True, on_delete=models.CASCADE)     # ID of comment, if this log is for a comment
+    quel        = models.ForeignKey(Story,   blank=True, null=True, related_name='activity_quel_set', on_delete=models.CASCADE)     # ID of prequel/sequel if this log is for a prequel/sequel
+    prompt      = models.ForeignKey(Prompt, blank=True, null=True, on_delete=models.CASCADE)
     ignore_me   = models.BooleanField(default=False)
-    challenge   = models.ForeignKey(Challenge, blank=True, null=True)
+    challenge   = models.ForeignKey(Challenge, blank=True, null=True, on_delete=models.CASCADE)
     ctime       = models.DateTimeField(default=timezone.now)
     
     def get_opt(self, o):
@@ -330,14 +330,14 @@ class Misc(models.Model):
             
 # E-mail subscriptions
 class Subscription(models.Model):
-    user        = models.ForeignKey(Profile)
-    story       = models.ForeignKey(Story, blank=True, null=True, related_name='subscriptions')
-    blog        = models.ForeignKey(Blog,  blank=True, null=True, related_name='subscriptions')
-    prompt      = models.ForeignKey(Prompt,  blank=True, null=True, related_name='subscriptions')
-    challenge   = models.ForeignKey(Challenge,  blank=True, null=True, related_name='subscriptions')
-    prequel_to     = models.ForeignKey(Story, blank=True, null=True, related_name='prequel_subscriptions')
-    sequel_to    = models.ForeignKey(Story, blank=True, null=True, related_name='sequel_subscriptions')
-    ch_entry    = models.ForeignKey(Challenge, blank=True, null=True, related_name='entry_subscriptions')
+    user        = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    story       = models.ForeignKey(Story, blank=True, null=True, related_name='subscriptions', on_delete=models.CASCADE)
+    blog        = models.ForeignKey(Blog,  blank=True, null=True, related_name='subscriptions', on_delete=models.CASCADE)
+    prompt      = models.ForeignKey(Prompt,  blank=True, null=True, related_name='subscriptions', on_delete=models.CASCADE)
+    challenge   = models.ForeignKey(Challenge,  blank=True, null=True, related_name='subscriptions', on_delete=models.CASCADE)
+    prequel_to     = models.ForeignKey(Story, blank=True, null=True, related_name='prequel_subscriptions', on_delete=models.CASCADE)
+    sequel_to    = models.ForeignKey(Story, blank=True, null=True, related_name='sequel_subscriptions', on_delete=models.CASCADE)
+    ch_entry    = models.ForeignKey(Challenge, blank=True, null=True, related_name='entry_subscriptions', on_delete=models.CASCADE)
     
     def __unicode__(self):
         r = unicode(self.user)

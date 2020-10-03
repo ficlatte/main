@@ -18,7 +18,7 @@
 
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.conf import settings
@@ -65,7 +65,7 @@ def run_convert_icon(profile):
 
     p = subprocess.Popen(["/usr/bin/convert", src_fnm, '-resize', '46x46', '-limit', 'thread', '1', dst_fnm], preexec_fn=setlimits)
     p.wait()
-    print "return code is",p.returncode
+    print("return code is",p.returncode)
     return p.returncode
 
 #-----------------------------------------------------------------------------

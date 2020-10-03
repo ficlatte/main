@@ -15,19 +15,18 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.conf.urls import url
-
+from django.urls import path
 from . import views
 
 urlpatterns = [
-    url(r'^$', 'prompt.views.prompts', name='prompts'),
-    url(r'^(?P<prompt_id>\d+)/$', 'prompt.views.prompt_view', name='prompt'),
-    #url(r'^edit/(?P<prompt_id>\d+)/$', 'prompt.views.edit_prompt', name='edit_prompt'),
-    url(r'^new/$', 'prompt.views.new_prompt', name='new_prompt'),
-    url(r'^submit/$', 'prompt.views.submit_prompt', name='submit_prompt'),
-    url(r'^unsubscribe/(?P<prompt_id>\d+)/$', 'prompt.views.prompt_unsubscribe', name='prompt-unsub'),
-    url(r'^subscribe/(?P<prompt_id>\d+)/$', 'prompt.views.prompt_subscribe', name='prompt-sub'),
-    url(r'^recent/$', 'prompt.views.browse_prompts', name='prompts_recent'),
-    url(r'^active/$', 'prompt.views.active_prompts', name='prompts_active'),
-    url(r'^popular/$', 'prompt.views.popular_prompts', name='prompts_popular'),
+    path('', views.prompts, name='prompts'),
+    path('<int:prompt_id>/', views.prompt_view, name='prompt'),
+    #path('edit/<int:prompt_id>/', views.edit_prompt, name='edit_prompt'),
+    path('new/', views.new_prompt, name='new_prompt'),
+    path('submit/', views.submit_prompt, name='submit_prompt'),
+    path('unsubscribe/<int:prompt_id>/', views.prompt_unsubscribe, name='prompt-unsub'),
+    path('subscribe/<int:prompt_id>/', views.prompt_subscribe, name='prompt-sub'),
+    path('recent/', views.browse_prompts, name='prompts_recent'),
+    path('active/', views.active_prompts, name='prompts_active'),
+    path('popular/', views.popular_prompts, name='prompts_popular'),
 ]

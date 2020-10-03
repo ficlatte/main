@@ -19,7 +19,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from castle.models import Challenge
-from datetimewidget.widgets import DateWidget
+#from datetimewidget.widgets import DateWidget
 
 class AvatarUploadForm(forms.Form):
     image_file = forms.FileField(label='image file')

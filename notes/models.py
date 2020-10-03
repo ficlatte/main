@@ -33,12 +33,12 @@ class NoteManager(models.Manager):
         return self.filter(recipient = user, read_date__isnull=True, recipient_deleted_date__isnull=True).count()   
 
 class Note(models.Model):
-    user                    = models.ForeignKey(Profile)
+    user                    = models.ForeignKey(Profile, on_delete=models.CASCADE)
     subject                 = models.CharField(max_length=140)
     body                    = models.CharField(max_length=2048)
-    sender                  = models.ForeignKey(Profile, related_name='sender')
-    recipient               = models.ForeignKey(Profile, related_name='recipient')
-    parent_msg              = models.ForeignKey('self', related_name='parent', blank=True, null=True)
+    sender                  = models.ForeignKey(Profile, related_name='sender', on_delete=models.CASCADE)
+    recipient               = models.ForeignKey(Profile, related_name='recipient', on_delete=models.CASCADE)
+    parent_msg              = models.ForeignKey('self', related_name='parent', blank=True, null=True, on_delete=models.CASCADE)
     sent_date               = models.DateTimeField(blank=True, null=True)
     read_date               = models.DateTimeField(blank=True, null=True)
     replied_date            = models.DateTimeField(blank=True, null=True)
