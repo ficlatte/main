@@ -16,15 +16,15 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.conf.urls import url
+from django.urls import path
 from . import views
 
 urlpatterns = [
-    url(r'^directory/', views.member_directory, name='member_directory'),
-    url(r'^(?P<pen_name>[^/]+)/', views.author, name='author'),
-    url(r'^u/drafts/', views.drafts, name='drafts'),
-    url(r'^u/prompts/', views.author_prompts, name='author_prompts'),
-    url(r'^u/challenges/', views.author_challenges, name='author_challenges'),
-    url(r'^u/profile/', views.profile_view, name='profile'),
-    url(r'^u/submit/', views.submit_profile, name='submit_profile'),
+    path('directory/', views.member_directory, name='member_directory'),
+    path('<str:pen_name>/', views.author, name='author'),
+    path('u/drafts/', views.drafts, name='drafts'),
+    path('u/prompts/', views.author_prompts, name='author_prompts'),
+    path('u/challenges/', views.author_challenges, name='author_challenges'),
+    path('u/profile/', views.profile_view, name='profile'),
+    path('u/submit/', views.submit_profile, name='submit_profile'),
 ]

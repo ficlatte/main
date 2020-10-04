@@ -59,9 +59,9 @@ class Command(BaseCommand):
             if (row[0] != 1):
                 user = User(
                     id = row[0],
-                    username = 'user'+unicode(row[0]),
+                    username = 'user'+str(row[0]),
                     first_name = 'user',
-                    last_name = unicode(row[0]),
+                    last_name = str(row[0]),
                     email = row[6],
                     date_joined = row[9],
                 )
@@ -72,7 +72,7 @@ class Command(BaseCommand):
             profile.user=user
             profile.save()
 
-            self.stdout.write(u'uid '+unicode(row[0])+ u' is '+row[1]+u' Django uid is '+unicode(user.id))
+            self.stdout.write(u'uid '+str(row[0])+ u' is '+row[1]+u' Django uid is '+str(user.id))
 
     @transaction.atomic
     def import_friendships(self):
@@ -82,7 +82,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write(unicode(row[0])+u' is following '+unicode(row[1]))
+            self.stdout.write(str(row[0])+u' is following '+str(row[1]))
             prof = Profile.objects.get(pk=int(row[0]))
             prof.friends.add(Profile.objects.get(pk=row[1]))
             prof.save()
@@ -95,7 +95,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write(u'Prompt '+unicode(row[0]))
+            self.stdout.write(u'Prompt '+str(row[0]))
             prompt = Prompt(
                 id = row[0],
                 user = Profile.objects.get(pk=row[1]),
@@ -115,7 +115,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write(u'Story '+unicode(row[0]))#+u': '+unicode(row[2]))
+            self.stdout.write(u'Story '+str(row[0]))#+u': '+str(row[2]))
             story = Story(
                 id = row[0],
                 user = Profile.objects.get(pk=row[1]),
@@ -138,7 +138,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write(u'Story '+unicode(row[0])+u': '+unicode(row[2]))
+            self.stdout.write(u'Story '+str(row[0])+u': '+str(row[2]))
             story = Story.objects.get(pk=row[0])
             try:
                 if (row[1]):
@@ -159,7 +159,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write(u'Blog '+unicode(row[0]))
+            self.stdout.write(u'Blog '+str(row[0]))
             profile = Profile.objects.get(pk=row[1])
             blog = Blog(
                     id = row[0],
@@ -181,7 +181,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write(u'Comment '+unicode(row[0]))
+            self.stdout.write(u'Comment '+str(row[0]))
             profile = Profile.objects.get(pk=row[1])
             comment = Comment(
                     id = row[0],
@@ -203,7 +203,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write(u'Tag '+unicode(row[0])+u' on '+unicode(row[1]))
+            self.stdout.write(u'Tag '+str(row[0])+u' on '+str(row[1]))
             story = Story.objects.get(pk=row[1])
             tag = Tag(
                 tag = row[0],
@@ -219,7 +219,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write(u'Rating from '+unicode(row[0]))
+            self.stdout.write(u'Rating from '+str(row[0]))
             try:
                 r = Rating(
                     user  = Profile.objects.get(pk=row[0]),
@@ -228,7 +228,7 @@ class Command(BaseCommand):
                     )
                 r.save()
             except ObjectDoesNotExist:
-                self.stdout.write("Rating of non-existant story "+unicode(row[1]))
+                self.stdout.write("Rating of non-existant story "+str(row[1]))
 
     @transaction.atomic
     def import_story_log(self):
@@ -239,7 +239,7 @@ class Command(BaseCommand):
             row = c.fetchone()
             if (not row):
                 break;
-            self.stdout.write(u'Story log user '+unicode(row[0])+u'; story='+unicode(row[1])+u'; type='+unicode(row[2]))
+            self.stdout.write(u'Story log user '+str(row[0])+u'; story='+str(row[1])+u'; type='+str(row[2]))
             try:
                 l = StoryLog(
                     user  = Profile.objects.get(pk=row[0]),

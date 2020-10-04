@@ -68,8 +68,8 @@ class Profile(models.Model):
     AUTOSUBSCRIBE_TO_SEQUEL                = 512  # Subscribe to notifications when someone sequels your story
     AUTOSUBSCRIBE_TO_CHALLENGE_ENTRY       = 1024  # Subscribe to notifications when someone enters a story in your challenge
 
-    def __unicode__(self):
-        return unicode(self.pen_name)
+    def __str__(self):
+        return str(self.pen_name)
     
     def email_authenticated(self):
         return (self.email_auth == 0) and (not self.spambot)
@@ -94,8 +94,8 @@ class Prompt(models.Model):
     mtime       = models.DateTimeField(default=timezone.now)    # Modification time
     ftime       = models.DateTimeField(blank=True, null=True)   # Featured time (first only)
 
-    def __unicode__(self):
-        return unicode(self.title)
+    def __str__(self):
+        return str(self.title)
         
 # Challenges
 class Challenge(models.Model):
@@ -111,8 +111,8 @@ class Challenge(models.Model):
     ftime       = models.DateTimeField(blank=True, null=True)   # Featured time (first only)
     winner      = models.ForeignKey('Story', related_name='winner', null=True, on_delete=models.CASCADE)
 
-    def __unicode__(self):
-        return unicode(self.title)
+    def __str__(self):
+        return str(self.title)
     
     def active(self):
         # Note: this is determined by UTC, ie. server time, not by user's local time
@@ -150,16 +150,16 @@ class Story(models.Model):
     ptime       = models.DateTimeField(blank=True, null=True)   # Publication time
     ftime       = models.DateTimeField(blank=True, null=True)   # Featured time (first only)
 
-    def __unicode__(self):
-        return unicode(self.title)
+    def __str__(self):
+        return str(self.title)
     
 # Story tags
 class Tag(models.Model):
     story       = models.ForeignKey(Story, on_delete=models.CASCADE)
     tag         = models.CharField(max_length=64)
 
-    def __unicode__(self):
-        return unicode(self.tag) + u' on ' + self.story.__unicode__()
+    def __str__(self):
+        return str(self.tag) + u' on ' + self.story.__str__()
 
     # Each tag must be unique within a story
     class Meta:
@@ -176,8 +176,8 @@ class Blog(models.Model):
     mtime       = models.DateTimeField(default=timezone.now)    # Modifcation time
     ptime       = models.DateTimeField(blank=True, null=True)   # Publication time
 
-    def __unicode__(self):
-        return unicode(self.title)
+    def __str__(self):
+        return str(self.title)
     
 # Story rating
 class Rating(models.Model):
@@ -187,8 +187,8 @@ class Rating(models.Model):
     ctime       = models.DateTimeField(default=timezone.now)
     mtime       = models.DateTimeField(default=timezone.now)
     
-    def __unicode__(self):
-        return self.user.__unicode__() + u' rates "' + self.story.__unicode__() + u'" by ' + self.story.user.__unicode__() + u' with score ' + unicode(self.rating)
+    def __str__(self):
+        return self.user.__str__() + u' rates "' + self.story.__str__() + u'" by ' + self.story.user.__str__() + u' with score ' + str(self.rating)
 
     # Each user can only rate an individual story once
     class Meta:
@@ -218,16 +218,16 @@ class Comment(models.Model):
     mtime       = models.DateTimeField(default=timezone.now)    
     spam        = models.IntegerField(default=0, choices=SPAM_OPTIONS)
 
-    def __unicode__(self):
+    def __str__(self):
         if (self.story is not None):
-            return self.user.__unicode__() + u' comment on story "' + self.story.__unicode__() + u'" by ' + self.story.user.__unicode__() + u' with text "' + unicode(self.body)[:30] + u'"'
+            return self.user.__str__() + u' comment on story "' + self.story.__str__() + u'" by ' + self.story.user.__str__() + u' with text "' + str(self.body)[:30] + u'"'
         if (self.blog is not None):
-            return self.user.__unicode__() + u' comment on blog post "' + self.blog.__unicode__() + u'" by ' + self.blog.user.__unicode__() + u' with text "' + unicode(self.body)[:30] + u'"'
+            return self.user.__str__() + u' comment on blog post "' + self.blog.__str__() + u'" by ' + self.blog.user.__str__() + u' with text "' + str(self.body)[:30] + u'"'
         if (self.prompt is not None):
-            return self.user.__unicode__() + u' comment on prompt "' + self.prompt.__unicode__() + u'" by ' + self.prompt.user.__unicode__() + u' with text "' + unicode(self.body)[:30] + u'"'
+            return self.user.__str__() + u' comment on prompt "' + self.prompt.__str__() + u'" by ' + self.prompt.user.__str__() + u' with text "' + str(self.body)[:30] + u'"'
         if (self.challenge is not None):
-            return self.user.__unicode__() + u' comment on challenge "' + self.challenge.__unicode__() + u'" by ' + self.challenge.user.__unicode__() + u' with text "' + unicode(self.body)[:30] + u'"'
-        return self.user.__unicode__() + u' comment on nothing at all with text "' + unicode(self.body)[:30] + u'"'
+            return self.user.__str__() + u' comment on challenge "' + self.challenge.__str__() + u'" by ' + self.challenge.user.__str__() + u' with text "' + str(self.body)[:30] + u'"'
+        return self.user.__str__() + u' comment on nothing at all with text "' + str(self.body)[:30] + u'"'
 
     def get_rating(self):
         if (self.story is not None):
@@ -241,8 +241,8 @@ class CommentLike(models.Model):
     user = models.ForeignKey(Profile, related_name='comment_liked', on_delete=models.CASCADE)
     comment = models.ForeignKey(Comment, blank=True, null=True, on_delete=models.CASCADE)
 
-    def __unicode__(self):
-        return self.story.user.__unicode__() + u' likes comment by "' + self.comment.user.__unicode__() + u' with text "' + unicode(
+    def __str__(self):
+        return self.story.user.__str__() + u' likes comment by "' + self.comment.user.__str__() + u' with text "' + str(
         self.comment)[:30] + u'"'
 
     # Each user can only Like a comment once
@@ -300,10 +300,10 @@ class StoryLog(models.Model):
         #        the LOG_OPTIONS structure
         return self.LOG_OPTIONS[self.log_type][1]
 
-    def __unicode__(self):
+    def __str__(self):
         # FIXME: LOG_OPTIONS[self.log_type][1] is not the right way to access
         #        the LOG_OPTIONS structure
-        return unicode(self.id)+u': User ' + self.user.__unicode__() + u' ' + self.LOG_OPTIONS[self.log_type][1] + u' story "' + self.story.__unicode__() + u'" by ' + self.story.user.__unicode__()
+        return str(self.id)+u': User ' + self.user.__str__() + u' ' + self.LOG_OPTIONS[self.log_type][1] + u' story "' + self.story.__str__() + u'" by ' + self.story.user.__str__()
         
 
 # Site log
@@ -311,8 +311,8 @@ class SiteLog(models.Model):
     ip          = models.GenericIPAddressField()
     url         = models.URLField(max_length=254)
     
-    def __unicode__(self):
-        return unicode(self.url) + u' hit from IP ' + unicode(self.url)
+    def __str__(self):
+        return str(self.url) + u' hit from IP ' + str(self.url)
 
 # Misc bits
 class Misc(models.Model):
@@ -320,12 +320,12 @@ class Misc(models.Model):
     s_val       = models.CharField(max_length=128, blank=True, null=True)
     i_val       = models.BigIntegerField(blank=True, null=True)
 
-    def __unicode__(self):
-        r = u'key:"'+unicode(self.key)+u'" : '
+    def __str__(self):
+        r = u'key:"'+str(self.key)+u'" : '
         if (self.s_val is not None):
-            r = r + u' s_val="'+unicode(self.s_val)+u'";'
+            r = r + u' s_val="'+str(self.s_val)+u'";'
         if (self.i_val is not None):
-            r = r + u' i_val='+unicode(self.i_val)+u';'
+            r = r + u' i_val='+str(self.i_val)+u';'
         return r
             
 # E-mail subscriptions
@@ -339,22 +339,22 @@ class Subscription(models.Model):
     sequel_to    = models.ForeignKey(Story, blank=True, null=True, related_name='sequel_subscriptions', on_delete=models.CASCADE)
     ch_entry    = models.ForeignKey(Challenge, blank=True, null=True, related_name='entry_subscriptions', on_delete=models.CASCADE)
     
-    def __unicode__(self):
-        r = unicode(self.user)
+    def __str__(self):
+        r = str(self.user)
         if (self.story is not None):
-            r += u' subscribed to story '+unicode(self.story)
+            r += u' subscribed to story '+str(self.story)
         if (self.blog is not None):
-            r += u' subscribed to blog post '+unicode(self.blog)
+            r += u' subscribed to blog post '+str(self.blog)
         if (self.prompt is not None):
-            r += u' subscribed to prompt '+unicode(self.prompt)
+            r += u' subscribed to prompt '+str(self.prompt)
         if (self.challenge is not None):
-            r += u' subscribed to challenge '+unicode(self.challenge)
+            r += u' subscribed to challenge '+str(self.challenge)
         if (self.prequel_to is not None):
-            r += u' subscribed to prequels on '+unicode(self.story)
+            r += u' subscribed to prequels on '+str(self.story)
         if (self.sequel_to is not None):
-            r += u' subscribed to sequels '+unicode(self.story)
+            r += u' subscribed to sequels '+str(self.story)
         if (self.ch_entry is not None):
-            r += u' subscribed to entries on challenge '+unicode(self.challenge)
+            r += u' subscribed to entries on challenge '+str(self.challenge)
         return r
 
 class DebugLog(models.Model):
@@ -362,14 +362,14 @@ class DebugLog(models.Model):
     timestamp   = models.IntegerField()
     log         = models.CharField(max_length = 2048)
     
-    def __unicode__(self):
+    def __str__(self):
         # Generate human-readable date
         r = datetime.utcfromtimestamp(self.timestamp).strftime('%Y-%m-%d %H:%M:%S')
         
         # Add user ID
         if (self.uid >= 1):
             r += str(self.uid)
-            #r += u': '+unicode(Profile.objects.get(pk=self.uid))+ u' - '
+            #r += u': '+str(Profile.objects.get(pk=self.uid))+ u' - '
         else:
             r += u': <no user> - '
         

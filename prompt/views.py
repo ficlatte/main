@@ -212,7 +212,7 @@ def prompt_view(request, prompt_id):
                'subscribed'        : subscribed,
                'page_title'        : u'Prompt ' + prompt.title,
                'prompt_sidepanel'  : 1,
-               'page_url'          : u'/prompts/' + unicode(prompt.id) + u'/',
+               'page_url'          : u'/prompts/' + str(prompt.id) + u'/',
                'pages'             : bs_pager(page_num, PAGE_STORIES, num_stories),
                'suppressed'        : suppressed,
                }
@@ -316,7 +316,7 @@ def submit_prompt(request):
             errors.append(u'Prompt body must be at least 30 characters long')
 
         if (l > 256):
-            errors.append(u'Prompt is over 256 characters (currently ' + unicode(l) + u')')
+            errors.append(u'Prompt is over 256 characters (currently ' + str(l) + u')')
 
     # If there have been errors, re-display the page
     if (errors):

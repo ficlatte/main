@@ -283,7 +283,7 @@ def story_view(request, story_id, comment_text=None, user_rating=None, error_tit
                'prequel_subscribed'  : prequel_subscribed,
                'sequel_subscribed'   : sequel_subscribed,
                'page_title'          : story.title,
-               'page_url'            : u'/stories/' + unicode(story_id) + u'/',
+               'page_url'            : u'/stories/' + str(story_id) + u'/',
                'pages'               : bs_pager(page_num, PAGE_COMMENTS, story.comment_set.filter(spam__lt=Comment.SPAM_QUARANTINE).count()),
                'story_sidepanel'     : 1,
                'owner'               : owner,
@@ -459,10 +459,10 @@ def submit_story(request):
         errors.append(u'Story body must be at least 60 characters long')
 
     if ((not story.draft) and (l > 1024)):
-        errors.append(u'Story is over 1024 characters (currently ' + unicode(l) + u')')
+        errors.append(u'Story is over 1024 characters (currently ' + str(l) + u')')
 
     if (story.draft and (l > 1536)):
-        errors.append(u'Draft is over 1536 characters (currently ' + unicode(l) + u')')
+        errors.append(u'Draft is over 1536 characters (currently ' + str(l) + u')')
 
     # If there have been errors, re-display the page
     if (errors):
@@ -788,7 +788,7 @@ def tags(request, tag_name):
         # No stories found, give the user
         return tags_null(request, u'No stories tagged ' + tag_name)
 
-    label = u'Stories tagged “' + unicode(tag_name) + u'”'
+    label = u'Stories tagged “' + str(tag_name) + u'”'
     url = u'/tag/' + urlquote(tag_name) + u'/'
 
     # Build context and render page
