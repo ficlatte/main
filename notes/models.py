@@ -59,8 +59,8 @@ class Note(models.Model):
         else:
             return True
     
-    def __unicode__(self):
-        return unicode(self.subject)
+    def __str__(self):
+        return str(self.subject)
     
     class Meta:
         ordering = ['-sent_date']

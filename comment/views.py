@@ -84,7 +84,7 @@ def submit_comment(request):
         errors.append(u'Comment body must be at least 1 character long')
 
     if (l > 1024):
-        errors.append(u'Comment is over 1024 characters (currently ' + unicode(l) + u')')
+        errors.append(u'Comment is over 1024 characters (currently ' + str(l) + u')')
 
     # If there have been errors, re-display the page
     if (errors):

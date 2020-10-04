@@ -247,7 +247,7 @@ def submit_note(request):
         errors.append(u'Story title must be at least 1 character long')
 
     if l > 2048:
-        errors.append(u'Note is over 2048 characters (currently ' + unicode(l) + u')')
+        errors.append(u'Note is over 2048 characters (currently ' + str(l) + u')')
 
     # If there have been errors, re-display the page
     if errors:

@@ -47,7 +47,7 @@ def num_comments_txt(obj):
     if c == 1:
         return u'1 comment'
     else:
-        return unicode(c) + u' comments'
+        return str(c) + u' comments'
 
 
 # -----------------------------------------------------------------------------
@@ -71,9 +71,9 @@ def users_liked(obj):
 @register.filter
 def comment_like(obj, profile):
     if obj.commentlike_set.filter(user_id=profile.id, comment_id=obj.id):
-        return mark_safe(u'<a class="like-comment" href="#" data-url="/comment/' + unicode(obj.id) + u'/unlike/">Unlike</a>')
+        return mark_safe(u'<a class="like-comment" href="#" data-url="/comment/' + str(obj.id) + u'/unlike/">Unlike</a>')
     else:
-        return mark_safe(u'<a class="like-comment" href="#" data-url="/comment/' + unicode(obj.id) + u'/like">Like</a>')
+        return mark_safe(u'<a class="like-comment" href="#" data-url="/comment/' + str(obj.id) + u'/like">Like</a>')
 
 # -----------------------------------------------------------------------------
 @register.filter
@@ -82,7 +82,7 @@ def num_stories_txt(obj):
     if c == 1:
         return u'1 story'
     else:
-        return unicode(c) + u' stories'
+        return str(c) + u' stories'
 
 
 # -----------------------------------------------------------------------------
@@ -110,7 +110,7 @@ def num_prompts_txt(obj):
     if c == 1:
         return u'1 prompt'
     else:
-        return unicode(c) + u' prompts'
+        return str(c) + u' prompts'
 
 
 # -----------------------------------------------------------------------------
@@ -126,7 +126,7 @@ def num_challenges_txt(obj):
     if c == 1:
         return u'1 challenge'
     else:
-        return unicode(c) + u' challenges'
+        return str(c) + u' challenges'
 
 
 # -----------------------------------------------------------------------------
@@ -142,7 +142,7 @@ def profile_comments_txt(profile):
     if c == 1:
         return u'1 comment'
     else:
-        return unicode(c) + u' comments'
+        return str(c) + u' comments'
 
 
 # -----------------------------------------------------------------------------
@@ -152,7 +152,7 @@ def num_friends_txt(profile):
     if c == 1:
         return u'1 friend'
     else:
-        return unicode(c) + u' friends'
+        return str(c) + u' friends'
 
 
 # -----------------------------------------------------------------------------
@@ -186,30 +186,30 @@ def age(value):
     age = int(age / 60)
     if age < 60:
         s = u's' if (age != 1) else u''
-        return unicode(age) + u' minute' + s + u' ago'
+        return str(age) + u' minute' + s + u' ago'
 
     # Hours
     age = int(age / 60)
     if age < 48:
         s = u's' if (age != 1) else u''
-        return unicode(age) + u' hour' + s + u' ago'
+        return str(age) + u' hour' + s + u' ago'
 
     # Days
     age = int(age / 24)
     if age < 32:
         s = u's' if (age != 1) else u''
-        return unicode(age) + u' day' + s + u' ago'
+        return str(age) + u' day' + s + u' ago'
 
     # Months
     months = int((age * 12.0) / 365.25)
     if months < 12:
         s = u's' if (months != 1) else u''
-        return unicode(months) + u' month' + s + u' ago'
+        return str(months) + u' month' + s + u' ago'
 
     # Years
     age = int(age / 365.25)
     s = u's' if (age != 1) else u''
-    return unicode(age) + u' year' + s + u' ago'
+    return str(age) + u' year' + s + u' ago'
 
 
 # -----------------------------------------------------------------------------
@@ -325,7 +325,7 @@ def story_link(story, tag=None):
     if tag == 'h1':
         return mark_safe(t1 + escape(d + story.title) + u' ' + mark_safe(w) + mark_safe(m) + t2)
     else:
-        return mark_safe(u'<a href="/stories/' + unicode(story.id) + u'" class="story-link">' + t1 + escape(
+        return mark_safe(u'<a href="/stories/' + str(story.id) + u'" class="story-link">' + t1 + escape(
             d + story.title) + u' ' + mark_safe(w) + mark_safe(m) + t2 + u'</a>')
 
 # -----------------------------------------------------------------------------
@@ -344,7 +344,7 @@ def prompt_link(prompt, tag=None):
     if tag == 'h1':
         return mark_safe(t1 + escape(prompt.title) + u' ' + mark_safe(m) + t2)
     else:
-        return mark_safe(u'<a href="/prompts/' + unicode(prompt.id) + u'" class="prompt-link">' + t1 + escape(
+        return mark_safe(u'<a href="/prompts/' + str(prompt.id) + u'" class="prompt-link">' + t1 + escape(
             prompt.title) + mark_safe(m) + t2 + u'</a>')
 
 
@@ -364,7 +364,7 @@ def challenge_link(challenge, tag=None):
     if tag == 'h1':
         return mark_safe(t1 + escape(challenge.title) + u' ' + mark_safe(m) + t2)
     else:
-        return mark_safe(u'<a href="/challenges/' + unicode(challenge.id) + u'" class="challenge-link">' + t1 + escape(
+        return mark_safe(u'<a href="/challenges/' + str(challenge.id) + u'" class="challenge-link">' + t1 + escape(
             challenge.title) + mark_safe(m) + t2 + u'</a>')
 
 
@@ -528,16 +528,16 @@ def user_icon(profile):
 def pager_button(page, url):
     # page is a two-element tuple; [0] describes the type of furniture
     # [1] contains the target page number
-    target = url + u'?page_num=' + unicode(page[1])
+    target = url + u'?page_num=' + str(page[1])
 
     if page[0] == 'P':  # Previous page
         return mark_safe(u'<li><a href="' + target + u'">&laquo; Previous</a></li>')
     elif page[0] == 'N':  # Next page
         return mark_safe(u'<li><a href="' + target + u'">Next &raquo;</a></li>')
     elif page[0] == 'G':  # Go to page
-        return mark_safe(u'<li><a href="' + target + u'">' + unicode(page[1]) + u'</a></li>')
+        return mark_safe(u'<li><a href="' + target + u'">' + str(page[1]) + u'</a></li>')
     elif page[0] == 'C':  # Current page
-        return mark_safe(u'<li class="active"><a href="#">' + unicode(page[1]) + u'</a></li>')
+        return mark_safe(u'<li class="active"><a href="#">' + str(page[1]) + u'</a></li>')
     elif page[0] == 'S':  # Separator
         return mark_safe(u'<li class="disabled"><a href="#">…</a></li>')
     else:
@@ -620,8 +620,8 @@ def end_all(mode):
 
 
 def encode_story_line(line):
-    # Ensure line is unicode
-    line = unicode(line)
+    # Ensure line is str
+    line = str(line)
 
     # Blank lines get short shrift
     if len(line) < 1:

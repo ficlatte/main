@@ -18,9 +18,16 @@ Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
 {%endcomment%}
 {% load static %}
 {% load castle_tags %}
-
+{% block top_script %}
+<script src='https://www.google.com/recaptcha/api.js' async defer></script>
+<script type="text/javascript">
+function recaptcha_callback() {
+    $('#capenable').removeAttr('disabled');
+};
+</script>
+{% endblock %}
 {% block primary_panel %}
-          <form accept-charset="utf-8" action="/authors/u/submit/" class="form-signin" method="POST" name="profile_form" role="form">
+          <form accept-charset="utf-8" action="/authors/u/submit/" class="form-signin" method="POST" name="profile_form" role="form" id="login_form">
             {% csrf_token %}
             <h2 class="form-signin-heading"><span class="glyphicon glyphicon-globe"></span> {% if profile %}Update your details{% else %}Please register{% endif %}</h2>
             <h3 class="form-signin-heading">Enter your details</h3>
@@ -88,15 +95,9 @@ Copyright © 2015-2017 Paul Robertson, Jim Stitzel and Shu Sam Chen
             <input name="action" type="hidden" value="update profile" />
             <input name="uid" type="hidden" value="1" /><br />
             {% if not profile and not no_captcha %}
-              <script src='https://www.google.com/recaptcha/api.js'></script>
-              <script type="text/javascript">
-                function recaptcha_callback() {
-                    $('#capenable').removeAttr('disabled');
-                };
-              </script>
-              <div class="g-recaptcha" data-sitekey="6Lf4LjsUAAAAAJTICi7mVecanM-8guxhAf-9bEB_"  data-callback="recaptcha_callback"></div><br />
+              <div class="g-recaptcha" data-sitekey="{{ site_key }}"  data-callback="recaptcha_callback"></div><br />
               <button disabled="disabled" id="capenable" class="btn btn-lg btn-success btn-block" type="submit">Submit</button>
-            {% else %}
+        {% else %}
                 <button class="btn btn-lg btn-success btn-block" type="submit">Submit</button>
             {% endif %}
           </form>

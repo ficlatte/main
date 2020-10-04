@@ -233,10 +233,11 @@ def profile_view(request, error_title=None, error_messages=None):
     
     # Do we have a Captcha key?
     try:
-        k = settings.GOOGLE_RECAPTCHA_SECRET_KEY
+        site       = settings.RECAPTCHA2_SITE_KEY
         no_captcha = False
     except AttributeError:
         no_captcha = True
+        site       = ''
 
     # Build context and render page
     context = {'profile'          : profile,
@@ -247,6 +248,7 @@ def profile_view(request, error_title=None, error_messages=None):
                'error_title'      : error_title,
                'error_messages'   : error_messages,
                'no_captcha'       : no_captcha,
+               'site_key'         : site,
                }
 
     return render(request, 'authors/profile.html', context)
@@ -417,7 +419,7 @@ def submit_profile(request):
         user.set_password(password)
 
         try:
-            key = settings.GOOGLE_RECAPTCHA_SECRET_KEY
+            key = settings.RECAPTCHA2_SECRET_KEY
             recaptcha_response = request.POST.get('g-recaptcha-response')
             url = 'https://www.google.com/recaptcha/api/siteverify'
             values = {
@@ -457,7 +459,7 @@ def submit_profile(request):
             profile.user = user
             profile.save()
             dlm.uid = profile.id;
-            un = unicode(profile.id)
+            un = str(profile.id)
             user.username = u'user' + un
             user.last_name = un
 

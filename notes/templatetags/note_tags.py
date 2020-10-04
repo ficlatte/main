@@ -30,9 +30,9 @@ def note_link(note):
     if note is None:
         return u'<NULL NOTE>'
     if note.read_date is None:
-        return mark_safe(u'<b><a href="/notes/view/' + unicode(note.id) + u'" class="note-link">' + escape(note.subject) + u'</a></b>')
+        return mark_safe(u'<b><a href="/notes/view/' + str(note.id) + u'" class="note-link">' + escape(note.subject) + u'</a></b>')
     else:
-        return mark_safe(u'<a href="/notes/view/' + unicode(note.id) + u'" class="note-link">' + escape(note.subject) + u'</a>')
+        return mark_safe(u'<a href="/notes/view/' + str(note.id) + u'" class="note-link">' + escape(note.subject) + u'</a>')
 
 #-----------------------------------------------------------------------------
 @register.filter

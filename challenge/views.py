@@ -224,7 +224,7 @@ def challenge_view(request, challenge_id, comment_text=None, error_title='', err
                'comments'             : comments,
                'page_title'           : u'Challenge ' + challenge.title,
                'challenge_sidepanel'  : 1,
-               'page_url'             : u'/challenges/' + unicode(challenge.id) + u'/',
+               'page_url'             : u'/challenges/' + str(challenge.id) + u'/',
                'pages'                : bs_pager(page_num, PAGE_STORIES, num_stories),
                'comment_text'         : comment_text,
                'suppressed'           : suppressed,
@@ -347,7 +347,7 @@ def submit_challenge(request):
             errors.append(u'Challenge body must be at least 30 characters long')
 
         if (l > 1024):
-            errors.append(u'Challenge is over 1024 characters (currently ' + unicode(l) + u')')
+            errors.append(u'Challenge is over 1024 characters (currently ' + str(l) + u')')
 
         if (challenge.stime < nowdate):
             errors.append(u'Challenge start time cannot be set in the past')

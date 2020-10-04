@@ -74,7 +74,7 @@ def blog_view(request, blog_id, comment_text=None, error_title='', error_message
                'author'          : blog.user,
                'blog'            : blog,
                'comments'        : comments,
-               'page_url'        : u'/blog/' + unicode(blog_id),
+               'page_url'        : u'/blog/' + str(blog_id),
                'pages'           : bs_pager(page_num, PAGE_COMMENTS, blog.comment_set.filter(spam__lt=Comment.SPAM_QUARANTINE).count()),
                'owner'           : owner,
                'comment_text'    : comment_text,
@@ -217,7 +217,7 @@ def submit_blog(request):
             errors.append(u'Blog body must be at least 60 characters long')
 
         if (l > 20480):
-            errors.append(u'Blog is over 20480 characters (currently ' + unicode(l) + u')')
+            errors.append(u'Blog is over 20480 characters (currently ' + str(l) + u')')
 
     # If there have been errors, re-display the page
     if errors:
