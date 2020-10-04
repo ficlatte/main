@@ -16,8 +16,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import urllib
+#import urllib
 #import urllib2     # FIXME: need to fix Captcha stuff
+import requests
 import json
 import time
 from ficlatte import settings
@@ -25,6 +26,15 @@ from django.contrib import messages
 from django.utils.http import urlquote
 from castle.views import *
 from the_pit.views import the_pit
+
+# -----------------------------------------------------------------------------
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
 
 # -----------------------------------------------------------------------------
 def get_authors(page_num=1, page_size=10):
@@ -258,8 +268,8 @@ def profile_view(request, error_title=None, error_messages=None):
 @transaction.atomic
 def submit_profile(request):
     # Prepare debug log message
-    dlm = DebugLog()
-    dlm.timestamp = int(time.time())
+    #dlm = DebugLog()
+    #dlm.timestamp = int(time.time())
     dlm_str = u''
     
     # Get user profile
@@ -423,16 +433,15 @@ def submit_profile(request):
             recaptcha_response = request.POST.get('g-recaptcha-response')
             url = 'https://www.google.com/recaptcha/api/siteverify'
             values = {
-                'secret': key,
-                'response': recaptcha_response
+                'secret'  : key,
+                'response': recaptcha_response,
+                'remoteip': get_client_ip(request),
             }
-            data = urllib.urlencode(values)
-            data2 = urllib.quote(data)
-            #req = urllib2.Request(url, data2)
-            #response = urllib2.urlopen(req)
-            result = json.load(response)
+            verify_call = requests.get(url, params=values, verify=True)
+            verify_response = verify_call.json()
+            verify_success = verify_response.get('success', False)
 
-            if result['success']:
+            if verify_success:
                 dlm_str += u'Captcha successful;'
                 user.save()
                 profile.user = user
@@ -458,7 +467,7 @@ def submit_profile(request):
             user.save()
             profile.user = user
             profile.save()
-            dlm.uid = profile.id;
+            #dlm.uid = profile.id;
             un = str(profile.id)
             user.username = u'user' + un
             user.last_name = un
@@ -484,8 +493,8 @@ def submit_profile(request):
         profile.save()
         
     # Debug log message
-    dlm.log       = dlm_str
-    dlm.save()
+#    dlm.log       = dlm_str
+#    dlm.save()
 
     return HttpResponseRedirect(reverse('author', args=(profile.pen_name,)))
 
