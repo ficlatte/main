@@ -60,13 +60,16 @@ urlpatterns = [
     #FIXME: fix log in/out
     #path('login/', django.contrib.auth.views.login, {'template_name': 'castle/login.html'}, name='login'),
     #path('logout/', castle.views.signout, name='signout'),
-    path('login/', auth_views.LoginView.as_view(), name='login'),
+    path('login/',  auth_views.LoginView.as_view (template_name='castle/login.html'),  name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     
     path('signin/',     castle.views.signin,  name='signin'),       # Process log-in credentials
     path('register/', author.views.profile_view, name='register'),
     re_path(r'^confirmation/(?P<yesno>(?:yes|no))/(?P<uid>\d+)/(?P<token>\d+)/$', castle.views.confirmation, name='confirmation'),
     path('resend_email_conf/', castle.views.resend_email_conf, name='resend_email_conf'),
+    
+    path('password_reset/', story.views.home, name='password_reset'),
+    
     #path('password_reset/', django.contrib.auth.views.password_reset, {'post_reset_redirect': reverse_lazy('password_reset_done'), 'html_email_template_name': 'castle/registration/password_reset_email.html', 'template_name': 'castle/registration/password_reset_form.html'}, name='password_reset'),
     #path('password_reset/done/', django.contrib.auth.views.password_reset_done, {'template_name': 'castle/registration/password_reset_done.html'}, name='password_reset_done'),
     #path('reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/', django.contrib.auth.views.password_reset_confirm, {'template_name': 'castle/registration/password_reset_confirm.html'}, name='password_reset_confirm'),

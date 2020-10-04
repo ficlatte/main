@@ -39,7 +39,16 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.sitemaps',
     'castle',
+    'notes',
     'bbcode',
+    'author',
+    'blog',
+    'challenge',
+    'comment',
+    'django-bbcode-master',
+    'prompt',
+    'story',
+    'the_pit',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -106,6 +115,7 @@ STATIC_URL = '/static/'
 
 # Stuff
 LOGIN_URL = '/login/'
+LOGOUT_REDIRECT_URL = '/'
 SITE_URL = 'http://127.0.0.1:8002'
 SERVER_LOCATION = 'dev'
 DB = 'mysql'
