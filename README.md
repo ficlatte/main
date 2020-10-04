@@ -5,6 +5,9 @@ Site can be found at https://ficlatte.com
 
 It's for writing micro-fiction.
 
+# The repository is in flux at the moment: we're moving to Python3 and Django 3.1
+
+
 # Getting started (on Linux)
 You'll need to install MySQL, Python 2.7 and Django 1.8.4 (which is a bit behind the head for now)
 
