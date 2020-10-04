@@ -256,7 +256,7 @@ def signin(request):
 
 
 # -----------------------------------------------------------------------------
-def signout(request):
+def logout(request):
     logout(request)
     return HttpResponseRedirect(reverse('home'))
 
