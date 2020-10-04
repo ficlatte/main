@@ -57,11 +57,8 @@ urlpatterns = [
     # Registration and Authentication
     path('', story.views.home, name='home'),
 
-    #FIXME: fix log in/out
-    #path('login/', django.contrib.auth.views.login, {'template_name': 'castle/login.html'}, name='login'),
-    #path('logout/', castle.views.signout, name='signout'),
     path('login/',  auth_views.LoginView.as_view (template_name='castle/login.html'),  name='login'),
-    path('logout/', auth_views.LogoutView.as_view(), name='signout'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     
     path('signin/',     castle.views.signin,  name='signin'),       # Process log-in credentials
     path('register/', author.views.profile_view, name='register'),
