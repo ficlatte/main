@@ -25,9 +25,9 @@ from django.conf import settings
 from django.db.models import F
 from django.template.defaultfilters import stringfilter
 from django.utils.html import escape
-from django.utils.http import urlquote
+from urllib.parse import quote
 from django.utils.safestring import mark_safe
-from django.utils.timezone import utc
+#from django.utils.timezone import utc
 from bbcode import util as bbcode
 from castle.models import StoryLog, Profile, Comment
 
@@ -175,7 +175,8 @@ def age(value):
 
     # Work out difference in seconds between now and the value parameter
     # FIXME: need to add hover text with the real date in
-    now = datetime.utcnow().replace(tzinfo=utc)
+    #now = datetime.utcnow().replace(tzinfo=utc)
+    now =datetime.now(timezone.utc)
     timediff = now - value
     age = timediff.total_seconds()
 
@@ -226,7 +227,7 @@ def author_link(profile, tag=None):
     # FIXME: Need proper URL magic here
     try:
         return mark_safe(
-            t1 + u'<a href="/authors/' + urlquote(profile.pen_name) + u'">' + escape(profile.pen_name) + u'</a>' + t2)
+            t1 + u'<a href="/authors/' + quote(profile.pen_name) + u'">' + escape(profile.pen_name) + u'</a>' + t2)
     except AttributeError:
         return mark_safe(t1+u'<a href="#">no profile</a>' + t2)
 
@@ -279,7 +280,7 @@ def author_span(profile, tag=None):
 @register.filter
 @stringfilter
 def url(text):
-    return urlquote(text)
+    return quote(text)
 
 
 # -----------------------------------------------------------------------------

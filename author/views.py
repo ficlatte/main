@@ -23,7 +23,7 @@ import json
 import time
 from ficlatte import settings
 from django.contrib import messages
-from django.utils.http import urlquote
+from urllib.parse import quote
 from castle.views import *
 from the_pit.views import the_pit
 
@@ -102,7 +102,7 @@ def author(request, pen_name):
                'challenge_list'      : challenge_list,
                'email_conf'          : email_conf,
                'page_title'          : author.pen_name,
-               'page_url'            : u'/authors/' + urlquote(author.pen_name) + u'/',
+               'page_url'            : u'/authors/' + quote(author.pen_name) + u'/',
                'pages'               : bs_pager(page_num, PAGE_STORIES, num_stories),
                'is_friend'           : is_friend,
                'user_dashboard'      : owner,
@@ -135,7 +135,7 @@ def drafts(request):
                'author'                 : profile,
                'story_list'             : story_list,
                'page_title'             : profile.pen_name, 'email_conf': email_conf,
-               'page_url'               : u'/authors/' + urlquote(profile.pen_name) + u'/',
+               'page_url'               : u'/authors/' + quote(profile.pen_name) + u'/',
                'pages'                  : bs_pager(page_num, PAGE_STORIES, num_stories),
                'drafts_page'            : True,
                'user_dashboard'         : True,
@@ -168,7 +168,7 @@ def author_prompts(request):
                'prompt_list'            : prompt_list,
                'page_title'             : profile.pen_name,
                'email_conf'             : email_conf,
-               'page_url'               : u'/authors/' + urlquote(profile.pen_name) + u'/',
+               'page_url'               : u'/authors/' + quote(profile.pen_name) + u'/',
                'pages'                  : bs_pager(page_num, PAGE_STORIES, num_prompts),
                'prompts_page'           : True,
                'user_dashboard'         : True,
@@ -201,7 +201,7 @@ def author_challenges(request):
                'challenge_list'         : challenge_list,
                'page_title'             : profile.pen_name,
                'email_conf'             : email_conf,
-               'page_url'               : u'/authors/' + urlquote(profile.pen_name) + u'/',
+               'page_url'               : u'/authors/' + quote(profile.pen_name) + u'/',
                'pages'                  : bs_pager(page_num, PAGE_STORIES, num_challenges),
                'challenges_page'        : True,
                'user_dashboard'         : True,

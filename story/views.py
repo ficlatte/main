@@ -18,7 +18,7 @@
 
 from random import randint
 from django.db.models import Avg, Q, Count
-from django.utils.http import urlquote
+from urllib.parse import quote
 from comment.views import *
 from the_pit.views import the_pit
 
@@ -789,7 +789,7 @@ def tags(request, tag_name):
         return tags_null(request, u'No stories tagged ' + tag_name)
 
     label = u'Stories tagged “' + str(tag_name) + u'”'
-    url = u'/tag/' + urlquote(tag_name) + u'/'
+    url = u'/tag/' + quote(tag_name) + u'/'
 
     # Build context and render page
     context = {'profile'         : profile,
