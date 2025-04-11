@@ -19,7 +19,7 @@
 import math
 import re
 import unicodedata
-from datetime import datetime
+from datetime import datetime, timezone
 from django import template
 from django.conf import settings
 from django.db.models import F
